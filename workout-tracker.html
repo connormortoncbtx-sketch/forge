@@ -6593,19 +6593,50 @@ async function sendAI(){
     const goalsText=goals.length
       ? goals.map((g,i)=>(i+1)+'. '+g.name+' — target: '+g.target+' '+(g.unit||'')+', current: '+(g.current>0?g.current+' '+(g.unit||''):'not set')).join('\n')
       : 'No goals set.';
-    const system='You are Smith — FORGE\'s built-in training coach. Direct, knowledgeable, no fluff. Gym environment.\n\nUSER GOALS:\n'+goalsText+'\n\nCURRENT WORKOUT:\n'+buildContext()+'\n\nBe specific. Reference actual logged numbers. Keep responses under 150 words unless a detailed plan is requested.';
-    const res=await fetch('https://forge-ai.connormortoncbtx.workers.dev',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system,messages:aiHistory})});
-    const data=await res.json();typing.remove();
+    const system='You are Smith — FORGE\'s built-in training coach. Direct, knowledgeable, no fluff. Gym environment. Plain text only — no markdown, no asterisks, no bullet symbols, no headers.\n\nUSER GOALS:\n'+goalsText+'\n\nCURRENT WORKOUT:\n'+buildContext()+'\n\nBe specific. Reference actual logged numbers. Keep responses under 150 words unless a detailed plan is requested.';
+    const body=JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system,messages:aiHistory});
+    const fallbackBody=JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:1000,system,messages:aiHistory});
+
+    // Attempt with exponential backoff — retry up to 3 times on 529
+    let res, data;
+    const delays=[0,1500,3000];
+    for(let attempt=0;attempt<3;attempt++){
+      if(delays[attempt]>0)await new Promise(r=>setTimeout(r,delays[attempt]));
+      // On final attempt fall back to Haiku
+      const reqBody = attempt===2 ? fallbackBody : body;
+      res=await fetch('https://forge-ai.connormortoncbtx.workers.dev',{method:'POST',headers:{'Content-Type':'application/json'},body:reqBody});
+      data=await res.json();
+      if(res.status!==529)break;
+    }
+
+    typing.remove();
     if(!res.ok){
-      const errMsg=data?.error?.message||'API error '+res.status;
-      addAIMsg('assistant','Error: '+errMsg);
+      const status=res.status;
+      const errMsg=status===529
+        ?'Smith is still overloaded. Try again in a minute.'
+        :status===401?'API key issue — check Cloudflare Worker settings.'
+        :'Something went wrong ('+status+'). Try again.';
+      addAIMsg('assistant',errMsg);
       aiTyping=false;document.getElementById('ai-send-btn').disabled=false;
       return;
     }
-    const reply=data.content?.[0]?.text||'No response received.';
-    addAIMsg('assistant',reply);aiHistory.push({role:'assistant',content:reply});
-  }catch(err){typing.remove();addAIMsg('assistant','Connection error: '+err.message);}
+    const raw=data.content?.[0]?.text||'No response received.';
+    const reply=stripMarkdown(raw);
+    addAIMsg('assistant',reply);aiHistory.push({role:'assistant',content:raw});
+  }catch(err){typing.remove();addAIMsg('assistant','Connection error — check your network and try again.');}
   aiTyping=false;document.getElementById('ai-send-btn').disabled=false;
+}
+
+function stripMarkdown(text){
+  return text
+    .replace(/\*\*(.+?)\*\*/g,'$1')
+    .replace(/\*(.+?)\*/g,'$1')
+    .replace(/_{1,2}(.+?)_{1,2}/g,'$1')
+    .replace(/`(.+?)`/g,'$1')
+    .replace(/#{1,6}\s+/g,'')
+    .replace(/^\s*[-*+]\s+/gm,'• ')
+    .replace(/^\s*\d+\.\s+/gm,'')
+    .trim();
 }
 
 function buildContext(){
