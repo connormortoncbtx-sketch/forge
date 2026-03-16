@@ -1,4 +1,4 @@
-const CACHE = 'forge-v5';
+const CACHE = 'forge-v6';
 
 self.addEventListener('install', e => {
   e.waitUntil(
@@ -21,7 +21,6 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
-  // Never cache — always live
   if (e.request.url.includes('anthropic.com') ||
       e.request.url.includes('workers.dev') ||
       e.request.url.includes('fonts.g')) {
@@ -29,7 +28,6 @@ self.addEventListener('fetch', e => {
     return;
   }
 
-  // Network first for main HTML — updates always come through immediately
   if (e.request.url.includes('workout-tracker.html') || e.request.mode === 'navigate') {
     e.respondWith(
       fetch(e.request)
@@ -43,7 +41,6 @@ self.addEventListener('fetch', e => {
     return;
   }
 
-  // Cache first for everything else
   e.respondWith(
     caches.match(e.request).then(cached => {
       if (cached) return cached;
