@@ -36,14 +36,21 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:1
 .field-input:focus{border-color:var(--accent);}
 .field-input::placeholder{color:var(--muted);}
 textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
-.tag-row{display:flex;flex-wrap:wrap;gap:6px;}
-.tag-chip{padding:5px 12px;border-radius:20px;font-family:var(--mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;}
+.tag-row{display:flex;flex-wrap:wrap;gap:8px;}
+.tag-chip{padding:6px 13px;border-radius:20px;font-family:var(--mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;}
 .tag-chip.selected{background:var(--accent-dim);border-color:var(--accent);color:var(--accent);}
 .color-row{display:flex;gap:10px;}
 .color-dot{width:28px;height:28px;border-radius:50%;cursor:pointer;border:2px solid transparent;}
 .color-dot.selected{border-color:var(--text);}
 .add-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;background:var(--card);border:1px dashed var(--border);border-radius:var(--radius);font-family:var(--mono);font-size:11px;color:var(--muted);cursor:pointer;letter-spacing:1px;text-transform:uppercase;}
 .add-btn:active{border-color:var(--accent);color:var(--accent);}
+.add-btn-primary{display:flex;align-items:center;justify-content:center;width:100%;padding:15px;background:var(--accent);border:none;border-radius:var(--radius);font-family:var(--display);font-size:20px;letter-spacing:2px;color:#0a0a0c;cursor:pointer;}
+.add-btn-primary:active{opacity:0.85;}
+.block-action-row{display:flex;gap:10px;margin-top:12px;}
+.block-action-add{flex:1;padding:13px;background:var(--accent);border:none;border-radius:var(--radius);font-family:var(--display);font-size:17px;letter-spacing:1px;color:#0a0a0c;cursor:pointer;}
+.block-action-add:active{opacity:0.85;}
+.block-action-close{flex:1;padding:13px;background:var(--card);border:1px solid var(--accent);border-radius:var(--radius);font-family:var(--display);font-size:17px;letter-spacing:1px;color:var(--accent);cursor:pointer;text-transform:uppercase;}
+.block-action-close:active{background:var(--accent-dim);}
 .save-bar{position:fixed;bottom:0;left:0;right:0;padding:14px 24px 30px;background:linear-gradient(0deg,var(--bg) 70%,transparent);z-index:25;}
 .save-btn{width:100%;background:var(--accent);color:#0a0a0c;border:none;border-radius:var(--radius);padding:16px;font-family:var(--display);font-size:22px;letter-spacing:2px;cursor:pointer;}
 .save-btn:active{opacity:0.85;}
@@ -95,42 +102,72 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
 .acc-arms{background:#ff4774;}.acc-accessories{background:#47ffd4;}.acc-cardio{background:#c847ff;}
 .acc-core{background:#ff4774;}.acc-custom{background:#e8ff47;}
 
-/* ── BUILDER SCREENS ── */
-#builder-program-screen,#builder-block-screen,#builder-exercise-screen{overflow-y:auto;padding-bottom:120px;}
+/* ── BUILDER ── */
+#builder-program-screen{overflow-y:auto;padding-bottom:120px;}
 
-.block-editor-list{display:flex;flex-direction:column;gap:10px;padding:0 24px;}
-.block-editor-item{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;display:flex;align-items:stretch;}
-.block-editor-accent{width:3px;flex-shrink:0;}
-.block-editor-body{flex:1;padding:14px 16px;min-width:0;}
-.block-editor-name{font-family:var(--display);font-size:20px;letter-spacing:1px;line-height:1;}
-.block-editor-meta{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:3px;}
-.block-editor-tag-row{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;}
-.block-editor-actions{display:flex;flex-direction:column;gap:0;padding:0;border-left:1px solid var(--border);flex-shrink:0;}
-.block-action-btn{flex:1;width:48px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-family:var(--mono);font-size:11px;color:var(--muted);background:none;border:none;border-bottom:1px solid var(--border);}
-.block-action-btn:last-child{border-bottom:none;}
-.block-action-btn:active{background:var(--accent-dim);color:var(--accent);}
-.block-action-btn.del:active{background:rgba(255,71,71,0.1);color:var(--red);}
+/* Confirm dialog */
+.confirm-sheet{position:fixed;inset:0;z-index:150;display:none;align-items:flex-end;}
+.confirm-sheet.open{display:flex;}
+.confirm-backdrop{position:absolute;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);}
+.confirm-panel{position:relative;width:100%;background:var(--surface);border-top:1px solid var(--border);border-radius:24px 24px 0 0;padding:24px 24px 40px;z-index:1;}
+.confirm-title{font-family:var(--display);font-size:22px;letter-spacing:1px;margin-bottom:8px;}
+.confirm-body{font-size:14px;color:var(--text-dim);margin-bottom:24px;line-height:1.5;}
+.confirm-btns{display:flex;flex-direction:column;gap:10px;}
+.confirm-yes{background:var(--red);color:#fff;border:none;border-radius:var(--radius);padding:15px;font-family:var(--display);font-size:20px;letter-spacing:2px;cursor:pointer;}
+.confirm-no{background:var(--card);border:1px solid var(--border);color:var(--muted);border-radius:var(--radius);padding:14px;font-family:var(--mono);font-size:12px;letter-spacing:1px;cursor:pointer;}
 
-.exercise-editor-list{display:flex;flex-direction:column;gap:10px;padding:0 24px;}
-.ex-editor-item{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
-.ex-editor-top{display:flex;align-items:stretch;gap:0;}
-.ex-editor-accent{width:3px;flex-shrink:0;background:var(--muted);}
-.ex-editor-main{flex:1;padding:14px 14px 10px;min-width:0;}
-.ex-editor-name{font-family:var(--display);font-size:18px;letter-spacing:0.5px;line-height:1.1;}
-.ex-editor-muscle{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:2px;}
-.ex-editor-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;}
-.ex-tag{font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:4px;background:var(--surface);color:var(--muted);border:1px solid var(--border);text-transform:uppercase;letter-spacing:1px;}
-.ex-editor-controls{padding:10px 14px 14px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:center;}
+/* Unified tile — same anatomy everywhere */
+.forge-tile{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:10px;}
+.forge-tile.expanded{border-color:var(--accent);}
+.forge-tile-header{display:flex;align-items:stretch;cursor:pointer;}
+.forge-tile-bar{width:3px;flex-shrink:0;}
+.forge-tile-main{flex:1;padding:14px 14px 12px;min-width:0;}
+.forge-tile-name{font-family:var(--display);font-size:20px;letter-spacing:1px;line-height:1;}
+.forge-tile-name input{font-family:var(--display);font-size:20px;letter-spacing:1px;background:transparent;border:none;outline:none;color:var(--text);width:100%;padding:0;caret-color:var(--accent);}
+.forge-tile-name input::placeholder{color:var(--muted);}
+.forge-tile-meta{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:3px;}
+.forge-tile-meta input{font-family:var(--mono);font-size:10px;color:var(--text-dim);background:transparent;border:none;outline:none;width:100%;padding:0;caret-color:var(--accent);}
+.forge-tile-meta input::placeholder{color:var(--muted);}
+.forge-tile-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;}
+.forge-tile-actions{display:flex;align-items:center;padding:0 14px;gap:8px;flex-shrink:0;}
+.tile-chevron{font-family:var(--mono);font-size:12px;color:var(--muted);transition:transform 0.2s;}
+.forge-tile.expanded .tile-chevron{transform:rotate(180deg);}
+.tile-del-btn{font-family:var(--mono);font-size:10px;color:var(--muted);background:none;border:1px solid var(--border);border-radius:6px;padding:5px 8px;cursor:pointer;letter-spacing:1px;}
+.tile-del-btn:active{border-color:var(--red);color:var(--red);}
+
+.forge-tile-body{display:none;border-top:1px solid var(--border);padding:14px;}
+.forge-tile.expanded .forge-tile-body{display:block;}
+
+/* Exercise tiles inside block tiles */
+.ex-tile{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:8px;}
+.ex-tile-header{display:flex;align-items:stretch;}
+.ex-tile-bar{width:3px;flex-shrink:0;}
+.ex-tile-main{flex:1;padding:12px 12px 10px;min-width:0;}
+.ex-tile-name{font-family:var(--display);font-size:17px;letter-spacing:0.5px;line-height:1.1;}
+.ex-tile-muscle{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:2px;}
+.ex-tile-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px;}
+.ex-tile-remove{display:flex;align-items:center;padding:0 12px;flex-shrink:0;}
+.ex-tile-del{font-family:var(--mono);font-size:10px;color:var(--muted);background:none;border:1px solid var(--border);border-radius:6px;padding:5px 8px;cursor:pointer;}
+.ex-tile-del:active{border-color:var(--red);color:var(--red);}
+.ex-tile-controls{padding:8px 12px 12px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
 .ex-ctrl-label{font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;white-space:nowrap;}
-.ex-ctrl-input{background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:15px;text-align:center;padding:8px 6px;outline:none;-webkit-appearance:none;}
+.ex-ctrl-input{background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:15px;text-align:center;padding:8px 6px;outline:none;-webkit-appearance:none;}
 .ex-ctrl-input:focus{border-color:var(--accent);}
 .ex-ctrl-input.sets-input{width:54px;}
-.ex-ctrl-input.reps-input{flex:1;}
-.ex-note-input{flex:2;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:12px;padding:8px 10px;outline:none;}
+.ex-ctrl-input.reps-input{width:80px;}
+.ex-note-input{flex:1;min-width:0;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:12px;padding:8px 10px;outline:none;}
 .ex-note-input:focus{border-color:var(--accent);}
 .ex-note-input::placeholder{color:var(--muted);}
-.ex-remove-btn{width:32px;height:32px;background:var(--surface);border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-family:var(--mono);font-size:11px;color:var(--muted);flex-shrink:0;}
-.ex-remove-btn:active{border-color:var(--red);color:var(--red);}
+
+/* Checklist editor */
+.check-edit-row{display:flex;gap:8px;margin-bottom:8px;align-items:center;}
+.check-edit-input{flex:1;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--sans);font-size:14px;padding:10px 12px;outline:none;}
+.check-edit-input:focus{border-color:var(--accent);}
+.check-edit-input::placeholder{color:var(--muted);}
+.check-edit-del{font-family:var(--mono);font-size:10px;color:var(--muted);background:none;border:1px solid var(--border);border-radius:6px;padding:8px 10px;cursor:pointer;flex-shrink:0;}
+.check-edit-del:active{border-color:var(--red);color:var(--red);}
+
+.ex-tag{font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:4px;background:var(--surface);color:var(--muted);border:1px solid var(--border);text-transform:uppercase;letter-spacing:1px;}
 
 /* Exercise picker sheet */
 .picker-sheet{position:fixed;inset:0;z-index:80;display:none;flex-direction:column;}
@@ -240,7 +277,7 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
 .ai-msg{max-width:90%;padding:10px 14px;border-radius:12px;font-size:14px;line-height:1.5;}
 .ai-msg.user{background:var(--accent);color:#0a0a0c;margin-left:auto;border-radius:12px 12px 2px 12px;font-weight:500;}
 .ai-msg.assistant{background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:12px 12px 12px 2px;}
-.ai-msg.system-msg{background:var(--accent-dim);border:1px solid rgba(232,255,71,0.2);color:var(--text-dim);font-family:var(--mono);font-size:11px;max-width:100%;text-align:center;margin:0 auto;}
+.ai-msg.system-msg{background:var(--card);border:1px solid var(--border);color:var(--text-dim);font-family:var(--sans);font-size:14px;line-height:1.5;border-radius:12px 12px 12px 2px;max-width:90%;}
 .ai-typing{display:flex;gap:5px;align-items:center;padding:10px 14px;background:var(--card);border:1px solid var(--border);border-radius:12px 12px 12px 2px;width:fit-content;}
 .ai-typing span{width:6px;height:6px;background:var(--muted);border-radius:50%;animation:bounce 1s infinite;}
 .ai-typing span:nth-child(2){animation-delay:0.15s;}
@@ -295,37 +332,44 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
 .h-sets{font-size:12px;color:var(--text-dim);}
 
 /* ── GOALS ── */
-#goals-screen{padding:52px 22px 100px;overflow-y:auto;}
-#goals-screen h2{font-family:var(--display);font-size:36px;letter-spacing:2px;margin-bottom:4px;}
-#goals-screen .gsub{font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:22px;}
-.goal-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:12px;}
-.goal-card-header{display:flex;align-items:center;gap:14px;margin-bottom:14px;}
-.goal-card-icon-wrap{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.goal-card-icon-wrap.bench{background:rgba(255,140,71,0.15);}
-.goal-card-icon-wrap.muscleup{background:rgba(72,180,255,0.15);}
-.goal-card-icon-wrap.mile{background:rgba(200,71,255,0.15);}
-.goal-card-icon-letter{font-family:var(--display);font-size:22px;letter-spacing:1px;}
-.goal-card-icon-letter.bench{color:var(--orange);}
-.goal-card-icon-letter.muscleup{color:var(--blue);}
-.goal-card-icon-letter.mile{color:var(--purple);}
-.goal-card-title{font-family:var(--display);font-size:22px;letter-spacing:1px;line-height:1;}
-.goal-card-sub{font-size:12px;color:var(--text-dim);margin-top:2px;}
-.goal-big-bar{height:6px;background:var(--border);border-radius:4px;overflow:hidden;margin-bottom:8px;}
-.goal-big-fill{height:100%;border-radius:4px;transition:width 0.5s;}
-.goal-big-fill.bench{background:var(--orange);}
-.goal-big-fill.muscleup{background:var(--blue);}
-.goal-big-fill.mile{background:var(--purple);}
-.goal-pct{font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:14px;}
-.goal-milestones{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
-.milestone{display:flex;align-items:center;gap:10px;font-size:13px;}
-.milestone .ms-dot{width:10px;height:10px;border-radius:50%;border:2px solid var(--muted);flex-shrink:0;}
-.milestone.done .ms-dot{background:var(--accent);border-color:var(--accent);}
-.milestone .ms-label{flex:1;}
-.milestone.done .ms-label{color:var(--muted);text-decoration:line-through;}
-.goal-input-row{display:flex;gap:8px;}
-.goal-input{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:15px;padding:10px 12px;outline:none;}
-.goal-input:focus{border-color:var(--accent);}
-.goal-save-btn{background:var(--accent);color:#0a0a0c;border:none;border-radius:8px;padding:10px 16px;font-family:var(--mono);font-size:12px;font-weight:500;cursor:pointer;}
+#goals-screen{overflow-y:auto;}
+.goal-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:12px;}
+.goal-card-top{display:flex;align-items:stretch;}
+.goal-card-bar{width:3px;flex-shrink:0;}
+.goal-card-body{flex:1;padding:16px 16px 14px;min-width:0;}
+.goal-card-name{font-family:var(--display);font-size:22px;letter-spacing:1px;line-height:1;}
+.goal-card-sub{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:3px;}
+.goal-card-actions{display:flex;flex-direction:column;border-left:1px solid var(--border);flex-shrink:0;}
+.goal-card-action-btn{flex:1;width:48px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-family:var(--mono);font-size:10px;color:var(--muted);background:none;border:none;border-bottom:1px solid var(--border);letter-spacing:1px;}
+.goal-card-action-btn:last-child{border-bottom:none;}
+.goal-card-action-btn:active{background:var(--accent-dim);color:var(--accent);}
+.goal-card-action-btn.del:active{background:rgba(255,71,71,0.1);color:var(--red);}
+.goal-card-progress{padding:0 16px 14px;}
+.goal-bar{height:6px;background:var(--border);border-radius:4px;overflow:hidden;margin-bottom:6px;}
+.goal-bar-fill{height:100%;border-radius:4px;transition:width 0.5s;}
+.goal-pct{font-family:var(--mono);font-size:10px;color:var(--muted);}
+.goal-update-row{display:flex;gap:8px;padding:0 16px 16px;}
+.goal-update-input{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:15px;padding:10px 12px;outline:none;}
+.goal-update-input:focus{border-color:var(--accent);}
+.goal-update-input::placeholder{color:var(--muted);}
+.goal-update-btn{background:var(--accent);color:#0a0a0c;border:none;border-radius:8px;padding:10px 16px;font-family:var(--mono);font-size:12px;font-weight:500;cursor:pointer;}
+/* Goal builder sheet */
+.goal-builder-sheet{position:fixed;inset:0;z-index:90;display:none;flex-direction:column;}
+.goal-builder-sheet.open{display:flex;}
+.goal-builder-panel{position:relative;margin-top:auto;background:var(--surface);border-top:1px solid var(--border);border-radius:24px 24px 0 0;padding:20px 24px 40px;z-index:1;max-height:85dvh;overflow-y:auto;}
+.goal-builder-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 16px;}
+.goal-builder-title{font-family:var(--display);font-size:24px;letter-spacing:1px;margin-bottom:18px;}
+.gb-field{margin-bottom:14px;}
+.gb-label{font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
+.gb-input{width:100%;background:var(--card);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:var(--sans);font-size:15px;padding:12px 14px;outline:none;}
+.gb-input:focus{border-color:var(--accent);}
+.gb-input::placeholder{color:var(--muted);}
+.gb-row{display:flex;gap:10px;}
+.gb-color-row{display:flex;gap:10px;flex-wrap:wrap;}
+.gb-color-dot{width:28px;height:28px;border-radius:50%;cursor:pointer;border:2px solid transparent;flex-shrink:0;}
+.gb-color-dot.selected{border-color:var(--text);}
+.gb-save-btn{width:100%;background:var(--accent);color:#0a0a0c;border:none;border-radius:var(--radius);padding:15px;font-family:var(--display);font-size:20px;letter-spacing:2px;cursor:pointer;margin-top:8px;}
+.gb-delete-btn{width:100%;background:transparent;border:1px solid var(--red);color:var(--red);border-radius:var(--radius);padding:13px;font-family:var(--mono);font-size:12px;letter-spacing:1px;cursor:pointer;margin-top:8px;}
 
 /* ── NAV ── */
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);display:flex;padding:10px 0 24px;z-index:30;}
@@ -339,6 +383,9 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
 .empty-state .em-label{font-family:var(--display);font-size:36px;color:var(--border);margin-bottom:12px;letter-spacing:2px;}
 .toast{position:fixed;top:58px;left:50%;transform:translateX(-50%) translateY(-10px);background:var(--card);border:1px solid var(--accent);border-radius:30px;padding:9px 18px;font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:1px;z-index:200;opacity:0;transition:opacity 0.2s,transform 0.2s;pointer-events:none;white-space:nowrap;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+#bp-preview:focus-within{border-color:var(--accent);}
+#bp-name::placeholder{color:var(--muted);}
+#bp-desc::placeholder{color:var(--muted);}
 </style>
 </head>
 <body>
@@ -367,16 +414,54 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
 
 <!-- GOALS -->
 <div class="screen" id="goals-screen">
-  <h2>GOALS</h2>
-  <div class="gsub">315 bench · muscle up · 6-min mile</div>
-  <div id="goals-list"></div>
+  <div style="padding:52px 24px 16px;display:flex;align-items:flex-end;justify-content:space-between;">
+    <div>
+      <div style="font-family:var(--display);font-size:36px;letter-spacing:2px;">GOALS</div>
+      <div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:3px;">Track your personal targets</div>
+    </div>
+    <button class="add-program-btn" onclick="openGoalBuilder(null)">+ Add Goal</button>
+  </div>
+  <div style="padding:0 24px 100px;" id="goals-list"></div>
+</div>
+
+<!-- GOAL BUILDER SHEET -->
+<div class="goal-builder-sheet" id="goal-builder-sheet">
+  <div class="ai-backdrop" onclick="closeGoalBuilder()"></div>
+  <div class="goal-builder-panel">
+    <div class="goal-builder-handle"></div>
+    <div class="goal-builder-title" id="gb-title">NEW GOAL</div>
+    <div class="gb-field">
+      <div class="gb-label">Goal Name</div>
+      <input class="gb-input" id="gb-name" placeholder="e.g. Bench Press 1RM, Sub-6 Mile">
+    </div>
+    <div class="gb-row">
+      <div style="flex:1">
+        <div class="gb-label">Current Value</div>
+        <input class="gb-input" id="gb-current" type="number" inputmode="decimal" placeholder="0">
+      </div>
+      <div style="flex:1">
+        <div class="gb-label">Target Value</div>
+        <input class="gb-input" id="gb-target" type="number" inputmode="decimal" placeholder="e.g. 315">
+      </div>
+      <div style="flex:1">
+        <div class="gb-label">Unit</div>
+        <input class="gb-input" id="gb-unit" placeholder="lbs, min, reps">
+      </div>
+    </div>
+    <div class="gb-field" style="margin-top:14px">
+      <div class="gb-label">Color</div>
+      <div class="gb-color-row" id="gb-colors"></div>
+    </div>
+    <button class="gb-save-btn" onclick="saveGoalFromBuilder()">SAVE GOAL</button>
+    <button class="gb-delete-btn" id="gb-delete-btn" style="display:none" onclick="deleteGoalFromBuilder()">DELETE GOAL</button>
+  </div>
 </div>
 
 <!-- NAV -->
 <div class="bottom-nav" id="main-nav">
   <div class="nav-tab active" onclick="showTab('home-screen',this)"><div class="nav-icon">HOME</div><div class="nav-lbl">Home</div></div>
   <div class="nav-tab" onclick="showTab('goals-screen',this);renderGoals()"><div class="nav-icon">GOALS</div><div class="nav-lbl">Goals</div></div>
-  <div class="nav-tab" onclick="openAI()"><div class="nav-icon">AI</div><div class="nav-lbl">Coach</div></div>
+  <div class="nav-tab" onclick="openAI()"><div class="nav-icon">AI</div><div class="nav-lbl">Smith</div></div>
   <div class="nav-tab" onclick="showTab('history-screen',this);renderHistory()"><div class="nav-icon">LOG</div><div class="nav-lbl">History</div></div>
 </div>
 
@@ -388,25 +473,26 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
     <button class="page-action" onclick="saveProgram()">SAVE</button>
   </div>
 
-  <!-- Live preview -->
+  <!-- Interactive program card — tap to edit inline -->
   <div style="padding:0 24px 20px;">
-    <div id="bp-preview" style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;display:flex;align-items:center;gap:14px;">
-      <div id="bp-preview-bar" style="width:3px;height:40px;border-radius:2px;background:#e8ff47;flex-shrink:0;"></div>
-      <div>
-        <div id="bp-preview-name" style="font-family:var(--display);font-size:26px;letter-spacing:1px;color:var(--muted)">PROGRAM NAME</div>
-        <div id="bp-preview-meta" style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:2px;">0 blocks</div>
+    <div id="bp-preview" style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;display:flex;align-items:flex-start;gap:14px;">
+      <div id="bp-preview-bar" style="width:3px;min-height:44px;border-radius:2px;background:#e8ff47;flex-shrink:0;margin-top:4px;"></div>
+      <div style="flex:1;min-width:0;">
+        <input id="bp-name"
+          style="font-family:var(--display);font-size:26px;letter-spacing:1px;background:transparent;border:none;outline:none;color:var(--text);width:100%;padding:0;caret-color:var(--accent);"
+          placeholder="PROGRAM NAME"
+          oninput="updateBPPreview()"
+          autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false">
+        <textarea id="bp-desc"
+          style="font-family:var(--mono);font-size:11px;color:var(--text-dim);background:transparent;border:none;outline:none;width:100%;resize:none;padding:0;margin-top:4px;caret-color:var(--accent);line-height:1.5;min-height:18px;"
+          placeholder="Description (optional)"
+          rows="2"
+          oninput="updateBPPreview();autoResizeDesc(this)"></textarea>
+        <div id="bp-preview-meta" style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:4px;">0 blocks</div>
       </div>
     </div>
   </div>
 
-  <div class="field-group">
-    <div class="field-label">Program Name</div>
-    <input class="field-input" id="bp-name" placeholder="e.g. STRENGTH, SUMMER CUT, 5/3/1" oninput="updateBPPreview()">
-  </div>
-  <div class="field-group">
-    <div class="field-label">Description</div>
-    <textarea class="field-input" id="bp-desc" placeholder="Brief description of this program's goal or style..."></textarea>
-  </div>
   <div class="field-group">
     <div class="field-label">Style Tags</div>
     <div class="tag-row" id="bp-style-tags"></div>
@@ -415,61 +501,30 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
     <div class="field-label">Accent Color</div>
     <div class="color-row" id="bp-colors"></div>
   </div>
-  <div style="padding:0 24px 10px;display:flex;align-items:center;justify-content:space-between;">
+  <div style="padding:0 24px 10px;">
     <div class="section-label">Blocks</div>
-    <button class="page-action" onclick="openBlockBuilder(null)">+ Add Block</button>
   </div>
   <div class="block-editor-list" id="bp-block-list"></div>
   <div style="padding:14px 24px 0;">
-    <button class="add-btn" onclick="openBlockBuilder(null)">+ Add Block</button>
+    <button class="add-btn-primary" onclick="addBlockInline()">+ ADD BLOCK</button>
+  </div>
+  <div style="padding:14px 24px 0;" id="bp-delete-wrap">
+    <button class="destructive-btn" onclick="confirmDeleteProgram()">DELETE PROGRAM</button>
   </div>
   <div style="height:20px"></div>
 </div>
 
-<!-- BUILDER: BLOCK -->
-<div class="screen" id="builder-block-screen">
-  <div class="page-header">
-    <div class="page-back" onclick="closeBlockBuilder()">&#8592;</div>
-    <div class="page-title" id="bb-title">NEW BLOCK</div>
-    <button class="page-action" onclick="saveBlock()">SAVE</button>
-  </div>
-  <div class="field-group">
-    <div class="field-label">Block Name</div>
-    <input class="field-input" id="bb-name" placeholder="e.g. PUSH, CARDIO, UPPER BODY">
-  </div>
-  <div class="field-group">
-    <div class="field-label">Description</div>
-    <input class="field-input" id="bb-desc" placeholder="e.g. Chest, Shoulders, Triceps — Heavy">
-  </div>
-  <div class="field-group">
-    <div class="field-label">Type</div>
-    <div class="tag-row" id="bb-type-tags"></div>
-  </div>
-  <div class="field-group">
-    <div class="field-label">Block Tags</div>
-    <div class="tag-row" id="bb-tags"></div>
-  </div>
-  <div id="bb-lifting-section">
-    <div style="padding:0 24px 10px;display:flex;align-items:center;justify-content:space-between;">
-      <div class="section-label">Exercises</div>
-      <button class="page-action" onclick="openExPicker()">+ Add Exercise</button>
-    </div>
-    <div class="exercise-editor-list" id="bb-exercise-list"></div>
-    <div style="padding:14px 24px 0;">
-      <button class="add-btn" onclick="openExPicker()">+ Add Exercise</button>
+<!-- CONFIRM DIALOG -->
+<div class="confirm-sheet" id="confirm-sheet">
+  <div class="confirm-backdrop" onclick="closeConfirm()"></div>
+  <div class="confirm-panel">
+    <div class="confirm-title" id="confirm-title">Are you sure?</div>
+    <div class="confirm-body" id="confirm-body">This cannot be undone.</div>
+    <div class="confirm-btns">
+      <button class="confirm-yes" id="confirm-yes-btn">DELETE</button>
+      <button class="confirm-no" onclick="closeConfirm()">CANCEL</button>
     </div>
   </div>
-  <div id="bb-simple-section" style="display:none">
-    <div style="padding:0 24px 10px;display:flex;align-items:center;justify-content:space-between;">
-      <div class="section-label">Checklist Items</div>
-      <button class="page-action" onclick="addCheckItem()">+ Add Item</button>
-    </div>
-    <div style="padding:0 24px;" id="bb-check-list"></div>
-    <div style="padding:14px 24px 0;">
-      <button class="add-btn" onclick="addCheckItem()">+ Add Item</button>
-    </div>
-  </div>
-  <div style="height:20px"></div>
 </div>
 
 <!-- EXERCISE PICKER SHEET -->
@@ -540,20 +595,20 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
   <div class="ai-panel">
     <div class="ai-handle"></div>
     <div class="ai-header">
-      <div class="ai-logo">FORGE AI</div>
-      <div class="ai-powered">powered by Claude</div>
+      <div class="ai-logo">SMITH</div>
+      <div class="ai-powered">by FORGE · powered by Claude</div>
       <div class="ai-close" onclick="closeAI()">X</div>
     </div>
     <div class="ai-messages" id="ai-messages">
-      <div class="ai-msg system-msg">Ask me anything about your workout, form, programming, or goals.</div>
+      <div class="ai-msg system-msg">Hey, I'm Smith — your FORGE coach. Ask me anything about training, form, programming, or your goals.</div>
     </div>
     <div class="ai-quick-btns">
       <div class="quick-btn" onclick="askQuick('How am I pacing today?')">Pace check</div>
-      <div class="quick-btn" onclick="askQuick('Suggest a weight for my next set')">Push weight</div>
-      <div class="quick-btn" onclick="askQuick('Form cues for the current exercise')">Form cues</div>
-      <div class="quick-btn" onclick="askQuick('How close am I to my 315 bench goal?')">315 check</div>
-      <div class="quick-btn" onclick="askQuick('What is my next step for the muscle up?')">Muscle up</div>
-      <div class="quick-btn" onclick="askQuick('Build me a plan to hit a 6 minute mile')">Mile plan</div>
+      <div class="quick-btn" onclick="askQuick('Suggest a weight for my next set based on what I have logged')">Push weight</div>
+      <div class="quick-btn" onclick="askQuick('Give me form cues for the current exercise')">Form cues</div>
+      <div class="quick-btn" onclick="askQuick('How is my progress toward my goals based on today?')">Goal check</div>
+      <div class="quick-btn" onclick="askQuick('Should I push harder or dial back intensity today?')">Intensity</div>
+      <div class="quick-btn" onclick="askQuick('Recommend a program for my goals')">Program advice</div>
     </div>
     <div class="ai-input-row">
       <input class="ai-input" id="ai-input" placeholder="Ask anything..." onkeydown="if(event.key==='Enter')sendAI()">
@@ -563,6 +618,4569 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
 </div>
 
 <script>
+// FORGE Exercise Library — auto-generated
+// 308 exercises across all categories
+const EXERCISE_LIBRARY = [
+  {
+    "id": "bb-bench",
+    "name": "Barbell Bench Press",
+    "muscleGroup": "Chest",
+    "tags": [
+      "Chest",
+      "Push",
+      "Compound",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "bb-bench-close",
+    "name": "Close-Grip Bench Press",
+    "muscleGroup": "Chest/Triceps",
+    "tags": [
+      "Chest",
+      "Triceps",
+      "Push",
+      "Compound",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "bb-bench-wide",
+    "name": "Wide-Grip Bench Press",
+    "muscleGroup": "Chest",
+    "tags": [
+      "Chest",
+      "Push",
+      "Compound",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "bb-bench-pause",
+    "name": "Paused Bench Press",
+    "muscleGroup": "Chest",
+    "tags": [
+      "Chest",
+      "Push",
+      "Compound",
+      "Barbell",
+      "Tempo"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "bb-incline-bench",
+    "name": "Incline Barbell Press",
+    "muscleGroup": "Chest",
+    "tags": [
+      "Chest",
+      "Push",
+      "Compound",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "bb-decline-bench",
+    "name": "Decline Barbell Press",
+    "muscleGroup": "Chest",
+    "tags": [
+      "Chest",
+      "Push",
+      "Compound",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "bb-floor-press",
+    "name": "Floor Press",
+    "muscleGroup": "Chest/Triceps",
+    "tags": [
+      "Chest",
+      "Push",
+      "Compound",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "bb-spoto-press",
+    "name": "Spoto Press",
+    "muscleGroup": "Chest",
+    "tags": [
+      "Chest",
+      "Push",
+      "Compound",
+      "Barbell",
+      "Tempo"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "db-flat-press",
+    "name": "Dumbbell Flat Press",
+    "muscleGroup": "Chest",
+    "tags": [
+      "Chest",
+      "Push",
+      "Compound",
+      "Dumbbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "db-incline-press",
+    "name": "Incline Dumbbell Press",
+    "muscleGroup": "Chest",
+    "tags": [
+      "Chest",
+      "Push",
+      "Compound",
+      "Dumbbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "db-decline-press",
+    "name": "Decline Dumbbell Press",
+    "muscleGroup": "Chest",
+    "tags": [
+      "Chest",
+      "Push",
+      "Compound",
+      "Dumbbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "db-fly-flat",
+    "name": "Dumbbell Fly (Flat)",
+    "muscleGroup": "Chest",
+    "tags": [
+      "Chest",
+      "Push",
+      "Isolation",
+      "Dumbbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "db-fly-incline",
+    "name": "Dumbbell Fly (Incline)",
+    "muscleGroup": "Chest",
+    "tags": [
+      "Chest",
+      "Push",
+      "Isolation",
+      "Dumbbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "db-pullover",
+    "name": "Dumbbell Pullover",
+    "muscleGroup": "Chest/Lats",
+    "tags": [
+      "Chest",
+      "Back",
+      "Isolation",
+      "Dumbbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "db-squeeze-press",
+    "name": "Dumbbell Squeeze Press",
+    "muscleGroup": "Chest",
+    "tags": [
+      "Chest",
+      "Push",
+      "Isolation",
+      "Dumbbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "cable-fly-mid",
+    "name": "Cable Fly (Mid)",
+    "muscleGroup": "Chest",
+    "tags": [
+      "Chest",
+      "Push",
+      "Isolation",
+      "Cable"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "cable-fly-low",
+    "name": "Cable Fly (Low to High)",
+    "muscleGroup": "Chest",
+    "tags": [
+      "Chest",
+      "Push",
+      "Isolation",
+      "Cable"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "cable-fly-high",
+    "name": "Cable Fly (High to Low)",
+    "muscleGroup": "Chest",
+    "tags": [
+      "Chest",
+      "Push",
+      "Isolation",
+      "Cable"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "cable-cross",
+    "name": "Cable Crossover",
+    "muscleGroup": "Chest",
+    "tags": [
+      "Chest",
+      "Push",
+      "Isolation",
+      "Cable"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "pec-deck",
+    "name": "Pec Deck / Machine Fly",
+    "muscleGroup": "Chest",
+    "tags": [
+      "Chest",
+      "Push",
+      "Isolation",
+      "Machine"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "chest-press-machine",
+    "name": "Chest Press Machine",
+    "muscleGroup": "Chest",
+    "tags": [
+      "Chest",
+      "Push",
+      "Compound",
+      "Machine"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "incline-chest-machine",
+    "name": "Incline Chest Press Machine",
+    "muscleGroup": "Chest",
+    "tags": [
+      "Chest",
+      "Push",
+      "Compound",
+      "Machine"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "smith-bench",
+    "name": "Smith Machine Bench Press",
+    "muscleGroup": "Chest",
+    "tags": [
+      "Chest",
+      "Push",
+      "Compound",
+      "Machine"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "pushup",
+    "name": "Push-Up",
+    "muscleGroup": "Chest",
+    "tags": [
+      "Chest",
+      "Push",
+      "Compound",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "pushup-wide",
+    "name": "Wide Push-Up",
+    "muscleGroup": "Chest",
+    "tags": [
+      "Chest",
+      "Push",
+      "Compound",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "pushup-close",
+    "name": "Diamond Push-Up",
+    "muscleGroup": "Chest/Triceps",
+    "tags": [
+      "Chest",
+      "Triceps",
+      "Push",
+      "Compound",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "pushup-incline",
+    "name": "Incline Push-Up",
+    "muscleGroup": "Chest",
+    "tags": [
+      "Chest",
+      "Push",
+      "Compound",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "pushup-decline",
+    "name": "Decline Push-Up",
+    "muscleGroup": "Chest",
+    "tags": [
+      "Chest",
+      "Push",
+      "Compound",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "pushup-archer",
+    "name": "Archer Push-Up",
+    "muscleGroup": "Chest",
+    "tags": [
+      "Chest",
+      "Push",
+      "Compound",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "pushup-clap",
+    "name": "Clap Push-Up",
+    "muscleGroup": "Chest",
+    "tags": [
+      "Chest",
+      "Push",
+      "Explosive",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "dip-chest",
+    "name": "Chest Dip",
+    "muscleGroup": "Chest/Triceps",
+    "tags": [
+      "Chest",
+      "Triceps",
+      "Push",
+      "Compound",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "deadlift",
+    "name": "Deadlift",
+    "muscleGroup": "Back/Posterior",
+    "tags": [
+      "Back",
+      "Hinge",
+      "Compound",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "sumo-deadlift",
+    "name": "Sumo Deadlift",
+    "muscleGroup": "Back/Posterior",
+    "tags": [
+      "Back",
+      "Legs",
+      "Hinge",
+      "Compound",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "trap-bar-deadlift",
+    "name": "Trap Bar Deadlift",
+    "muscleGroup": "Back/Posterior",
+    "tags": [
+      "Back",
+      "Legs",
+      "Hinge",
+      "Compound",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "rack-pull",
+    "name": "Rack Pull",
+    "muscleGroup": "Back",
+    "tags": [
+      "Back",
+      "Hinge",
+      "Compound",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "romanian-deadlift",
+    "name": "Romanian Deadlift",
+    "muscleGroup": "Hamstrings",
+    "tags": [
+      "Back",
+      "Legs",
+      "Hamstrings",
+      "Hinge",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "stiff-leg-deadlift",
+    "name": "Stiff-Leg Deadlift",
+    "muscleGroup": "Hamstrings",
+    "tags": [
+      "Back",
+      "Legs",
+      "Hamstrings",
+      "Hinge",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "bb-row",
+    "name": "Barbell Row",
+    "muscleGroup": "Back",
+    "tags": [
+      "Back",
+      "Pull",
+      "Compound",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "bb-row-underhand",
+    "name": "Underhand Barbell Row",
+    "muscleGroup": "Back",
+    "tags": [
+      "Back",
+      "Pull",
+      "Compound",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "pendlay-row",
+    "name": "Pendlay Row",
+    "muscleGroup": "Back",
+    "tags": [
+      "Back",
+      "Pull",
+      "Compound",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "yates-row",
+    "name": "Yates Row",
+    "muscleGroup": "Back",
+    "tags": [
+      "Back",
+      "Pull",
+      "Compound",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "bb-shrug",
+    "name": "Barbell Shrug",
+    "muscleGroup": "Traps",
+    "tags": [
+      "Back",
+      "Traps",
+      "Isolation",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "bb-good-morning",
+    "name": "Good Morning",
+    "muscleGroup": "Hamstrings/Back",
+    "tags": [
+      "Back",
+      "Legs",
+      "Hamstrings",
+      "Hinge",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "db-row-single",
+    "name": "Single Arm Dumbbell Row",
+    "muscleGroup": "Back",
+    "tags": [
+      "Back",
+      "Pull",
+      "Compound",
+      "Dumbbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "db-row-chest",
+    "name": "Chest-Supported Dumbbell Row",
+    "muscleGroup": "Back",
+    "tags": [
+      "Back",
+      "Pull",
+      "Compound",
+      "Dumbbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "db-deadlift",
+    "name": "Dumbbell Deadlift",
+    "muscleGroup": "Back/Posterior",
+    "tags": [
+      "Back",
+      "Hinge",
+      "Compound",
+      "Dumbbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "db-rdl",
+    "name": "Dumbbell Romanian Deadlift",
+    "muscleGroup": "Hamstrings",
+    "tags": [
+      "Back",
+      "Hamstrings",
+      "Hinge",
+      "Dumbbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "db-shrug",
+    "name": "Dumbbell Shrug",
+    "muscleGroup": "Traps",
+    "tags": [
+      "Back",
+      "Traps",
+      "Isolation",
+      "Dumbbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "db-pullover-back",
+    "name": "Dumbbell Pullover (Back Focus)",
+    "muscleGroup": "Lats",
+    "tags": [
+      "Back",
+      "Pull",
+      "Isolation",
+      "Dumbbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "lat-pulldown",
+    "name": "Lat Pulldown",
+    "muscleGroup": "Lats",
+    "tags": [
+      "Back",
+      "Pull",
+      "Compound",
+      "Cable"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "lat-pulldown-wide",
+    "name": "Wide-Grip Lat Pulldown",
+    "muscleGroup": "Lats",
+    "tags": [
+      "Back",
+      "Pull",
+      "Compound",
+      "Cable"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "lat-pulldown-close",
+    "name": "Close-Grip Lat Pulldown",
+    "muscleGroup": "Lats",
+    "tags": [
+      "Back",
+      "Pull",
+      "Compound",
+      "Cable"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "lat-pulldown-single",
+    "name": "Single Arm Lat Pulldown",
+    "muscleGroup": "Lats",
+    "tags": [
+      "Back",
+      "Pull",
+      "Isolation",
+      "Cable"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "seated-cable-row",
+    "name": "Seated Cable Row",
+    "muscleGroup": "Back",
+    "tags": [
+      "Back",
+      "Pull",
+      "Compound",
+      "Cable"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "seated-cable-row-wide",
+    "name": "Wide-Grip Seated Row",
+    "muscleGroup": "Back",
+    "tags": [
+      "Back",
+      "Pull",
+      "Compound",
+      "Cable"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "cable-row-standing",
+    "name": "Standing Cable Row",
+    "muscleGroup": "Back",
+    "tags": [
+      "Back",
+      "Pull",
+      "Compound",
+      "Cable"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "straight-arm-pulldown",
+    "name": "Straight-Arm Pulldown",
+    "muscleGroup": "Lats",
+    "tags": [
+      "Back",
+      "Pull",
+      "Isolation",
+      "Cable"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "face-pull",
+    "name": "Face Pull",
+    "muscleGroup": "Rear Delts",
+    "tags": [
+      "Back",
+      "Shoulders",
+      "Pull",
+      "Isolation",
+      "Cable"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "cable-shrug",
+    "name": "Cable Shrug",
+    "muscleGroup": "Traps",
+    "tags": [
+      "Back",
+      "Traps",
+      "Isolation",
+      "Cable"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "machine-row",
+    "name": "Machine Row",
+    "muscleGroup": "Back",
+    "tags": [
+      "Back",
+      "Pull",
+      "Compound",
+      "Machine"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "t-bar-row",
+    "name": "T-Bar Row",
+    "muscleGroup": "Back",
+    "tags": [
+      "Back",
+      "Pull",
+      "Compound",
+      "Machine"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "reverse-fly-machine",
+    "name": "Reverse Fly Machine",
+    "muscleGroup": "Rear Delts",
+    "tags": [
+      "Back",
+      "Shoulders",
+      "Isolation",
+      "Machine"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "pullup",
+    "name": "Pull-Up",
+    "muscleGroup": "Lats",
+    "tags": [
+      "Back",
+      "Pull",
+      "Compound",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "chinup",
+    "name": "Chin-Up",
+    "muscleGroup": "Lats/Biceps",
+    "tags": [
+      "Back",
+      "Pull",
+      "Compound",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "neutral-pullup",
+    "name": "Neutral Grip Pull-Up",
+    "muscleGroup": "Lats",
+    "tags": [
+      "Back",
+      "Pull",
+      "Compound",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "inverted-row",
+    "name": "Inverted Row",
+    "muscleGroup": "Back",
+    "tags": [
+      "Back",
+      "Pull",
+      "Compound",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "ring-row",
+    "name": "Ring Row",
+    "muscleGroup": "Back",
+    "tags": [
+      "Back",
+      "Pull",
+      "Compound",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "superman",
+    "name": "Superman Hold",
+    "muscleGroup": "Lower Back",
+    "tags": [
+      "Back",
+      "Core",
+      "Isolation",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "back-extension",
+    "name": "Back Extension",
+    "muscleGroup": "Lower Back",
+    "tags": [
+      "Back",
+      "Core",
+      "Compound",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "ohp",
+    "name": "Overhead Press",
+    "muscleGroup": "Shoulders",
+    "tags": [
+      "Shoulders",
+      "Push",
+      "Compound",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "push-press",
+    "name": "Push Press",
+    "muscleGroup": "Shoulders",
+    "tags": [
+      "Shoulders",
+      "Push",
+      "Compound",
+      "Barbell",
+      "Explosive"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "behind-neck-press",
+    "name": "Behind-the-Neck Press",
+    "muscleGroup": "Shoulders",
+    "tags": [
+      "Shoulders",
+      "Push",
+      "Compound",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "bb-upright-row",
+    "name": "Barbell Upright Row",
+    "muscleGroup": "Shoulders/Traps",
+    "tags": [
+      "Shoulders",
+      "Traps",
+      "Pull",
+      "Compound",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "db-shoulder-press",
+    "name": "Dumbbell Shoulder Press",
+    "muscleGroup": "Shoulders",
+    "tags": [
+      "Shoulders",
+      "Push",
+      "Compound",
+      "Dumbbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "db-arnold-press",
+    "name": "Arnold Press",
+    "muscleGroup": "Shoulders",
+    "tags": [
+      "Shoulders",
+      "Push",
+      "Compound",
+      "Dumbbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "db-lateral-raise",
+    "name": "Lateral Raise",
+    "muscleGroup": "Lateral Delt",
+    "tags": [
+      "Shoulders",
+      "Isolation",
+      "Dumbbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "db-front-raise",
+    "name": "Front Raise",
+    "muscleGroup": "Anterior Delt",
+    "tags": [
+      "Shoulders",
+      "Isolation",
+      "Dumbbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "db-rear-delt-fly",
+    "name": "Rear Delt Fly",
+    "muscleGroup": "Rear Delts",
+    "tags": [
+      "Shoulders",
+      "Isolation",
+      "Dumbbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "db-shrug-shoulder",
+    "name": "Dumbbell Shrug",
+    "muscleGroup": "Traps",
+    "tags": [
+      "Shoulders",
+      "Traps",
+      "Isolation",
+      "Dumbbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "db-upright-row",
+    "name": "Dumbbell Upright Row",
+    "muscleGroup": "Shoulders",
+    "tags": [
+      "Shoulders",
+      "Traps",
+      "Pull",
+      "Dumbbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "cable-lateral-raise",
+    "name": "Cable Lateral Raise",
+    "muscleGroup": "Lateral Delt",
+    "tags": [
+      "Shoulders",
+      "Isolation",
+      "Cable"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "cable-front-raise",
+    "name": "Cable Front Raise",
+    "muscleGroup": "Anterior Delt",
+    "tags": [
+      "Shoulders",
+      "Isolation",
+      "Cable"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "cable-rear-delt",
+    "name": "Cable Rear Delt Fly",
+    "muscleGroup": "Rear Delts",
+    "tags": [
+      "Shoulders",
+      "Isolation",
+      "Cable"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "cable-upright-row",
+    "name": "Cable Upright Row",
+    "muscleGroup": "Shoulders",
+    "tags": [
+      "Shoulders",
+      "Pull",
+      "Cable"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "machine-shoulder-press",
+    "name": "Machine Shoulder Press",
+    "muscleGroup": "Shoulders",
+    "tags": [
+      "Shoulders",
+      "Push",
+      "Compound",
+      "Machine"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "machine-lateral-raise",
+    "name": "Machine Lateral Raise",
+    "muscleGroup": "Lateral Delt",
+    "tags": [
+      "Shoulders",
+      "Isolation",
+      "Machine"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "smith-ohp",
+    "name": "Smith Machine OHP",
+    "muscleGroup": "Shoulders",
+    "tags": [
+      "Shoulders",
+      "Push",
+      "Compound",
+      "Machine"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "pike-pushup",
+    "name": "Pike Push-Up",
+    "muscleGroup": "Shoulders",
+    "tags": [
+      "Shoulders",
+      "Push",
+      "Compound",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "handstand-pushup",
+    "name": "Handstand Push-Up",
+    "muscleGroup": "Shoulders",
+    "tags": [
+      "Shoulders",
+      "Push",
+      "Compound",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "wall-handstand-pushup",
+    "name": "Wall Handstand Push-Up",
+    "muscleGroup": "Shoulders",
+    "tags": [
+      "Shoulders",
+      "Push",
+      "Compound",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "lateral-raise-bw",
+    "name": "Plate Lateral Raise",
+    "muscleGroup": "Lateral Delt",
+    "tags": [
+      "Shoulders",
+      "Isolation",
+      "Bodyweight"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "bb-curl",
+    "name": "Barbell Curl",
+    "muscleGroup": "Biceps",
+    "tags": [
+      "Arms",
+      "Biceps",
+      "Isolation",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "bb-curl-ez",
+    "name": "EZ Bar Curl",
+    "muscleGroup": "Biceps",
+    "tags": [
+      "Arms",
+      "Biceps",
+      "Isolation",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "bb-curl-preacher",
+    "name": "Preacher Curl (Barbell)",
+    "muscleGroup": "Biceps",
+    "tags": [
+      "Arms",
+      "Biceps",
+      "Isolation",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "bb-reverse-curl",
+    "name": "Reverse Barbell Curl",
+    "muscleGroup": "Forearms/Biceps",
+    "tags": [
+      "Arms",
+      "Isolation",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "skull-crusher",
+    "name": "Skull Crusher",
+    "muscleGroup": "Triceps",
+    "tags": [
+      "Arms",
+      "Triceps",
+      "Isolation",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "skull-crusher-ez",
+    "name": "EZ Bar Skull Crusher",
+    "muscleGroup": "Triceps",
+    "tags": [
+      "Arms",
+      "Triceps",
+      "Isolation",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "tricep-ext-bb",
+    "name": "Overhead Barbell Tricep Extension",
+    "muscleGroup": "Triceps",
+    "tags": [
+      "Arms",
+      "Triceps",
+      "Isolation",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "wrist-curl-bb",
+    "name": "Wrist Curl (Barbell)",
+    "muscleGroup": "Forearms",
+    "tags": [
+      "Arms",
+      "Forearms",
+      "Isolation",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "db-curl",
+    "name": "Dumbbell Curl",
+    "muscleGroup": "Biceps",
+    "tags": [
+      "Arms",
+      "Biceps",
+      "Isolation",
+      "Dumbbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "db-hammer-curl",
+    "name": "Hammer Curl",
+    "muscleGroup": "Biceps/Brachialis",
+    "tags": [
+      "Arms",
+      "Biceps",
+      "Isolation",
+      "Dumbbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "db-incline-curl",
+    "name": "Incline Dumbbell Curl",
+    "muscleGroup": "Biceps",
+    "tags": [
+      "Arms",
+      "Biceps",
+      "Isolation",
+      "Dumbbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "db-concentration-curl",
+    "name": "Concentration Curl",
+    "muscleGroup": "Biceps",
+    "tags": [
+      "Arms",
+      "Biceps",
+      "Isolation",
+      "Dumbbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "db-zottman-curl",
+    "name": "Zottman Curl",
+    "muscleGroup": "Biceps/Forearms",
+    "tags": [
+      "Arms",
+      "Isolation",
+      "Dumbbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "db-preacher-curl",
+    "name": "Preacher Curl (Dumbbell)",
+    "muscleGroup": "Biceps",
+    "tags": [
+      "Arms",
+      "Biceps",
+      "Isolation",
+      "Dumbbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "db-tricep-kickback",
+    "name": "Tricep Kickback",
+    "muscleGroup": "Triceps",
+    "tags": [
+      "Arms",
+      "Triceps",
+      "Isolation",
+      "Dumbbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "db-oh-tricep-ext",
+    "name": "Overhead Dumbbell Tricep Extension",
+    "muscleGroup": "Triceps",
+    "tags": [
+      "Arms",
+      "Triceps",
+      "Isolation",
+      "Dumbbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "db-tricep-ext-single",
+    "name": "Single Arm Overhead Tricep Extension",
+    "muscleGroup": "Triceps",
+    "tags": [
+      "Arms",
+      "Triceps",
+      "Isolation",
+      "Dumbbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "db-wrist-curl",
+    "name": "Wrist Curl (Dumbbell)",
+    "muscleGroup": "Forearms",
+    "tags": [
+      "Arms",
+      "Forearms",
+      "Isolation",
+      "Dumbbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "db-reverse-curl",
+    "name": "Reverse Dumbbell Curl",
+    "muscleGroup": "Forearms",
+    "tags": [
+      "Arms",
+      "Forearms",
+      "Isolation",
+      "Dumbbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "cable-curl",
+    "name": "Cable Curl",
+    "muscleGroup": "Biceps",
+    "tags": [
+      "Arms",
+      "Biceps",
+      "Isolation",
+      "Cable"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "cable-curl-single",
+    "name": "Single Arm Cable Curl",
+    "muscleGroup": "Biceps",
+    "tags": [
+      "Arms",
+      "Biceps",
+      "Isolation",
+      "Cable"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "cable-hammer-curl",
+    "name": "Cable Hammer Curl",
+    "muscleGroup": "Biceps",
+    "tags": [
+      "Arms",
+      "Biceps",
+      "Isolation",
+      "Cable"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "cable-preacher",
+    "name": "Cable Preacher Curl",
+    "muscleGroup": "Biceps",
+    "tags": [
+      "Arms",
+      "Biceps",
+      "Isolation",
+      "Cable"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "cable-tricep-pushdown",
+    "name": "Tricep Pushdown (Rope)",
+    "muscleGroup": "Triceps",
+    "tags": [
+      "Arms",
+      "Triceps",
+      "Isolation",
+      "Cable"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "cable-tricep-pushdown-bar",
+    "name": "Tricep Pushdown (Bar)",
+    "muscleGroup": "Triceps",
+    "tags": [
+      "Arms",
+      "Triceps",
+      "Isolation",
+      "Cable"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "cable-oh-tricep",
+    "name": "Overhead Cable Tricep Extension",
+    "muscleGroup": "Triceps",
+    "tags": [
+      "Arms",
+      "Triceps",
+      "Isolation",
+      "Cable"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "cable-tricep-kickback",
+    "name": "Cable Tricep Kickback",
+    "muscleGroup": "Triceps",
+    "tags": [
+      "Arms",
+      "Triceps",
+      "Isolation",
+      "Cable"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "dip-tricep",
+    "name": "Tricep Dip",
+    "muscleGroup": "Triceps",
+    "tags": [
+      "Arms",
+      "Triceps",
+      "Push",
+      "Compound",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "chin-up-bicep",
+    "name": "Chin-Up (Bicep Focus)",
+    "muscleGroup": "Biceps",
+    "tags": [
+      "Arms",
+      "Back",
+      "Pull",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "diamond-pushup-arms",
+    "name": "Diamond Push-Up",
+    "muscleGroup": "Triceps",
+    "tags": [
+      "Arms",
+      "Triceps",
+      "Push",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "back-squat",
+    "name": "Back Squat",
+    "muscleGroup": "Quads/Glutes",
+    "tags": [
+      "Legs",
+      "Quads",
+      "Squat",
+      "Compound",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "front-squat",
+    "name": "Front Squat",
+    "muscleGroup": "Quads",
+    "tags": [
+      "Legs",
+      "Quads",
+      "Squat",
+      "Compound",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "low-bar-squat",
+    "name": "Low Bar Squat",
+    "muscleGroup": "Quads/Glutes",
+    "tags": [
+      "Legs",
+      "Quads",
+      "Squat",
+      "Compound",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "pause-squat",
+    "name": "Pause Squat",
+    "muscleGroup": "Quads/Glutes",
+    "tags": [
+      "Legs",
+      "Quads",
+      "Squat",
+      "Compound",
+      "Barbell",
+      "Tempo"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "box-squat",
+    "name": "Box Squat",
+    "muscleGroup": "Quads/Glutes",
+    "tags": [
+      "Legs",
+      "Quads",
+      "Squat",
+      "Compound",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "zercher-squat",
+    "name": "Zercher Squat",
+    "muscleGroup": "Quads/Glutes",
+    "tags": [
+      "Legs",
+      "Quads",
+      "Squat",
+      "Compound",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "overhead-squat",
+    "name": "Overhead Squat",
+    "muscleGroup": "Quads/Full Body",
+    "tags": [
+      "Legs",
+      "Quads",
+      "Squat",
+      "Compound",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "bb-rdl",
+    "name": "Romanian Deadlift",
+    "muscleGroup": "Hamstrings",
+    "tags": [
+      "Legs",
+      "Hamstrings",
+      "Hinge",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "bb-lunge",
+    "name": "Barbell Lunge",
+    "muscleGroup": "Quads/Glutes",
+    "tags": [
+      "Legs",
+      "Quads",
+      "Compound",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "bb-reverse-lunge",
+    "name": "Barbell Reverse Lunge",
+    "muscleGroup": "Quads/Glutes",
+    "tags": [
+      "Legs",
+      "Quads",
+      "Compound",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "bb-hip-thrust",
+    "name": "Barbell Hip Thrust",
+    "muscleGroup": "Glutes",
+    "tags": [
+      "Legs",
+      "Glutes",
+      "Hinge",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "bb-good-morning-legs",
+    "name": "Good Morning",
+    "muscleGroup": "Hamstrings",
+    "tags": [
+      "Legs",
+      "Hamstrings",
+      "Hinge",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "bb-calf-raise",
+    "name": "Standing Calf Raise (Barbell)",
+    "muscleGroup": "Calves",
+    "tags": [
+      "Legs",
+      "Calves",
+      "Isolation",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "bb-step-up",
+    "name": "Barbell Step-Up",
+    "muscleGroup": "Quads/Glutes",
+    "tags": [
+      "Legs",
+      "Quads",
+      "Compound",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "db-goblet-squat",
+    "name": "Goblet Squat",
+    "muscleGroup": "Quads",
+    "tags": [
+      "Legs",
+      "Quads",
+      "Squat",
+      "Compound",
+      "Dumbbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "db-lunge",
+    "name": "Dumbbell Lunge",
+    "muscleGroup": "Quads/Glutes",
+    "tags": [
+      "Legs",
+      "Quads",
+      "Compound",
+      "Dumbbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "db-walking-lunge",
+    "name": "Walking Lunge",
+    "muscleGroup": "Quads/Glutes",
+    "tags": [
+      "Legs",
+      "Quads",
+      "Compound",
+      "Dumbbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "db-reverse-lunge",
+    "name": "Dumbbell Reverse Lunge",
+    "muscleGroup": "Quads/Glutes",
+    "tags": [
+      "Legs",
+      "Quads",
+      "Compound",
+      "Dumbbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "db-rdl",
+    "name": "Dumbbell Romanian Deadlift",
+    "muscleGroup": "Hamstrings",
+    "tags": [
+      "Legs",
+      "Hamstrings",
+      "Hinge",
+      "Dumbbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "db-hip-thrust",
+    "name": "Dumbbell Hip Thrust",
+    "muscleGroup": "Glutes",
+    "tags": [
+      "Legs",
+      "Glutes",
+      "Hinge",
+      "Dumbbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "db-sumo-squat",
+    "name": "Dumbbell Sumo Squat",
+    "muscleGroup": "Quads/Glutes",
+    "tags": [
+      "Legs",
+      "Quads",
+      "Squat",
+      "Compound",
+      "Dumbbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "db-step-up",
+    "name": "Dumbbell Step-Up",
+    "muscleGroup": "Quads/Glutes",
+    "tags": [
+      "Legs",
+      "Quads",
+      "Compound",
+      "Dumbbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "db-calf-raise",
+    "name": "Dumbbell Calf Raise",
+    "muscleGroup": "Calves",
+    "tags": [
+      "Legs",
+      "Calves",
+      "Isolation",
+      "Dumbbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "db-lateral-lunge",
+    "name": "Lateral Lunge",
+    "muscleGroup": "Quads/Adductors",
+    "tags": [
+      "Legs",
+      "Compound",
+      "Dumbbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "db-bulgarian",
+    "name": "Bulgarian Split Squat",
+    "muscleGroup": "Quads/Glutes",
+    "tags": [
+      "Legs",
+      "Quads",
+      "Compound",
+      "Dumbbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "leg-press",
+    "name": "Leg Press",
+    "muscleGroup": "Quads",
+    "tags": [
+      "Legs",
+      "Quads",
+      "Compound",
+      "Machine"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "leg-press-single",
+    "name": "Single Leg Press",
+    "muscleGroup": "Quads",
+    "tags": [
+      "Legs",
+      "Quads",
+      "Compound",
+      "Machine"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "leg-extension",
+    "name": "Leg Extension",
+    "muscleGroup": "Quads",
+    "tags": [
+      "Legs",
+      "Quads",
+      "Isolation",
+      "Machine"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "leg-curl-lying",
+    "name": "Lying Leg Curl",
+    "muscleGroup": "Hamstrings",
+    "tags": [
+      "Legs",
+      "Hamstrings",
+      "Isolation",
+      "Machine"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "leg-curl-seated",
+    "name": "Seated Leg Curl",
+    "muscleGroup": "Hamstrings",
+    "tags": [
+      "Legs",
+      "Hamstrings",
+      "Isolation",
+      "Machine"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "hip-adductor",
+    "name": "Hip Adductor Machine",
+    "muscleGroup": "Adductors",
+    "tags": [
+      "Legs",
+      "Isolation",
+      "Machine"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "hip-abductor",
+    "name": "Hip Abductor Machine",
+    "muscleGroup": "Abductors",
+    "tags": [
+      "Legs",
+      "Isolation",
+      "Machine"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "calf-raise-machine",
+    "name": "Calf Raise Machine",
+    "muscleGroup": "Calves",
+    "tags": [
+      "Legs",
+      "Calves",
+      "Isolation",
+      "Machine"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "seated-calf-raise",
+    "name": "Seated Calf Raise",
+    "muscleGroup": "Calves",
+    "tags": [
+      "Legs",
+      "Calves",
+      "Isolation",
+      "Machine"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "hack-squat",
+    "name": "Hack Squat",
+    "muscleGroup": "Quads",
+    "tags": [
+      "Legs",
+      "Quads",
+      "Squat",
+      "Compound",
+      "Machine"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "smith-squat",
+    "name": "Smith Machine Squat",
+    "muscleGroup": "Quads/Glutes",
+    "tags": [
+      "Legs",
+      "Quads",
+      "Squat",
+      "Compound",
+      "Machine"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "glute-kickback-machine",
+    "name": "Glute Kickback Machine",
+    "muscleGroup": "Glutes",
+    "tags": [
+      "Legs",
+      "Glutes",
+      "Isolation",
+      "Machine"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "hip-thrust-machine",
+    "name": "Hip Thrust Machine",
+    "muscleGroup": "Glutes",
+    "tags": [
+      "Legs",
+      "Glutes",
+      "Compound",
+      "Machine"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "bodyweight-squat",
+    "name": "Bodyweight Squat",
+    "muscleGroup": "Quads/Glutes",
+    "tags": [
+      "Legs",
+      "Quads",
+      "Squat",
+      "Compound",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "jump-squat",
+    "name": "Jump Squat",
+    "muscleGroup": "Quads/Glutes",
+    "tags": [
+      "Legs",
+      "Quads",
+      "Explosive",
+      "Plyometric",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "pistol-squat",
+    "name": "Pistol Squat",
+    "muscleGroup": "Quads",
+    "tags": [
+      "Legs",
+      "Quads",
+      "Squat",
+      "Compound",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "bw-lunge",
+    "name": "Bodyweight Lunge",
+    "muscleGroup": "Quads/Glutes",
+    "tags": [
+      "Legs",
+      "Quads",
+      "Compound",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "bw-bulgarian",
+    "name": "Bulgarian Split Squat (BW)",
+    "muscleGroup": "Quads/Glutes",
+    "tags": [
+      "Legs",
+      "Quads",
+      "Compound",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "glute-bridge",
+    "name": "Glute Bridge",
+    "muscleGroup": "Glutes",
+    "tags": [
+      "Legs",
+      "Glutes",
+      "Hinge",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "single-leg-glute-bridge",
+    "name": "Single Leg Glute Bridge",
+    "muscleGroup": "Glutes",
+    "tags": [
+      "Legs",
+      "Glutes",
+      "Hinge",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "donkey-kick",
+    "name": "Donkey Kick",
+    "muscleGroup": "Glutes",
+    "tags": [
+      "Legs",
+      "Glutes",
+      "Isolation",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "box-jump",
+    "name": "Box Jump",
+    "muscleGroup": "Full Lower Body",
+    "tags": [
+      "Legs",
+      "Explosive",
+      "Plyometric",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "broad-jump",
+    "name": "Broad Jump",
+    "muscleGroup": "Full Lower Body",
+    "tags": [
+      "Legs",
+      "Explosive",
+      "Plyometric",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "split-squat-jump",
+    "name": "Split Squat Jump",
+    "muscleGroup": "Quads/Glutes",
+    "tags": [
+      "Legs",
+      "Explosive",
+      "Plyometric",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "step-up-bw",
+    "name": "Step-Up (BW)",
+    "muscleGroup": "Quads/Glutes",
+    "tags": [
+      "Legs",
+      "Quads",
+      "Compound",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "lateral-bound",
+    "name": "Lateral Bound",
+    "muscleGroup": "Full Lower Body",
+    "tags": [
+      "Legs",
+      "Explosive",
+      "Plyometric",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "calf-raise-bw",
+    "name": "Calf Raise (Bodyweight)",
+    "muscleGroup": "Calves",
+    "tags": [
+      "Legs",
+      "Calves",
+      "Isolation",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "nordic-curl",
+    "name": "Nordic Hamstring Curl",
+    "muscleGroup": "Hamstrings",
+    "tags": [
+      "Legs",
+      "Hamstrings",
+      "Compound",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "wall-sit",
+    "name": "Wall Sit",
+    "muscleGroup": "Quads",
+    "tags": [
+      "Legs",
+      "Quads",
+      "Isometric",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "pogo-hop",
+    "name": "Pogo Hop",
+    "muscleGroup": "Calves/Ankles",
+    "tags": [
+      "Legs",
+      "Calves",
+      "Explosive",
+      "Plyometric",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "plank",
+    "name": "Plank",
+    "muscleGroup": "Core",
+    "tags": [
+      "Core",
+      "Isometric",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "plank-single-arm",
+    "name": "Single Arm Plank",
+    "muscleGroup": "Core",
+    "tags": [
+      "Core",
+      "Isometric",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "ab-wheel",
+    "name": "Ab Wheel Rollout",
+    "muscleGroup": "Core",
+    "tags": [
+      "Core",
+      "Compound",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "dead-bug",
+    "name": "Dead Bug",
+    "muscleGroup": "Core",
+    "tags": [
+      "Core",
+      "Compound",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "hollow-body",
+    "name": "Hollow Body Hold",
+    "muscleGroup": "Core",
+    "tags": [
+      "Core",
+      "Isometric",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "hollow-body-rock",
+    "name": "Hollow Body Rock",
+    "muscleGroup": "Core",
+    "tags": [
+      "Core",
+      "Compound",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "dragon-flag",
+    "name": "Dragon Flag",
+    "muscleGroup": "Core",
+    "tags": [
+      "Core",
+      "Compound",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "dragon-flag-neg",
+    "name": "Dragon Flag Negative",
+    "muscleGroup": "Core",
+    "tags": [
+      "Core",
+      "Compound",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "ab-rollout-barbell",
+    "name": "Barbell Ab Rollout",
+    "muscleGroup": "Core",
+    "tags": [
+      "Core",
+      "Compound",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "stability-ball-rollout",
+    "name": "Stability Ball Rollout",
+    "muscleGroup": "Core",
+    "tags": [
+      "Core",
+      "Compound",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "pallof-press",
+    "name": "Pallof Press",
+    "muscleGroup": "Core",
+    "tags": [
+      "Core",
+      "Isometric",
+      "Cable"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "pallof-press-kneeling",
+    "name": "Pallof Press (Kneeling)",
+    "muscleGroup": "Core",
+    "tags": [
+      "Core",
+      "Isometric",
+      "Cable"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "woodchop",
+    "name": "Wood Chop",
+    "muscleGroup": "Core",
+    "tags": [
+      "Core",
+      "Rotational",
+      "Cable"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "woodchop-low",
+    "name": "Low-to-High Wood Chop",
+    "muscleGroup": "Core",
+    "tags": [
+      "Core",
+      "Rotational",
+      "Cable"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "landmine-rotation",
+    "name": "Landmine Rotation",
+    "muscleGroup": "Core",
+    "tags": [
+      "Core",
+      "Rotational",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "suitcase-carry",
+    "name": "Suitcase Carry",
+    "muscleGroup": "Core",
+    "tags": [
+      "Core",
+      "Carry",
+      "Compound"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "single-arm-carry",
+    "name": "Single Arm Farmer Carry",
+    "muscleGroup": "Core",
+    "tags": [
+      "Core",
+      "Carry",
+      "Compound"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "crunch",
+    "name": "Crunch",
+    "muscleGroup": "Core",
+    "tags": [
+      "Core",
+      "Isolation",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "cable-crunch",
+    "name": "Cable Crunch",
+    "muscleGroup": "Core",
+    "tags": [
+      "Core",
+      "Isolation",
+      "Cable"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "sit-up",
+    "name": "Sit-Up",
+    "muscleGroup": "Core",
+    "tags": [
+      "Core",
+      "Compound",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "bicycle-crunch",
+    "name": "Bicycle Crunch",
+    "muscleGroup": "Core",
+    "tags": [
+      "Core",
+      "Rotational",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "v-up",
+    "name": "V-Up",
+    "muscleGroup": "Core",
+    "tags": [
+      "Core",
+      "Compound",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "leg-raise-hanging",
+    "name": "Hanging Leg Raise",
+    "muscleGroup": "Core",
+    "tags": [
+      "Core",
+      "Compound",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "knee-raise-hanging",
+    "name": "Hanging Knee Raise",
+    "muscleGroup": "Core",
+    "tags": [
+      "Core",
+      "Compound",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "toes-to-bar",
+    "name": "Toes to Bar",
+    "muscleGroup": "Core",
+    "tags": [
+      "Core",
+      "Compound",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "leg-raise-floor",
+    "name": "Floor Leg Raise",
+    "muscleGroup": "Core",
+    "tags": [
+      "Core",
+      "Compound",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "reverse-crunch",
+    "name": "Reverse Crunch",
+    "muscleGroup": "Core",
+    "tags": [
+      "Core",
+      "Compound",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "l-sit",
+    "name": "L-Sit Hold",
+    "muscleGroup": "Core",
+    "tags": [
+      "Core",
+      "Isometric",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "farmers-carry",
+    "name": "Farmer Carry",
+    "muscleGroup": "Core/Traps",
+    "tags": [
+      "Core",
+      "Carry",
+      "Compound"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "trap-bar-carry",
+    "name": "Trap Bar Carry",
+    "muscleGroup": "Core/Full Body",
+    "tags": [
+      "Core",
+      "Carry",
+      "Compound"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "zercher-carry",
+    "name": "Zercher Carry",
+    "muscleGroup": "Core/Back",
+    "tags": [
+      "Core",
+      "Carry",
+      "Compound"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "overhead-carry",
+    "name": "Overhead Carry",
+    "muscleGroup": "Core/Shoulders",
+    "tags": [
+      "Core",
+      "Carry",
+      "Compound"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "russian-twist",
+    "name": "Russian Twist",
+    "muscleGroup": "Core",
+    "tags": [
+      "Core",
+      "Rotational",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "med-ball-slam",
+    "name": "Med Ball Slam",
+    "muscleGroup": "Core/Full Body",
+    "tags": [
+      "Core",
+      "Explosive",
+      "Compound"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "med-ball-rotational",
+    "name": "Rotational Med Ball Throw",
+    "muscleGroup": "Core",
+    "tags": [
+      "Core",
+      "Explosive",
+      "Rotational"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "med-ball-chest-pass",
+    "name": "Med Ball Chest Pass",
+    "muscleGroup": "Chest/Core",
+    "tags": [
+      "Core",
+      "Chest",
+      "Explosive"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "windshield-wiper",
+    "name": "Windshield Wiper",
+    "muscleGroup": "Core",
+    "tags": [
+      "Core",
+      "Rotational",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "clean",
+    "name": "Power Clean",
+    "muscleGroup": "Full Body",
+    "tags": [
+      "Full Body",
+      "Olympic",
+      "Explosive",
+      "Compound",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "hang-clean",
+    "name": "Hang Clean",
+    "muscleGroup": "Full Body",
+    "tags": [
+      "Full Body",
+      "Olympic",
+      "Explosive",
+      "Compound",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "clean-and-jerk",
+    "name": "Clean and Jerk",
+    "muscleGroup": "Full Body",
+    "tags": [
+      "Full Body",
+      "Olympic",
+      "Explosive",
+      "Compound",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "snatch",
+    "name": "Snatch",
+    "muscleGroup": "Full Body",
+    "tags": [
+      "Full Body",
+      "Olympic",
+      "Explosive",
+      "Compound",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "hang-snatch",
+    "name": "Hang Snatch",
+    "muscleGroup": "Full Body",
+    "tags": [
+      "Full Body",
+      "Olympic",
+      "Explosive",
+      "Compound",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "kettlebell-swing",
+    "name": "Kettlebell Swing",
+    "muscleGroup": "Posterior Chain",
+    "tags": [
+      "Full Body",
+      "Hinge",
+      "Explosive",
+      "Compound",
+      "Kettlebell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "kettlebell-clean",
+    "name": "Kettlebell Clean",
+    "muscleGroup": "Full Body",
+    "tags": [
+      "Full Body",
+      "Compound",
+      "Kettlebell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "kettlebell-snatch",
+    "name": "Kettlebell Snatch",
+    "muscleGroup": "Full Body",
+    "tags": [
+      "Full Body",
+      "Compound",
+      "Kettlebell",
+      "Explosive"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "kettlebell-thruster",
+    "name": "Kettlebell Thruster",
+    "muscleGroup": "Full Body",
+    "tags": [
+      "Full Body",
+      "Compound",
+      "Kettlebell",
+      "Explosive"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "landmine-press",
+    "name": "Landmine Press",
+    "muscleGroup": "Chest/Shoulders",
+    "tags": [
+      "Push",
+      "Compound",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "landmine-squat",
+    "name": "Landmine Squat",
+    "muscleGroup": "Legs",
+    "tags": [
+      "Legs",
+      "Squat",
+      "Compound",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "thruster",
+    "name": "Barbell Thruster",
+    "muscleGroup": "Full Body",
+    "tags": [
+      "Full Body",
+      "Compound",
+      "Barbell",
+      "Explosive"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "devils-press",
+    "name": "Devil's Press",
+    "muscleGroup": "Full Body",
+    "tags": [
+      "Full Body",
+      "Compound",
+      "Dumbbell",
+      "Explosive"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "bear-complex",
+    "name": "Bear Complex",
+    "muscleGroup": "Full Body",
+    "tags": [
+      "Full Body",
+      "Olympic",
+      "Barbell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "kb-goblet-squat",
+    "name": "Kettlebell Goblet Squat",
+    "muscleGroup": "Quads",
+    "tags": [
+      "Legs",
+      "Squat",
+      "Compound",
+      "Kettlebell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "kb-rdl",
+    "name": "Kettlebell RDL",
+    "muscleGroup": "Hamstrings",
+    "tags": [
+      "Legs",
+      "Hamstrings",
+      "Hinge",
+      "Kettlebell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "kb-turkish-getup",
+    "name": "Turkish Get-Up",
+    "muscleGroup": "Full Body",
+    "tags": [
+      "Full Body",
+      "Compound",
+      "Kettlebell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "kb-press",
+    "name": "Kettlebell Press",
+    "muscleGroup": "Shoulders",
+    "tags": [
+      "Shoulders",
+      "Push",
+      "Compound",
+      "Kettlebell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "kb-row",
+    "name": "Kettlebell Row",
+    "muscleGroup": "Back",
+    "tags": [
+      "Back",
+      "Pull",
+      "Compound",
+      "Kettlebell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "kb-lateral-raise",
+    "name": "Kettlebell Lateral Raise",
+    "muscleGroup": "Shoulders",
+    "tags": [
+      "Shoulders",
+      "Isolation",
+      "Kettlebell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "kb-windmill",
+    "name": "Kettlebell Windmill",
+    "muscleGroup": "Core/Shoulders",
+    "tags": [
+      "Core",
+      "Shoulders",
+      "Compound",
+      "Kettlebell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "kb-halo",
+    "name": "Kettlebell Halo",
+    "muscleGroup": "Shoulders/Core",
+    "tags": [
+      "Shoulders",
+      "Core",
+      "Mobility",
+      "Kettlebell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "kb-figure8",
+    "name": "Kettlebell Figure 8",
+    "muscleGroup": "Core/Legs",
+    "tags": [
+      "Core",
+      "Legs",
+      "Compound",
+      "Kettlebell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "kb-sumo-deadlift",
+    "name": "Kettlebell Sumo Deadlift",
+    "muscleGroup": "Legs/Back",
+    "tags": [
+      "Legs",
+      "Back",
+      "Hinge",
+      "Kettlebell"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "muscle-up-bar",
+    "name": "Muscle Up (Bar)",
+    "muscleGroup": "Full Upper Body",
+    "tags": [
+      "Back",
+      "Chest",
+      "Arms",
+      "Compound",
+      "Bodyweight",
+      "Skill"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "muscle-up-ring",
+    "name": "Muscle Up (Rings)",
+    "muscleGroup": "Full Upper Body",
+    "tags": [
+      "Back",
+      "Chest",
+      "Arms",
+      "Compound",
+      "Bodyweight",
+      "Skill"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "ring-dip",
+    "name": "Ring Dip",
+    "muscleGroup": "Chest/Triceps",
+    "tags": [
+      "Chest",
+      "Triceps",
+      "Push",
+      "Compound",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "ring-pushup",
+    "name": "Ring Push-Up",
+    "muscleGroup": "Chest",
+    "tags": [
+      "Chest",
+      "Push",
+      "Compound",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "false-grip-hang",
+    "name": "False Grip Hang",
+    "muscleGroup": "Grip/Forearms",
+    "tags": [
+      "Arms",
+      "Skill",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "front-lever",
+    "name": "Front Lever",
+    "muscleGroup": "Back/Core",
+    "tags": [
+      "Back",
+      "Core",
+      "Isometric",
+      "Bodyweight",
+      "Skill"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "back-lever",
+    "name": "Back Lever",
+    "muscleGroup": "Back/Core",
+    "tags": [
+      "Back",
+      "Core",
+      "Isometric",
+      "Bodyweight",
+      "Skill"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "planche",
+    "name": "Planche",
+    "muscleGroup": "Chest/Shoulders",
+    "tags": [
+      "Chest",
+      "Shoulders",
+      "Isometric",
+      "Bodyweight",
+      "Skill"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "human-flag",
+    "name": "Human Flag",
+    "muscleGroup": "Core/Shoulders",
+    "tags": [
+      "Core",
+      "Shoulders",
+      "Isometric",
+      "Bodyweight",
+      "Skill"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "skin-the-cat",
+    "name": "Skin the Cat",
+    "muscleGroup": "Back/Shoulders",
+    "tags": [
+      "Back",
+      "Shoulders",
+      "Mobility",
+      "Bodyweight",
+      "Skill"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "burpee",
+    "name": "Burpee",
+    "muscleGroup": "Full Body",
+    "tags": [
+      "Full Body",
+      "HIIT",
+      "Conditioning",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "burpee-pullup",
+    "name": "Burpee Pull-Up",
+    "muscleGroup": "Full Body",
+    "tags": [
+      "Full Body",
+      "HIIT",
+      "Conditioning",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "mountain-climber",
+    "name": "Mountain Climber",
+    "muscleGroup": "Core/Full Body",
+    "tags": [
+      "Core",
+      "Full Body",
+      "HIIT",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "jumping-jack",
+    "name": "Jumping Jack",
+    "muscleGroup": "Full Body",
+    "tags": [
+      "Full Body",
+      "Cardio",
+      "HIIT",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "high-knees",
+    "name": "High Knees",
+    "muscleGroup": "Legs/Cardio",
+    "tags": [
+      "Legs",
+      "Cardio",
+      "HIIT",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "butt-kicks",
+    "name": "Butt Kicks",
+    "muscleGroup": "Hamstrings/Cardio",
+    "tags": [
+      "Legs",
+      "Cardio",
+      "HIIT",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "squat-jump-hiit",
+    "name": "Squat Jump",
+    "muscleGroup": "Legs/Conditioning",
+    "tags": [
+      "Legs",
+      "HIIT",
+      "Explosive",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "lateral-shuffle",
+    "name": "Lateral Shuffle",
+    "muscleGroup": "Legs/Agility",
+    "tags": [
+      "Legs",
+      "HIIT",
+      "Agility",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "inchworm",
+    "name": "Inchworm",
+    "muscleGroup": "Full Body",
+    "tags": [
+      "Full Body",
+      "HIIT",
+      "Mobility",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "bear-crawl",
+    "name": "Bear Crawl",
+    "muscleGroup": "Full Body",
+    "tags": [
+      "Full Body",
+      "HIIT",
+      "Conditioning",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "crab-walk",
+    "name": "Crab Walk",
+    "muscleGroup": "Full Body",
+    "tags": [
+      "Full Body",
+      "HIIT",
+      "Conditioning",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "sled-push",
+    "name": "Sled Push",
+    "muscleGroup": "Full Body",
+    "tags": [
+      "Full Body",
+      "Conditioning",
+      "Power"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "sled-pull",
+    "name": "Sled Pull",
+    "muscleGroup": "Full Body",
+    "tags": [
+      "Full Body",
+      "Conditioning",
+      "Power"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "battle-rope",
+    "name": "Battle Rope Waves",
+    "muscleGroup": "Full Body",
+    "tags": [
+      "Full Body",
+      "HIIT",
+      "Conditioning"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "box-step-up-fast",
+    "name": "Fast Box Step-Up",
+    "muscleGroup": "Legs/Cardio",
+    "tags": [
+      "Legs",
+      "HIIT",
+      "Conditioning",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "tire-flip",
+    "name": "Tire Flip",
+    "muscleGroup": "Full Body",
+    "tags": [
+      "Full Body",
+      "Conditioning",
+      "Power",
+      "Explosive"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "wall-ball",
+    "name": "Wall Ball",
+    "muscleGroup": "Full Body",
+    "tags": [
+      "Full Body",
+      "HIIT",
+      "Compound"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "run-easy",
+    "name": "Easy Run (Zone 2)",
+    "muscleGroup": "Cardio",
+    "tags": [
+      "Cardio",
+      "Running",
+      "Zone 2"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "run-tempo",
+    "name": "Tempo Run",
+    "muscleGroup": "Cardio",
+    "tags": [
+      "Cardio",
+      "Running",
+      "Tempo"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "run-interval",
+    "name": "Running Intervals",
+    "muscleGroup": "Cardio",
+    "tags": [
+      "Cardio",
+      "Running",
+      "HIIT"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "run-sprint",
+    "name": "Sprint",
+    "muscleGroup": "Cardio",
+    "tags": [
+      "Cardio",
+      "Running",
+      "Sprint",
+      "Explosive"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "run-400m",
+    "name": "400m Repeats",
+    "muscleGroup": "Cardio",
+    "tags": [
+      "Cardio",
+      "Running",
+      "HIIT"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "run-800m",
+    "name": "800m Repeats",
+    "muscleGroup": "Cardio",
+    "tags": [
+      "Cardio",
+      "Running",
+      "HIIT"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "run-mile",
+    "name": "Mile Time Trial",
+    "muscleGroup": "Cardio",
+    "tags": [
+      "Cardio",
+      "Running"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "run-5k",
+    "name": "5K Run",
+    "muscleGroup": "Cardio",
+    "tags": [
+      "Cardio",
+      "Running"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "fartlek",
+    "name": "Fartlek Run",
+    "muscleGroup": "Cardio",
+    "tags": [
+      "Cardio",
+      "Running",
+      "HIIT"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "hill-sprint",
+    "name": "Hill Sprint",
+    "muscleGroup": "Cardio",
+    "tags": [
+      "Cardio",
+      "Running",
+      "Sprint",
+      "Explosive"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "stair-run",
+    "name": "Stair Run",
+    "muscleGroup": "Cardio",
+    "tags": [
+      "Cardio",
+      "Running",
+      "Legs"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "treadmill",
+    "name": "Treadmill",
+    "muscleGroup": "Cardio",
+    "tags": [
+      "Cardio",
+      "Running",
+      "Machine"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "incline-treadmill",
+    "name": "Incline Treadmill Walk",
+    "muscleGroup": "Cardio",
+    "tags": [
+      "Cardio",
+      "Zone 2",
+      "Machine"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "rowing-machine",
+    "name": "Rowing Machine (Erg)",
+    "muscleGroup": "Cardio",
+    "tags": [
+      "Cardio",
+      "Full Body",
+      "Machine"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "stationary-bike",
+    "name": "Stationary Bike",
+    "muscleGroup": "Cardio",
+    "tags": [
+      "Cardio",
+      "Cycling",
+      "Machine"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "assault-bike",
+    "name": "Assault Bike",
+    "muscleGroup": "Cardio",
+    "tags": [
+      "Cardio",
+      "HIIT",
+      "Machine"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "stair-climber",
+    "name": "Stair Climber",
+    "muscleGroup": "Cardio",
+    "tags": [
+      "Cardio",
+      "Legs",
+      "Machine"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "elliptical",
+    "name": "Elliptical",
+    "muscleGroup": "Cardio",
+    "tags": [
+      "Cardio",
+      "Machine"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "ski-erg",
+    "name": "Ski Erg",
+    "muscleGroup": "Cardio",
+    "tags": [
+      "Cardio",
+      "Full Body",
+      "Machine"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "versa-climber",
+    "name": "VersaClimber",
+    "muscleGroup": "Cardio",
+    "tags": [
+      "Cardio",
+      "Full Body",
+      "Machine"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "jump-rope",
+    "name": "Jump Rope",
+    "muscleGroup": "Cardio",
+    "tags": [
+      "Cardio",
+      "Conditioning",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "jump-rope-double-under",
+    "name": "Double Under",
+    "muscleGroup": "Cardio",
+    "tags": [
+      "Cardio",
+      "Conditioning",
+      "Skill",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "swimming",
+    "name": "Swimming",
+    "muscleGroup": "Cardio",
+    "tags": [
+      "Cardio",
+      "Full Body"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "cycling-outdoor",
+    "name": "Cycling (Outdoor)",
+    "muscleGroup": "Cardio",
+    "tags": [
+      "Cardio",
+      "Cycling"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "walking",
+    "name": "Walking",
+    "muscleGroup": "Cardio",
+    "tags": [
+      "Cardio",
+      "Zone 2"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "hiking",
+    "name": "Hiking",
+    "muscleGroup": "Cardio",
+    "tags": [
+      "Cardio",
+      "Zone 2"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "hip-flexor-stretch",
+    "name": "Hip Flexor Stretch",
+    "muscleGroup": "Hips",
+    "tags": [
+      "Mobility",
+      "Flexibility",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "hamstring-stretch",
+    "name": "Hamstring Stretch",
+    "muscleGroup": "Hamstrings",
+    "tags": [
+      "Mobility",
+      "Flexibility",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "pigeon-pose",
+    "name": "Pigeon Pose",
+    "muscleGroup": "Hips/Glutes",
+    "tags": [
+      "Mobility",
+      "Flexibility",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "thoracic-rotation",
+    "name": "Thoracic Rotation",
+    "muscleGroup": "Upper Back",
+    "tags": [
+      "Mobility",
+      "Flexibility",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "world-greatest-stretch",
+    "name": "World's Greatest Stretch",
+    "muscleGroup": "Full Body",
+    "tags": [
+      "Mobility",
+      "Flexibility",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "ankle-mobility",
+    "name": "Ankle Circles / Mobility",
+    "muscleGroup": "Ankles",
+    "tags": [
+      "Mobility",
+      "Flexibility",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "shoulder-dislocate",
+    "name": "Shoulder Dislocate",
+    "muscleGroup": "Shoulders",
+    "tags": [
+      "Mobility",
+      "Flexibility",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "cat-cow",
+    "name": "Cat-Cow",
+    "muscleGroup": "Spine",
+    "tags": [
+      "Mobility",
+      "Flexibility",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "leg-swing",
+    "name": "Leg Swing",
+    "muscleGroup": "Hips",
+    "tags": [
+      "Mobility",
+      "Warmup",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "arm-circle",
+    "name": "Arm Circle",
+    "muscleGroup": "Shoulders",
+    "tags": [
+      "Mobility",
+      "Warmup",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "foam-roll-quads",
+    "name": "Foam Roll \u2014 Quads",
+    "muscleGroup": "Quads",
+    "tags": [
+      "Mobility",
+      "Recovery",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "foam-roll-back",
+    "name": "Foam Roll \u2014 Back",
+    "muscleGroup": "Back",
+    "tags": [
+      "Mobility",
+      "Recovery",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "foam-roll-it-band",
+    "name": "Foam Roll \u2014 IT Band",
+    "muscleGroup": "Legs",
+    "tags": [
+      "Mobility",
+      "Recovery",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "couch-stretch",
+    "name": "Couch Stretch",
+    "muscleGroup": "Hip Flexors",
+    "tags": [
+      "Mobility",
+      "Flexibility",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "90-90-stretch",
+    "name": "90/90 Hip Stretch",
+    "muscleGroup": "Hips",
+    "tags": [
+      "Mobility",
+      "Flexibility",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "deep-squat-hold",
+    "name": "Deep Squat Hold",
+    "muscleGroup": "Hips/Ankles",
+    "tags": [
+      "Mobility",
+      "Flexibility",
+      "Bodyweight"
+    ],
+    "bw": true,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "band-pull-apart",
+    "name": "Band Pull-Apart",
+    "muscleGroup": "Rear Delts",
+    "tags": [
+      "Shoulders",
+      "Mobility",
+      "Warmup"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  },
+  {
+    "id": "face-pull-warmup",
+    "name": "Face Pull (Warmup Weight)",
+    "muscleGroup": "Rear Delts",
+    "tags": [
+      "Shoulders",
+      "Mobility",
+      "Warmup",
+      "Cable"
+    ],
+    "bw": false,
+    "sets": 3,
+    "reps": "8-12",
+    "note": ""
+  }
+];
+
 // ─────────────────────────────────────────────
 // CONSTANTS
 // ─────────────────────────────────────────────
@@ -576,179 +5194,303 @@ const BLOCK_TYPES = [
   {id:'custom',label:'Custom'},
 ];
 const BLOCK_TAGS = ['Push','Pull','Legs','Chest','Back','Shoulders','Arms','Core','Compound','Isolation','Tempo','Explosive','Zone 2','HIIT','Skill Work'];
-const EX_TAGS = ['Chest','Back','Shoulders','Arms','Biceps','Triceps','Legs','Quads','Hamstrings','Glutes','Calves','Core','Compound','Isolation','Push','Pull','Hinge','Squat','Carry','Explosive','Tempo','315 Goal','Muscle Up','6-Min Mile'];
+const EX_TAGS = [
+  // Equipment
+  'Barbell','Dumbbell','Cable','Machine','Kettlebell','Bodyweight',
+  // Movement
+  'Compound','Isolation','Push','Pull','Hinge','Squat','Carry','Rotational','Isometric',
+  // Muscle
+  'Chest','Back','Shoulders','Arms','Biceps','Triceps','Legs','Quads','Hamstrings','Glutes','Calves','Core','Traps','Forearms',
+  // Style
+  'Strength','Hypertrophy','Explosive','Plyometric','Tempo','Power','Olympic','Skill',
+  // Cardio/Conditioning
+  'Cardio','HIIT','Zone 2','Running','Cycling','Conditioning','Sprint',
+  // Other
+  'Mobility','Flexibility','Warmup','Recovery','Full Body','GZCLP',
+];
 
 // ─────────────────────────────────────────────
 // BUILT-IN PROGRAMS (read-only)
 // ─────────────────────────────────────────────
 const BUILTIN_PROGRAMS = [
+  // ── 1. FULL BODY 3x ──
   {
-    id:'strength', name:'STRENGTH', meta:'Push / Pull / Legs', builtin:true,
-    desc:'Heavy compounds · 3-5 rep range · Max neural output · Built around your 315 bench goal.',
-    accentColor:'#ff8c47', tags:['PPL','Strength'],
+    id:'fullbody3', name:'FULL BODY 3x', meta:'Full Body', builtin:true,
+    desc:'3-day full body. Compound-focused, balanced push/pull/hinge each session. Great for beginners through intermediate.',
+    accentColor:'#e8ff47', tags:['Full Body','Strength','Hypertrophy'],
     days:[
-      {id:'s-push',name:'PUSH',type:'push',desc:'Chest · Shoulders · Triceps — Heavy',tags:['Push','Compound'],
+      {id:'fb-a',name:'FULL BODY A',type:'push',desc:'Squat · Press · Hinge · Pull',tags:['Compound','Full Body'],
         exercises:[
-          {id:'s-bench',name:'Barbell Bench Press',sets:5,reps:'3-5',note:'315 goal work. Add 5 lbs when you hit 5 reps.',muscleGroup:'Chest',tags:['Chest','Compound','Push','315 Goal']},
-          {id:'s-incline',name:'Incline Barbell Press',sets:4,reps:'4-6',note:'Upper chest strength. Keep arch controlled.',muscleGroup:'Chest',tags:['Chest','Push']},
-          {id:'s-ohp',name:'Overhead Press',sets:4,reps:'4-6',note:'Strict press. Shoulder strength for muscle-up lockout.',muscleGroup:'Shoulders',tags:['Shoulders','Push','Muscle Up']},
-          {id:'s-dip-w',name:'Weighted Dips',sets:4,reps:'5-6',note:'Belt weight. Full ROM. Key muscle-up carryover.',muscleGroup:'Triceps/Chest',tags:['Triceps','Chest','Push','Muscle Up']},
-          {id:'s-lat-raise',name:'Lateral Raises',sets:3,reps:'12-15',note:'Cable. Controlled tempo.',muscleGroup:'Shoulders',tags:['Shoulders','Isolation']},
+          {id:'fb-squat',name:'Back Squat',sets:3,reps:'5-8',note:'Primary lower body compound. Focus on depth and bracing.',muscleGroup:'Quads/Glutes',tags:['Legs','Quads','Squat','Compound']},
+          {id:'fb-bench',name:'Barbell Bench Press',sets:3,reps:'5-8',note:'Primary horizontal push. Control the descent.',muscleGroup:'Chest',tags:['Chest','Push','Compound']},
+          {id:'fb-row',name:'Barbell Row',sets:3,reps:'6-8',note:'Primary horizontal pull. Elbows tucked, flat back.',muscleGroup:'Back',tags:['Back','Pull','Compound']},
+          {id:'fb-rdl',name:'Romanian Deadlift',sets:3,reps:'8-10',note:'Hip hinge emphasis. Slow eccentric.',muscleGroup:'Hamstrings',tags:['Legs','Hamstrings','Hinge']},
+          {id:'fb-curl',name:'Dumbbell Curl',sets:2,reps:'10-12',note:'Isolation finisher.',muscleGroup:'Biceps',tags:['Arms','Biceps','Isolation']},
         ]},
-      {id:'s-pull',name:'PULL',type:'pull',desc:'Back · Biceps — Heavy Hinge & Pull',tags:['Pull','Compound'],
+      {id:'fb-b',name:'FULL BODY B',type:'pull',desc:'Hinge · Vertical Push · Vertical Pull',tags:['Compound','Full Body'],
         exercises:[
-          {id:'s-deadlift',name:'Deadlift',sets:4,reps:'3-5',note:'Primary hinge. Max effort. Brace hard.',muscleGroup:'Back/Posterior',tags:['Back','Hinge','Compound']},
-          {id:'s-row-bb',name:'Barbell Row',sets:4,reps:'4-6',note:'Overhand, elbows tucked. Horizontal pull strength.',muscleGroup:'Back',tags:['Back','Pull','Compound','Muscle Up']},
-          {id:'s-pullup-w',name:'Weighted Pull-Ups',sets:5,reps:'3-5',note:'Core muscle-up prerequisite. Add belt weight when BW is easy.',muscleGroup:'Back/Lats',tags:['Back','Pull','Compound','Muscle Up']},
-          {id:'s-facepull',name:'Face Pulls',sets:3,reps:'15-20',note:'External rotation health. Never skip.',muscleGroup:'Rear Delts',tags:['Shoulders','Pull','Isolation']},
-          {id:'s-curl-bb',name:'Barbell Curl',sets:3,reps:'6-8',note:'Strength curl.',muscleGroup:'Biceps',tags:['Biceps','Arms','Isolation']},
+          {id:'fb-dead',name:'Deadlift',sets:3,reps:'3-5',note:'Primary hip hinge. Brace hard, push the floor away.',muscleGroup:'Back/Posterior',tags:['Back','Hinge','Compound']},
+          {id:'fb-ohp',name:'Overhead Press',sets:3,reps:'5-8',note:'Vertical push. Keep core tight, avoid excess lean.',muscleGroup:'Shoulders',tags:['Shoulders','Push','Compound']},
+          {id:'fb-pullup',name:'Pull-Ups / Lat Pulldown',sets:3,reps:'6-10',note:'Vertical pull. Full stretch at top, drive elbows down.',muscleGroup:'Lats',tags:['Back','Pull','Compound']},
+          {id:'fb-lunge',name:'Dumbbell Lunge',sets:3,reps:'10/leg',note:'Single leg work. Stay upright through the torso.',muscleGroup:'Quads/Glutes',tags:['Legs','Compound']},
+          {id:'fb-tricep',name:'Tricep Pushdown',sets:2,reps:'12-15',note:'Isolation finisher.',muscleGroup:'Triceps',tags:['Arms','Triceps','Isolation']},
         ]},
-      {id:'s-legs',name:'LEGS',type:'legs',desc:'Squat · Hinge · Drive — Heavy',tags:['Legs','Compound'],
+      {id:'fb-c',name:'FULL BODY C',type:'legs',desc:'Variation Day — Alternate Movements',tags:['Compound','Full Body'],
         exercises:[
-          {id:'s-squat',name:'Back Squat',sets:5,reps:'3-5',note:'Work up to a heavy top set. Hit depth every rep.',muscleGroup:'Quads/Glutes',tags:['Legs','Quads','Squat','Compound']},
-          {id:'s-rdl',name:'Romanian Deadlift',sets:4,reps:'5-6',note:'Heavy hinge. Control the eccentric.',muscleGroup:'Hamstrings',tags:['Legs','Hamstrings','Hinge']},
-          {id:'s-legpress',name:'Leg Press',sets:3,reps:'6-8',note:'Heavy. High foot placement. Full range.',muscleGroup:'Quads/Glutes',tags:['Legs','Quads']},
-          {id:'s-calf-s',name:'Standing Calf Raise',sets:4,reps:'6-8',note:'Load heavy. Pause at full stretch.',muscleGroup:'Calves',tags:['Legs','Calves','Isolation']},
-        ]},
-      {id:'s-cardio',name:'CARDIO',type:'cardio',desc:'Mile Training + Zone 2',tags:['Cardio','6-Min Mile'],isSimple:true,
-        checks:[
-          {id:'sc1',label:'6x800m Intervals at 3:00/800m pace',sub:'6-min mile training — 90s rest between reps.'},
-          {id:'sc2',label:'10-15 min easy Zone 2 warm-up',sub:'Conversational pace.'},
-          {id:'sc3',label:'10 min cool-down + stretch',sub:'Hip flexors, calves, hamstrings.'},
-        ]},
-      {id:'s-core',name:'CORE',type:'core',desc:'Strength Core + Muscle Up Skill Work',tags:['Core','Muscle Up'],isSimple:true,
-        checks:[
-          {id:'sco1',label:'L-Sit Hold — 3x15-20s',sub:'Bars or parallettes.'},
-          {id:'sco2',label:'Hollow Body Hold — 3x30s',sub:'Flat lower back, arms overhead.'},
-          {id:'sco3',label:'Hanging Leg Raise — 3x10',sub:'Dead hang. Raise to 90 degrees or higher.'},
-          {id:'sco4',label:'Pallof Press — 3x12/side',sub:'Anti-rotation. Cable.'},
-          {id:'sco5',label:'Muscle Up Transition Drills — 3x5',sub:'Band-assisted or box-assisted false grip transitions.'},
+          {id:'fb-fsquat',name:'Front Squat / Goblet Squat',sets:3,reps:'6-8',note:'Quad-dominant squat variation. More upright torso.',muscleGroup:'Quads',tags:['Legs','Quads','Squat','Compound']},
+          {id:'fb-incline',name:'Incline Dumbbell Press',sets:3,reps:'8-10',note:'Upper chest variation. Controlled tempo.',muscleGroup:'Chest',tags:['Chest','Push','Compound']},
+          {id:'fb-cable-row',name:'Seated Cable Row',sets:3,reps:'8-10',note:'Mid-back emphasis. Squeeze the shoulder blades.',muscleGroup:'Mid-Back',tags:['Back','Pull']},
+          {id:'fb-hip',name:'Hip Thrust',sets:3,reps:'10-12',note:'Glute isolation. Full extension at top.',muscleGroup:'Glutes',tags:['Legs','Glutes','Hinge']},
+          {id:'fb-face',name:'Face Pulls',sets:2,reps:'15-20',note:'Shoulder health. External rotation focus.',muscleGroup:'Rear Delts',tags:['Shoulders','Isolation']},
         ]},
     ]
   },
+
+  // ── 2. PUSH PULL LEGS ──
   {
-    id:'hypertrophy', name:'HYPERTROPHY', meta:'Chest / Back / Shoulders / Arms / Legs / Accessories', builtin:true,
-    desc:'Higher volume · 8-15 rep range · Time under tension · Six-day bro split.',
+    id:'ppl', name:'PUSH PULL LEGS', meta:'Push / Pull / Legs', builtin:true,
+    desc:'6-day PPL. The most widely used intermediate split. Run twice per week for high frequency and volume.',
+    accentColor:'#ff8c47', tags:['PPL','Hypertrophy','Strength'],
+    days:[
+      {id:'ppl-push',name:'PUSH',type:'push',desc:'Chest · Shoulders · Triceps',tags:['Push'],
+        exercises:[
+          {id:'ppl-bench',name:'Barbell Bench Press',sets:4,reps:'5-8',note:'Primary compound. Add weight when top of range is achieved across all sets.',muscleGroup:'Chest',tags:['Chest','Push','Compound']},
+          {id:'ppl-inc-db',name:'Incline Dumbbell Press',sets:3,reps:'10-12',note:'Upper chest. Full stretch at bottom.',muscleGroup:'Chest',tags:['Chest','Push']},
+          {id:'ppl-ohp',name:'Overhead Press',sets:3,reps:'8-10',note:'Shoulder compound. Avoid excessive back lean.',muscleGroup:'Shoulders',tags:['Shoulders','Push','Compound']},
+          {id:'ppl-lat-r',name:'Lateral Raise',sets:3,reps:'15-20',note:'Side delt. Cable or dumbbell, controlled.',muscleGroup:'Lateral Delt',tags:['Shoulders','Isolation']},
+          {id:'ppl-pushdn',name:'Tricep Pushdown',sets:3,reps:'12-15',note:'Rope attachment. Full extension.',muscleGroup:'Triceps',tags:['Triceps','Arms','Isolation']},
+          {id:'ppl-oh-ext',name:'Overhead Tricep Extension',sets:2,reps:'12-15',note:'Long head emphasis.',muscleGroup:'Triceps',tags:['Triceps','Arms','Isolation']},
+        ]},
+      {id:'ppl-pull',name:'PULL',type:'pull',desc:'Back · Biceps · Rear Delts',tags:['Pull'],
+        exercises:[
+          {id:'ppl-pullup',name:'Pull-Ups / Weighted Pull-Ups',sets:4,reps:'6-10',note:'Primary lat movement. Add weight when all sets are easy.',muscleGroup:'Lats',tags:['Back','Pull','Compound']},
+          {id:'ppl-row',name:'Barbell or Cable Row',sets:4,reps:'8-10',note:'Mid-back thickness. Elbows in, squeeze at contraction.',muscleGroup:'Mid-Back',tags:['Back','Pull','Compound']},
+          {id:'ppl-pulldown',name:'Lat Pulldown',sets:3,reps:'10-12',note:'Wide grip. Full stretch at top.',muscleGroup:'Lats',tags:['Back','Pull']},
+          {id:'ppl-facepull',name:'Face Pulls',sets:3,reps:'15-20',note:'Shoulder health. Never skip this.',muscleGroup:'Rear Delts',tags:['Shoulders','Pull','Isolation']},
+          {id:'ppl-curl-bb',name:'Barbell Curl',sets:3,reps:'8-12',note:'Full ROM, no swing.',muscleGroup:'Biceps',tags:['Biceps','Arms','Isolation']},
+          {id:'ppl-hammer',name:'Hammer Curl',sets:2,reps:'12-15',note:'Brachialis and forearm.',muscleGroup:'Biceps/Forearm',tags:['Arms','Isolation']},
+        ]},
+      {id:'ppl-legs',name:'LEGS',type:'legs',desc:'Quads · Hamstrings · Glutes · Calves',tags:['Legs'],
+        exercises:[
+          {id:'ppl-squat',name:'Back Squat',sets:4,reps:'6-10',note:'Primary quad compound. Hit depth every rep.',muscleGroup:'Quads/Glutes',tags:['Legs','Quads','Squat','Compound']},
+          {id:'ppl-rdl',name:'Romanian Deadlift',sets:4,reps:'8-12',note:'Hamstring hinge. Feel the stretch.',muscleGroup:'Hamstrings',tags:['Legs','Hamstrings','Hinge']},
+          {id:'ppl-leg-press',name:'Leg Press',sets:3,reps:'10-15',note:'High foot placement for posterior emphasis.',muscleGroup:'Quads/Glutes',tags:['Legs','Quads']},
+          {id:'ppl-leg-curl',name:'Leg Curl',sets:3,reps:'10-15',note:'Seated or lying. Slow eccentric.',muscleGroup:'Hamstrings',tags:['Legs','Hamstrings','Isolation']},
+          {id:'ppl-calf',name:'Calf Raise',sets:4,reps:'12-20',note:'Full ROM, pause at stretch and contraction.',muscleGroup:'Calves',tags:['Legs','Calves','Isolation']},
+        ]},
+    ]
+  },
+
+  // ── 3. UPPER LOWER ──
+  {
+    id:'upperlower', name:'UPPER LOWER', meta:'Upper / Lower', builtin:true,
+    desc:'4-day upper/lower split. Good balance of frequency and volume. Works for intermediate lifters.',
+    accentColor:'#47b4ff', tags:['Upper/Lower','Strength','Hypertrophy'],
+    days:[
+      {id:'ul-upper-a',name:'UPPER A',type:'push',desc:'Horizontal Push · Vertical Pull · Accessory',tags:['Push','Pull','Compound'],
+        exercises:[
+          {id:'ul-bench',name:'Barbell Bench Press',sets:4,reps:'4-6',note:'Heavier, strength focus on this upper day.',muscleGroup:'Chest',tags:['Chest','Push','Compound']},
+          {id:'ul-row',name:'Barbell Row',sets:4,reps:'4-6',note:'Pairs with bench. Horizontal pull balance.',muscleGroup:'Back',tags:['Back','Pull','Compound']},
+          {id:'ul-inc',name:'Incline Dumbbell Press',sets:3,reps:'10-12',note:'Upper chest volume.',muscleGroup:'Chest',tags:['Chest','Push']},
+          {id:'ul-pulldown',name:'Lat Pulldown',sets:3,reps:'10-12',note:'Lat width.',muscleGroup:'Lats',tags:['Back','Pull']},
+          {id:'ul-lat-r',name:'Lateral Raise',sets:3,reps:'15-20',note:'Side delt isolation.',muscleGroup:'Shoulders',tags:['Shoulders','Isolation']},
+        ]},
+      {id:'ul-lower-a',name:'LOWER A',type:'legs',desc:'Squat Focus · Hamstring Accessory',tags:['Legs','Compound'],
+        exercises:[
+          {id:'ul-squat',name:'Back Squat',sets:4,reps:'4-6',note:'Strength squat. Work up to a hard set.',muscleGroup:'Quads/Glutes',tags:['Legs','Quads','Squat','Compound']},
+          {id:'ul-rdl',name:'Romanian Deadlift',sets:4,reps:'8-10',note:'Hamstring hinge accessory.',muscleGroup:'Hamstrings',tags:['Legs','Hamstrings','Hinge']},
+          {id:'ul-leg-press',name:'Leg Press',sets:3,reps:'10-12',note:'Quad volume.',muscleGroup:'Quads',tags:['Legs','Quads']},
+          {id:'ul-leg-curl',name:'Leg Curl',sets:3,reps:'10-15',note:'Hamstring isolation.',muscleGroup:'Hamstrings',tags:['Legs','Hamstrings','Isolation']},
+          {id:'ul-calf-a',name:'Calf Raise',sets:4,reps:'12-20',note:'Full ROM both directions.',muscleGroup:'Calves',tags:['Legs','Calves']},
+        ]},
+      {id:'ul-upper-b',name:'UPPER B',type:'shoulders',desc:'Vertical Push · Horizontal Pull · Volume',tags:['Push','Pull'],
+        exercises:[
+          {id:'ul-ohp',name:'Overhead Press',sets:4,reps:'6-10',note:'Vertical push. Shoulder volume day.',muscleGroup:'Shoulders',tags:['Shoulders','Push','Compound']},
+          {id:'ul-pullup',name:'Pull-Ups',sets:4,reps:'6-10',note:'Bodyweight or weighted. Full hang.',muscleGroup:'Lats',tags:['Back','Pull','Compound']},
+          {id:'ul-db-press',name:'Dumbbell Bench Press',sets:3,reps:'10-12',note:'Chest volume. Greater ROM than barbell.',muscleGroup:'Chest',tags:['Chest','Push']},
+          {id:'ul-cable-row',name:'Cable Row',sets:3,reps:'10-12',note:'Mid-back. Constant tension.',muscleGroup:'Mid-Back',tags:['Back','Pull']},
+          {id:'ul-facepull',name:'Face Pulls',sets:3,reps:'15-20',note:'Shoulder health. Always.',muscleGroup:'Rear Delts',tags:['Shoulders','Isolation']},
+        ]},
+      {id:'ul-lower-b',name:'LOWER B',type:'legs',desc:'Hinge Focus · Quad Accessory',tags:['Legs','Compound'],
+        exercises:[
+          {id:'ul-dead',name:'Deadlift',sets:4,reps:'4-6',note:'Primary hinge. Max effort.',muscleGroup:'Back/Posterior',tags:['Back','Legs','Hinge','Compound']},
+          {id:'ul-front-sq',name:'Front Squat / Hack Squat',sets:4,reps:'8-10',note:'Quad-dominant variation.',muscleGroup:'Quads',tags:['Legs','Quads','Squat']},
+          {id:'ul-hip',name:'Hip Thrust',sets:3,reps:'10-15',note:'Glute isolation. Full lockout at top.',muscleGroup:'Glutes',tags:['Legs','Glutes','Hinge']},
+          {id:'ul-leg-ext',name:'Leg Extension',sets:3,reps:'12-15',note:'VMO isolation.',muscleGroup:'Quads',tags:['Legs','Quads','Isolation']},
+          {id:'ul-calf-b',name:'Calf Raise',sets:4,reps:'12-20',note:'Seated for soleus emphasis.',muscleGroup:'Calves',tags:['Legs','Calves']},
+        ]},
+    ]
+  },
+
+  // ── 4. BRO SPLIT ──
+  {
+    id:'brosplit', name:'BRO SPLIT', meta:'Chest / Back / Shoulders / Arms / Legs', builtin:true,
+    desc:'Classic 5-day bodybuilding split. One muscle group per day, high volume, good for hypertrophy.',
     accentColor:'#c847ff', tags:['Bro Split','Hypertrophy'],
     days:[
-      {id:'h-chest',name:'CHEST',type:'chest',desc:'Chest Volume — Upper, Mid, Lower',tags:['Chest','Push'],
+      {id:'bs-chest',name:'CHEST',type:'chest',desc:'Chest Volume — Upper, Mid, Lower',tags:['Chest','Push'],
         exercises:[
-          {id:'h-bench',name:'Barbell Bench Press (Paused)',sets:4,reps:'6-8',note:'1-second pause at chest. Builds bottom-end strength for 315.',muscleGroup:'Chest',tags:['Chest','Compound','Push','315 Goal','Tempo']},
-          {id:'h-incline-db',name:'Incline DB Press',sets:4,reps:'10-12',note:'Upper chest growth. Full stretch at the bottom.',muscleGroup:'Chest',tags:['Chest','Push']},
-          {id:'h-cable-fly',name:'Cable Fly (Low to High)',sets:3,reps:'12-15',note:'Upper fiber isolation. Squeeze hard at top.',muscleGroup:'Chest',tags:['Chest','Isolation','Push']},
-          {id:'h-dip',name:'Dips',sets:3,reps:'10-12',note:'Forward lean for chest emphasis.',muscleGroup:'Chest/Triceps',tags:['Chest','Triceps','Push','Muscle Up']},
-          {id:'h-pec-deck',name:'Pec Deck / Machine Fly',sets:3,reps:'15',note:'Peak contraction focus. Slow eccentric.',muscleGroup:'Chest',tags:['Chest','Isolation','Tempo']},
+          {id:'bs-bench',name:'Barbell Bench Press',sets:4,reps:'8-10',note:'Primary compound. Full ROM.',muscleGroup:'Chest',tags:['Chest','Push','Compound']},
+          {id:'bs-inc-db',name:'Incline Dumbbell Press',sets:4,reps:'10-12',note:'Upper chest. Full stretch at bottom.',muscleGroup:'Chest',tags:['Chest','Push']},
+          {id:'bs-fly',name:'Cable Fly',sets:3,reps:'12-15',note:'Isolation. Squeeze at top.',muscleGroup:'Chest',tags:['Chest','Push','Isolation']},
+          {id:'bs-dip',name:'Dips',sets:3,reps:'10-15',note:'Forward lean for chest. Add weight if easy.',muscleGroup:'Chest/Triceps',tags:['Chest','Triceps','Push']},
+          {id:'bs-pec',name:'Pec Deck',sets:3,reps:'15',note:'Peak contraction focus.',muscleGroup:'Chest',tags:['Chest','Isolation']},
         ]},
-      {id:'h-back',name:'BACK',type:'back',desc:'Back Volume — Width and Thickness',tags:['Back','Pull'],
+      {id:'bs-back',name:'BACK',type:'back',desc:'Back Width and Thickness',tags:['Back','Pull'],
         exercises:[
-          {id:'h-pulldown',name:'Lat Pulldown',sets:4,reps:'10-12',note:'Wide grip. Full stretch at top.',muscleGroup:'Lats',tags:['Back','Pull','Compound']},
-          {id:'h-seated-row',name:'Seated Cable Row',sets:4,reps:'10-12',note:'V-bar. Elbows in. Squeeze scapula.',muscleGroup:'Mid-Back',tags:['Back','Pull']},
-          {id:'h-db-row',name:'Single Arm DB Row',sets:3,reps:'10-12/side',note:'Heavy. Elbow to hip.',muscleGroup:'Back',tags:['Back','Pull']},
-          {id:'h-pullup-bw',name:'Pull-Up Clusters',sets:4,reps:'6-8',note:'BW or slight band. Full retraction.',muscleGroup:'Lats/Back',tags:['Back','Pull','Muscle Up']},
-          {id:'h-rear-fly',name:'Rear Delt Fly',sets:3,reps:'15-20',note:'Pec deck or bent-over DB.',muscleGroup:'Rear Delts',tags:['Shoulders','Isolation']},
+          {id:'bs-dead',name:'Deadlift',sets:4,reps:'5-8',note:'Primary compound. Brace hard.',muscleGroup:'Back/Posterior',tags:['Back','Hinge','Compound']},
+          {id:'bs-pullup',name:'Pull-Ups',sets:4,reps:'6-10',note:'Lat width. Full hang, drive elbows to hips.',muscleGroup:'Lats',tags:['Back','Pull','Compound']},
+          {id:'bs-row',name:'Barbell Row',sets:4,reps:'8-10',note:'Thickness. Elbows in.',muscleGroup:'Mid-Back',tags:['Back','Pull','Compound']},
+          {id:'bs-pulldown',name:'Lat Pulldown',sets:3,reps:'10-12',note:'Width. Wide grip.',muscleGroup:'Lats',tags:['Back','Pull']},
+          {id:'bs-rear-fly',name:'Rear Delt Fly',sets:3,reps:'15-20',note:'Shoulder health. Always include.',muscleGroup:'Rear Delts',tags:['Shoulders','Isolation']},
         ]},
-      {id:'h-shoulders',name:'SHOULDERS',type:'shoulders',desc:'Full Delt Volume',tags:['Shoulders','Push'],
+      {id:'bs-shoulders',name:'SHOULDERS',type:'shoulders',desc:'Full Delt Volume',tags:['Shoulders','Push'],
         exercises:[
-          {id:'h-db-press',name:'DB Shoulder Press',sets:4,reps:'10-12',note:'Seated. Full lockout at top.',muscleGroup:'Anterior Delt',tags:['Shoulders','Push','Muscle Up']},
-          {id:'h-lat-raise-c',name:'Cable Lateral Raise',sets:4,reps:'12-15/side',note:'Single arm cable. Constant tension.',muscleGroup:'Lateral Delt',tags:['Shoulders','Isolation']},
-          {id:'h-front-raise',name:'Plate Front Raise',sets:3,reps:'12-15',note:'Controlled. No swinging.',muscleGroup:'Anterior Delt',tags:['Shoulders','Isolation']},
-          {id:'h-facepull-h',name:'Face Pulls',sets:3,reps:'20',note:'External rotation. Never skip.',muscleGroup:'Rear Delt/RC',tags:['Shoulders','Pull','Isolation']},
-          {id:'h-upright-row',name:'Upright Row (Cable)',sets:3,reps:'12-15',note:'Elbows wide. Pull to chin.',muscleGroup:'Traps/Delt',tags:['Shoulders','Pull']},
+          {id:'bs-ohp',name:'Overhead Press',sets:4,reps:'8-10',note:'Primary compound. Strict form.',muscleGroup:'Shoulders',tags:['Shoulders','Push','Compound']},
+          {id:'bs-db-press',name:'Dumbbell Shoulder Press',sets:3,reps:'10-12',note:'More ROM than barbell.',muscleGroup:'Shoulders',tags:['Shoulders','Push']},
+          {id:'bs-lat-r',name:'Lateral Raise',sets:4,reps:'15-20',note:'Side delt. Cable keeps constant tension.',muscleGroup:'Lateral Delt',tags:['Shoulders','Isolation']},
+          {id:'bs-front-r',name:'Front Raise',sets:3,reps:'12-15',note:'Anterior delt. Controlled speed.',muscleGroup:'Anterior Delt',tags:['Shoulders','Isolation']},
+          {id:'bs-facepull',name:'Face Pulls',sets:3,reps:'20',note:'Rear delt and rotator cuff. Never skip.',muscleGroup:'Rear Delts',tags:['Shoulders','Isolation']},
         ]},
-      {id:'h-arms',name:'ARMS',type:'arms',desc:'Biceps · Triceps · Forearms',tags:['Arms'],
+      {id:'bs-arms',name:'ARMS',type:'arms',desc:'Biceps · Triceps · Forearms',tags:['Arms'],
         exercises:[
-          {id:'h-curl-bb',name:'Barbell Curl',sets:4,reps:'8-10',note:'Full ROM. No cheat.',muscleGroup:'Biceps',tags:['Biceps','Arms','Isolation']},
-          {id:'h-incline-curl',name:'Incline DB Curl',sets:3,reps:'10-12',note:'Long head stretch. Slow eccentric.',muscleGroup:'Biceps',tags:['Biceps','Arms','Isolation','Tempo']},
-          {id:'h-hammer',name:'Hammer Curl',sets:3,reps:'12',note:'Brachialis and brachioradialis.',muscleGroup:'Biceps/Forearm',tags:['Arms','Isolation']},
-          {id:'h-skull',name:'Skull Crushers',sets:4,reps:'10-12',note:'EZ bar. Long head mass.',muscleGroup:'Triceps',tags:['Triceps','Arms','Isolation']},
-          {id:'h-pushdown',name:'Tricep Pushdown',sets:3,reps:'12-15',note:'Rope. Full extension at bottom.',muscleGroup:'Triceps',tags:['Triceps','Arms','Isolation']},
-          {id:'h-oh-ext',name:'Overhead Tricep Extension',sets:3,reps:'12-15',note:'Cable or DB. Long head stretch.',muscleGroup:'Triceps',tags:['Triceps','Arms','Isolation']},
+          {id:'bs-curl-bb',name:'Barbell Curl',sets:4,reps:'8-10',note:'Primary bicep. Full ROM, no swing.',muscleGroup:'Biceps',tags:['Biceps','Arms','Isolation']},
+          {id:'bs-inc-curl',name:'Incline Dumbbell Curl',sets:3,reps:'10-12',note:'Long head stretch.',muscleGroup:'Biceps',tags:['Biceps','Arms','Isolation']},
+          {id:'bs-hammer',name:'Hammer Curl',sets:3,reps:'12',note:'Brachialis. Neutral grip.',muscleGroup:'Biceps/Forearm',tags:['Arms','Isolation']},
+          {id:'bs-skull',name:'Skull Crushers',sets:4,reps:'10-12',note:'Long head tricep. EZ bar.',muscleGroup:'Triceps',tags:['Triceps','Arms','Isolation']},
+          {id:'bs-pushdn',name:'Tricep Pushdown',sets:3,reps:'12-15',note:'Rope. Full extension.',muscleGroup:'Triceps',tags:['Triceps','Arms','Isolation']},
         ]},
-      {id:'h-legs',name:'LEGS',type:'legs',desc:'Quad and Posterior Chain Volume',tags:['Legs'],
+      {id:'bs-legs',name:'LEGS',type:'legs',desc:'Quads · Hamstrings · Glutes · Calves',tags:['Legs'],
         exercises:[
-          {id:'h-squat',name:'Back Squat',sets:4,reps:'8-10',note:'Full depth. Time under tension.',muscleGroup:'Quads/Glutes',tags:['Legs','Quads','Squat','Compound']},
-          {id:'h-legpress',name:'Leg Press',sets:4,reps:'12-15',note:'High volume. Slow eccentric.',muscleGroup:'Quads',tags:['Legs','Quads']},
-          {id:'h-legext',name:'Leg Extension',sets:3,reps:'15',note:'VMO focus. Peak contraction.',muscleGroup:'Quads',tags:['Legs','Quads','Isolation']},
-          {id:'h-rdl',name:'Romanian Deadlift',sets:4,reps:'10-12',note:'Feel the full stretch.',muscleGroup:'Hamstrings',tags:['Legs','Hamstrings','Hinge']},
-          {id:'h-legcurl',name:'Lying Leg Curl',sets:3,reps:'12-15',note:'Slow eccentric.',muscleGroup:'Hamstrings',tags:['Legs','Hamstrings','Isolation','Tempo']},
-          {id:'h-hipthrust',name:'Hip Thrust (Barbell)',sets:3,reps:'12-15',note:'Shoulders on bench. Glute peak contraction.',muscleGroup:'Glutes',tags:['Legs','Glutes','Hinge']},
-          {id:'h-calf',name:'Calf Superset',sets:4,reps:'15-20',note:'Standing + seated back-to-back.',muscleGroup:'Calves',tags:['Legs','Calves','Isolation']},
-        ]},
-      {id:'h-access',name:'ACCESSORIES',type:'accessories',desc:'Weak Points · Muscle Up Progressions · Core',tags:['Core','Muscle Up'],
-        exercises:[
-          {id:'h-mu-neg',name:'Muscle Up Negatives',sets:5,reps:'3-5',note:'Jump or band to top, lower as slowly as possible.',muscleGroup:'Full Upper',tags:['Muscle Up','Pull','Compound']},
-          {id:'h-false-grip',name:'False Grip Ring Hangs',sets:3,reps:'20-30s',note:'Build the false grip the muscle-up requires.',muscleGroup:'Grip/Forearm',tags:['Muscle Up','Arms']},
-          {id:'h-ring-row',name:'Ring Rows (High)',sets:3,reps:'10-15',note:'Body near horizontal. Pull chest to rings.',muscleGroup:'Back/Biceps',tags:['Muscle Up','Back','Pull']},
-          {id:'h-ab-wheel',name:'Ab Wheel Rollout',sets:3,reps:'10',note:'Full extension if possible.',muscleGroup:'Core',tags:['Core','Compound']},
-          {id:'h-carry',name:'Farmer Carry',sets:3,reps:'40-50 yards',note:'Heavy DB or trap bar. Grip, core, traps.',muscleGroup:'Full Body',tags:['Core','Carry','Compound']},
-        ]},
-      {id:'h-cardio',name:'CARDIO',type:'cardio',desc:'Tempo Run + Active Recovery',tags:['Cardio'],isSimple:true,
-        checks:[
-          {id:'hc1',label:'Tempo Run — 20 min at 7:30/mile',sub:'Aerobic base building.'},
-          {id:'hc2',label:'10,000+ steps today',sub:'NEAT matters for body composition.'},
-          {id:'hc3',label:'Foam roll + stretch — 10 min',sub:'Post-session.'},
+          {id:'bs-squat',name:'Back Squat',sets:4,reps:'8-10',note:'Full depth. Time under tension.',muscleGroup:'Quads/Glutes',tags:['Legs','Quads','Squat','Compound']},
+          {id:'bs-rdl',name:'Romanian Deadlift',sets:4,reps:'10-12',note:'Feel the stretch in hamstrings.',muscleGroup:'Hamstrings',tags:['Legs','Hamstrings','Hinge']},
+          {id:'bs-leg-press',name:'Leg Press',sets:4,reps:'12-15',note:'High volume. Slow down.',muscleGroup:'Quads',tags:['Legs','Quads']},
+          {id:'bs-leg-curl',name:'Leg Curl',sets:3,reps:'12-15',note:'Slow eccentric.',muscleGroup:'Hamstrings',tags:['Legs','Hamstrings','Isolation']},
+          {id:'bs-hip',name:'Hip Thrust',sets:3,reps:'12-15',note:'Glute peak contraction.',muscleGroup:'Glutes',tags:['Legs','Glutes','Hinge']},
+          {id:'bs-calf',name:'Calf Raise',sets:5,reps:'15-20',note:'Full ROM. Pause at stretch.',muscleGroup:'Calves',tags:['Legs','Calves']},
         ]},
     ]
   },
+
+  // ── 5. 5/3/1 ──
   {
-    id:'explosive', name:'EXPLOSIVE', meta:'Push / Pull / Legs', builtin:true,
-    desc:'Power and athleticism. Plyometrics where they make sense. Compounds with maximum speed intent.',
-    accentColor:'#e8ff47', tags:['PPL','Explosive'],
+    id:'531', name:'5/3/1', meta:'4-Day Upper / Lower', builtin:true,
+    desc:'Jim Wendler\'s percentage-based strength program. Built around 4 main lifts with structured progression. Work up to a top set, then do 5x5 FSL (First Set Last).',
+    accentColor:'#ff4774', tags:['Strength','Upper/Lower'],
     days:[
-      {id:'e-push',name:'PUSH',type:'push',desc:'Explosive Chest and Shoulders',tags:['Push','Explosive'],
+      {id:'531-press',name:'PRESS DAY',type:'push',desc:'OHP Main · Bench Accessory',tags:['Push','Compound','Strength'],
         exercises:[
-          {id:'e-bench-exp',name:'Speed Bench Press',sets:6,reps:'3',note:'60-70% of 1RM. Maximum bar speed. Trains the nervous system.',muscleGroup:'Chest',tags:['Chest','Push','Explosive','315 Goal']},
-          {id:'e-clap-push',name:'Clap Push-Ups',sets:4,reps:'5-8',note:'Explosive concentric. Land soft.',muscleGroup:'Chest',tags:['Chest','Push','Explosive']},
-          {id:'e-push-press',name:'Push Press',sets:4,reps:'4-6',note:'Leg drive into OHP lockout. Muscle-up lockout builder.',muscleGroup:'Shoulders',tags:['Shoulders','Push','Explosive','Muscle Up']},
-          {id:'e-med-ball',name:'Med Ball Chest Pass (Wall)',sets:3,reps:'10',note:'12-20 lb ball. Max velocity.',muscleGroup:'Chest/Shoulders',tags:['Chest','Explosive']},
-          {id:'e-dip-exp',name:'Explosive Dips',sets:3,reps:'5-6',note:'Push hard enough to get airborne at top.',muscleGroup:'Triceps/Chest',tags:['Triceps','Chest','Explosive','Muscle Up']},
-          {id:'e-lat-raise',name:'Lateral Raises',sets:3,reps:'15',note:'Keep controlled speed here.',muscleGroup:'Shoulders',tags:['Shoulders','Isolation']},
+          {id:'531-ohp',name:'Overhead Press — Top Set',sets:3,reps:'5/3/1',note:'Week 1: 3x5. Week 2: 3x3. Week 3: 5/3/1. Final set is AMRAP — push it.',muscleGroup:'Shoulders',tags:['Shoulders','Push','Compound','Strength']},
+          {id:'531-ohp-fsl',name:'Overhead Press — FSL 5x5',sets:5,reps:'5',note:'First Set Last. Use your first working weight. Builds volume.',muscleGroup:'Shoulders',tags:['Shoulders','Push','Compound']},
+          {id:'531-db-row',name:'Dumbbell Row',sets:5,reps:'10-15',note:'Pulling superset. Match volume to press.',muscleGroup:'Back',tags:['Back','Pull']},
+          {id:'531-dip',name:'Dips or Push-Ups',sets:3,reps:'10-20',note:'Bodyweight accessory. Add weight if easy.',muscleGroup:'Chest/Triceps',tags:['Chest','Triceps','Push']},
+          {id:'531-curl-p',name:'Bicep Curl',sets:3,reps:'10-15',note:'Arm accessory.',muscleGroup:'Biceps',tags:['Arms','Biceps','Isolation']},
         ]},
-      {id:'e-pull',name:'PULL',type:'pull',desc:'Explosive Pull — Bar Speed and Muscle Up Work',tags:['Pull','Explosive'],
+      {id:'531-dead',name:'DEADLIFT DAY',type:'pull',desc:'Deadlift Main · Leg Accessory',tags:['Pull','Hinge','Compound','Strength'],
         exercises:[
-          {id:'e-trap-dead',name:'Trap Bar Deadlift (Explosive)',sets:5,reps:'3',note:'70% 1RM. Rip it off the floor fast.',muscleGroup:'Back/Hips',tags:['Back','Hinge','Explosive','Compound']},
-          {id:'e-pull-exp',name:'Explosive Pull-Ups',sets:5,reps:'5',note:'Pull as hard as possible — goal is chest to bar.',muscleGroup:'Back/Lats',tags:['Back','Pull','Explosive','Muscle Up']},
-          {id:'e-mu-attempt',name:'Muscle Up Attempts / Progressions',sets:5,reps:'2-5',note:'Full attempts or band-assisted. Max effort each.',muscleGroup:'Full Upper',tags:['Muscle Up','Pull','Explosive']},
-          {id:'e-inv-row',name:'Inverted Rows (Explosive)',sets:3,reps:'8-10',note:'Pull chest to bar explosively.',muscleGroup:'Back',tags:['Back','Pull','Explosive']},
-          {id:'e-facepull',name:'Face Pulls',sets:3,reps:'15-20',note:'Shoulder health. Always include.',muscleGroup:'Rear Delts',tags:['Shoulders','Isolation']},
-          {id:'e-curl',name:'Hammer Curl',sets:3,reps:'12',note:'Controlled speed. Maintain elbow health.',muscleGroup:'Biceps',tags:['Arms','Biceps','Isolation']},
+          {id:'531-dl',name:'Deadlift — Top Set',sets:3,reps:'5/3/1',note:'Week 1: 3x5. Week 2: 3x3. Week 3: 5/3/1. Final set AMRAP.',muscleGroup:'Back/Posterior',tags:['Back','Hinge','Compound','Strength']},
+          {id:'531-dl-fsl',name:'Deadlift — FSL 5x5',sets:5,reps:'5',note:'First Set Last. Full reset each rep.',muscleGroup:'Back/Posterior',tags:['Back','Hinge','Compound']},
+          {id:'531-goblet',name:'Goblet Squat',sets:5,reps:'10-15',note:'Squat accessory. Stay upright.',muscleGroup:'Quads/Glutes',tags:['Legs','Quads','Squat']},
+          {id:'531-leg-curl2',name:'Leg Curl',sets:3,reps:'10-15',note:'Hamstring accessory.',muscleGroup:'Hamstrings',tags:['Legs','Hamstrings','Isolation']},
+          {id:'531-ab',name:'Ab Work',sets:3,reps:'10-15',note:'Planks, hanging leg raises, or ab wheel.',muscleGroup:'Core',tags:['Core']},
         ]},
-      {id:'e-legs',name:'LEGS',type:'legs',desc:'Power · Jumps · Drive',tags:['Legs','Explosive'],
+      {id:'531-bench',name:'BENCH DAY',type:'chest',desc:'Bench Main · Row Accessory',tags:['Push','Compound','Strength'],
         exercises:[
-          {id:'e-box-squat',name:'Box Squat (Speed)',sets:6,reps:'3',note:'60% 1RM. Explode up. Rate of force development.',muscleGroup:'Quads/Glutes',tags:['Legs','Quads','Squat','Explosive']},
-          {id:'e-box-jump',name:'Box Jumps',sets:4,reps:'5',note:'24-30 inch box. Full hip extension. Step down.',muscleGroup:'Full Lower',tags:['Legs','Explosive']},
-          {id:'e-broad-jump',name:'Broad Jumps',sets:3,reps:'5',note:'Max distance each rep.',muscleGroup:'Full Lower',tags:['Legs','Explosive']},
-          {id:'e-rdl',name:'Romanian Deadlift',sets:4,reps:'8',note:'Controlled speed. Hinge integrity.',muscleGroup:'Hamstrings',tags:['Legs','Hamstrings','Hinge']},
-          {id:'e-split-jump',name:'Split Squat Jumps',sets:3,reps:'8/leg',note:'Explosive alternating lunges. Land soft.',muscleGroup:'Quads/Glutes',tags:['Legs','Explosive']},
-          {id:'e-pogo',name:'Pogo Hops / Calf Bounds',sets:3,reps:'20',note:'Minimal ground contact. Ankle stiffness helps mile time.',muscleGroup:'Calves',tags:['Legs','Calves','Explosive','6-Min Mile']},
+          {id:'531-bench',name:'Bench Press — Top Set',sets:3,reps:'5/3/1',note:'Week 1: 3x5. Week 2: 3x3. Week 3: 5/3/1. Final set AMRAP.',muscleGroup:'Chest',tags:['Chest','Push','Compound','Strength']},
+          {id:'531-bench-fsl',name:'Bench Press — FSL 5x5',sets:5,reps:'5',note:'First Set Last. Touch and go or paused.',muscleGroup:'Chest',tags:['Chest','Push','Compound']},
+          {id:'531-db-row2',name:'Dumbbell Row',sets:5,reps:'10-15',note:'Pulling balance for bench.',muscleGroup:'Back',tags:['Back','Pull']},
+          {id:'531-pullup2',name:'Pull-Ups',sets:3,reps:'Max',note:'Bodyweight. As many as possible each set.',muscleGroup:'Lats',tags:['Back','Pull','Compound']},
+          {id:'531-tri',name:'Tricep Work',sets:3,reps:'10-15',note:'Pushdowns or skull crushers.',muscleGroup:'Triceps',tags:['Triceps','Arms','Isolation']},
         ]},
-      {id:'e-cardio',name:'CARDIO',type:'cardio',desc:'Speed Work — 6-Min Mile Training',tags:['Cardio','6-Min Mile'],isSimple:true,
-        checks:[
-          {id:'ec1',label:'4x400m at 90-second target',sub:'All-out 400m. 2 min rest.'},
-          {id:'ec2',label:'6x100m Strides',sub:'Accelerate to 95%, hold, decelerate.'},
-          {id:'ec3',label:'10 min easy cool-down jog',sub:'Drop HR before stopping.'},
-          {id:'ec4',label:'Dynamic mobility — 10 min',sub:'High knees, leg swings, hip circles.'},
-        ]},
-      {id:'e-core',name:'CORE',type:'core',desc:'Power Core — Transfer Strength',tags:['Core','Explosive'],isSimple:true,
-        checks:[
-          {id:'eco1',label:'Med Ball Slam — 4x10',sub:'20-30 lb ball. Maximum force output.'},
-          {id:'eco2',label:'Rotational Med Ball Throw — 3x8/side',sub:'Hips drive, core transfers.'},
-          {id:'eco3',label:'Hanging Windshield Wipers — 3x8/side',sub:'Legs up, rotate to each side.'},
-          {id:'eco4',label:'Dragon Flag Negatives — 3x5',sub:'Bench. Slow lower from vertical.'},
-          {id:'eco5',label:'Sprint Acceleration Drills — 3x20 yards',sub:'Drive phase practice.'},
+      {id:'531-squat',name:'SQUAT DAY',type:'legs',desc:'Squat Main · Hip Hinge Accessory',tags:['Legs','Compound','Strength'],
+        exercises:[
+          {id:'531-sq',name:'Back Squat — Top Set',sets:3,reps:'5/3/1',note:'Week 1: 3x5. Week 2: 3x3. Week 3: 5/3/1. Final set AMRAP.',muscleGroup:'Quads/Glutes',tags:['Legs','Quads','Squat','Compound','Strength']},
+          {id:'531-sq-fsl',name:'Back Squat — FSL 5x5',sets:5,reps:'5',note:'First Set Last. Hit depth every rep.',muscleGroup:'Quads/Glutes',tags:['Legs','Quads','Squat','Compound']},
+          {id:'531-rdl2',name:'Romanian Deadlift',sets:5,reps:'10-15',note:'Hip hinge accessory.',muscleGroup:'Hamstrings',tags:['Legs','Hamstrings','Hinge']},
+          {id:'531-calf2',name:'Calf Raise',sets:4,reps:'12-20',note:'Full ROM.',muscleGroup:'Calves',tags:['Legs','Calves']},
+          {id:'531-ab2',name:'Ab Work',sets:3,reps:'10-15',note:'Core accessory.',muscleGroup:'Core',tags:['Core']},
         ]},
     ]
-  }
+  },
+
+  // ── 6. LINEAR PROGRESSION ──
+  {
+    id:'linearprog', name:'LINEAR PROGRESSION', meta:'Full Body 3x / Week', builtin:true,
+    desc:'Simple beginner program. 3-day full body, add weight every session. Best for those new to barbell training.',
+    accentColor:'#47ffd4', tags:['Full Body','Strength'],
+    days:[
+      {id:'lp-a',name:'WORKOUT A',type:'push',desc:'Squat · Bench · Deadlift',tags:['Compound','Full Body','Strength'],
+        exercises:[
+          {id:'lp-squat-a',name:'Back Squat',sets:3,reps:'5',note:'Add 5 lbs each session. Focus on form before chasing weight.',muscleGroup:'Quads/Glutes',tags:['Legs','Quads','Squat','Compound','Strength']},
+          {id:'lp-bench-a',name:'Barbell Bench Press',sets:3,reps:'5',note:'Add 5 lbs each session. Control the bar.',muscleGroup:'Chest',tags:['Chest','Push','Compound','Strength']},
+          {id:'lp-dead-a',name:'Deadlift',sets:1,reps:'5',note:'Single heavy set. Add 10 lbs each session. Biggest lift.',muscleGroup:'Back/Posterior',tags:['Back','Hinge','Compound','Strength']},
+          {id:'lp-pull-a',name:'Pull-Ups or Lat Pulldown',sets:3,reps:'Max / 8-10',note:'Supplemental pull. Work toward bodyweight pull-ups.',muscleGroup:'Lats',tags:['Back','Pull','Compound']},
+        ]},
+      {id:'lp-b',name:'WORKOUT B',type:'pull',desc:'Squat · Press · Barbell Row',tags:['Compound','Full Body','Strength'],
+        exercises:[
+          {id:'lp-squat-b',name:'Back Squat',sets:3,reps:'5',note:'Same as Workout A. Add 5 lbs each session.',muscleGroup:'Quads/Glutes',tags:['Legs','Quads','Squat','Compound','Strength']},
+          {id:'lp-ohp-b',name:'Overhead Press',sets:3,reps:'5',note:'Add 5 lbs each session. Alternate with bench.',muscleGroup:'Shoulders',tags:['Shoulders','Push','Compound','Strength']},
+          {id:'lp-row-b',name:'Barbell Row',sets:3,reps:'5',note:'Add 5 lbs each session. Horizontal pull.',muscleGroup:'Back',tags:['Back','Pull','Compound','Strength']},
+          {id:'lp-dip-b',name:'Dips or Push-Ups',sets:2,reps:'Max',note:'Supplemental push. Add weight when easy.',muscleGroup:'Chest/Triceps',tags:['Chest','Push']},
+        ]},
+    ]
+  },
+
+  // ── 7. GZCLP ──
+  {
+    id:'gzclp', name:'GZCLP', meta:'4-Day Tiered Program', builtin:true,
+    desc:'Tiered linear progression by Gzcl. T1 = big compounds, T2 = secondary compounds, T3 = isolation. Efficient and scalable.',
+    accentColor:'#ffffff', tags:['Strength','Hypertrophy','Full Body'],
+    days:[
+      {id:'gz-1',name:'DAY 1',type:'push',desc:'T1: Squat · T2: OHP · T3: Arms',tags:['Compound','Strength'],
+        exercises:[
+          {id:'gz-sq1',name:'Back Squat — T1',sets:5,reps:'3',note:'T1: 5x3 with heavy weight. Work up to max set on last. Add weight when all sets complete.',muscleGroup:'Quads/Glutes',tags:['Legs','Quads','Squat','Compound','Strength']},
+          {id:'gz-ohp1',name:'Overhead Press — T2',sets:3,reps:'10',note:'T2: 3x10 moderate weight. Increase when all sets complete.',muscleGroup:'Shoulders',tags:['Shoulders','Push','Compound']},
+          {id:'gz-lat-r1',name:'Lateral Raise — T3',sets:2,reps:'15-25',note:'T3: 2 sets to near failure. High rep range.',muscleGroup:'Shoulders',tags:['Shoulders','Isolation']},
+          {id:'gz-curl1',name:'Bicep Curl — T3',sets:2,reps:'15-25',note:'T3 accessory.',muscleGroup:'Biceps',tags:['Arms','Biceps','Isolation']},
+        ]},
+      {id:'gz-2',name:'DAY 2',type:'pull',desc:'T1: Bench · T2: Row · T3: Triceps',tags:['Compound','Strength'],
+        exercises:[
+          {id:'gz-bench2',name:'Bench Press — T1',sets:5,reps:'3',note:'T1: 5x3 heavy. Max set on last. Increase when complete.',muscleGroup:'Chest',tags:['Chest','Push','Compound','Strength']},
+          {id:'gz-row2',name:'Barbell Row — T2',sets:3,reps:'10',note:'T2: 3x10 moderate.',muscleGroup:'Back',tags:['Back','Pull','Compound']},
+          {id:'gz-tri2',name:'Tricep Extension — T3',sets:2,reps:'15-25',note:'T3 accessory.',muscleGroup:'Triceps',tags:['Triceps','Arms','Isolation']},
+          {id:'gz-pull2',name:'Pull-Ups — T3',sets:2,reps:'Max',note:'T3. As many reps as possible.',muscleGroup:'Lats',tags:['Back','Pull']},
+        ]},
+      {id:'gz-3',name:'DAY 3',type:'legs',desc:'T1: Deadlift · T2: Bench · T3: Core',tags:['Compound','Strength'],
+        exercises:[
+          {id:'gz-dead3',name:'Deadlift — T1',sets:5,reps:'3',note:'T1: 5x3 heavy. Last set AMRAP. Add weight when all sets complete.',muscleGroup:'Back/Posterior',tags:['Back','Hinge','Compound','Strength']},
+          {id:'gz-bench3',name:'Bench Press — T2',sets:3,reps:'10',note:'T2: 3x10 moderate weight.',muscleGroup:'Chest',tags:['Chest','Push','Compound']},
+          {id:'gz-ab3',name:'Ab Wheel or Plank — T3',sets:2,reps:'10-20',note:'T3 core work.',muscleGroup:'Core',tags:['Core']},
+          {id:'gz-facepull3',name:'Face Pulls — T3',sets:2,reps:'15-25',note:'Shoulder health.',muscleGroup:'Rear Delts',tags:['Shoulders','Isolation']},
+        ]},
+      {id:'gz-4',name:'DAY 4',type:'push',desc:'T1: OHP · T2: Squat · T3: Back',tags:['Compound','Strength'],
+        exercises:[
+          {id:'gz-ohp4',name:'Overhead Press — T1',sets:5,reps:'3',note:'T1: 5x3 heavy. Alternate T1 with squat.',muscleGroup:'Shoulders',tags:['Shoulders','Push','Compound','Strength']},
+          {id:'gz-sq4',name:'Back Squat — T2',sets:3,reps:'10',note:'T2: 3x10 moderate.',muscleGroup:'Quads/Glutes',tags:['Legs','Quads','Squat','Compound']},
+          {id:'gz-pulldown4',name:'Lat Pulldown — T3',sets:2,reps:'15-25',note:'T3 lat work.',muscleGroup:'Lats',tags:['Back','Pull']},
+          {id:'gz-curl4',name:'Dumbbell Curl — T3',sets:2,reps:'15-25',note:'T3 arm work.',muscleGroup:'Biceps',tags:['Arms','Biceps','Isolation']},
+        ]},
+    ]
+  },
 ];
 
-const GOALS=[
-  {id:'bench',letter:'B',name:'315 lb Bench Press',sub:'Enter estimated 1RM (lbs)',target:315,colorClass:'bench',invert:false,
-    milestones:[{l:'225 lbs (2 plate)',v:225},{l:'245 lbs',v:245},{l:'265 lbs',v:265},{l:'285 lbs',v:285},{l:'305 lbs',v:305},{l:'315 lbs (3 plate)',v:315}]},
-  {id:'muscleup',letter:'M',name:'First Muscle Up',sub:'Enter stage 1-5 you are at',target:5,colorClass:'muscleup',invert:false,
-    milestones:[{l:'10 strict pull-ups BW',v:1},{l:'Chest-to-bar pull-ups x5',v:2},{l:'Muscle up negative x5',v:3},{l:'Band-assisted muscle up x3',v:4},{l:'Clean unassisted muscle up',v:5}]},
-  {id:'mile',letter:'R',name:'6-Minute Mile',sub:'Enter best mile in seconds (e.g. 480 = 8:00)',target:360,colorClass:'mile',invert:true,
-    milestones:[{l:'Sub 9:00 (540s)',v:540},{l:'Sub 8:00 (480s)',v:480},{l:'Sub 7:30 (450s)',v:450},{l:'Sub 7:00 (420s)',v:420},{l:'Sub 6:30 (390s)',v:390},{l:'Sub 6:00 (360s)',v:360}]},
+// ─────────────────────────────────────────────
+// GOALS — user configurable
+// ─────────────────────────────────────────────
+const GOAL_COLORS = ['#e8ff47','#ff8c47','#47b4ff','#c847ff','#ff4774','#47ffd4','#ff4747','#ffffff'];
+
+const DEFAULT_GOALS = [
+  {id:'goal-bench',name:'Bench Press 1RM',unit:'lbs',target:225,current:0,color:'#ff8c47',invert:false},
+  {id:'goal-squat',name:'Back Squat 1RM',unit:'lbs',target:315,current:0,color:'#e8ff47',invert:false},
+  {id:'goal-dead',name:'Deadlift 1RM',unit:'lbs',target:405,current:0,color:'#47b4ff',invert:false},
 ];
+
+function getUserGoals(){
+  const saved=localStorage.getItem('forge_user_goals');
+  if(saved)return JSON.parse(saved);
+  return JSON.parse(JSON.stringify(DEFAULT_GOALS));
+}
+function saveUserGoals(g){localStorage.setItem('forge_user_goals',JSON.stringify(g));}
 
 // ─────────────────────────────────────────────
 // STATE
@@ -857,13 +5599,26 @@ function openProgramBuilder(progId){
     builderProgram={id:'custom-'+Date.now(),name:'',desc:'',tags:[],accentColor:'#e8ff47',days:[],builtin:false};
     document.getElementById('bp-title').textContent='NEW PROGRAM';
   }
+  expandedBlockIndex=null;
   document.getElementById('bp-name').value=builderProgram.name;
   document.getElementById('bp-desc').value=builderProgram.desc;
+  document.getElementById('bp-delete-wrap').style.display=progId?'block':'none';
   renderBPStyleTags();
   renderBPColors();
   renderBPBlocks();
   updateBPPreview();
   showScreen('builder-program-screen');
+  // Auto-resize desc if editing existing program
+  const descEl=document.getElementById('bp-desc');
+  setTimeout(()=>{autoResizeDesc(descEl);if(!builderProgram.name)document.getElementById('bp-name').focus();},50);
+}
+
+function deleteProgram(){
+  if(!confirm('Delete "'+builderProgram.name+'"? This cannot be undone.'))return;
+  const customs=getCustomProgs().filter(p=>p.id!==builderProgram.id);
+  saveCustomProgs(customs);
+  showToast('Program deleted');
+  closeProgramBuilder();
 }
 
 function closeProgramBuilder(){showScreen('home-screen');renderHome();}
@@ -885,13 +5640,15 @@ function renderBPStyleTags(){
 }
 
 function updateBPPreview(){
-  const name=document.getElementById('bp-name').value.trim();
-  document.getElementById('bp-preview-name').textContent=name?name.toUpperCase():'PROGRAM NAME';
-  document.getElementById('bp-preview-name').style.color=name?'var(--text)':'var(--muted)';
   document.getElementById('bp-preview-bar').style.background=builderProgram.accentColor||'#e8ff47';
   const blockCount=builderProgram.days?builderProgram.days.length:0;
   const tags=builderProgram.tags||[];
   document.getElementById('bp-preview-meta').textContent=(tags.length?tags.join(' / ')+' · ':'')+blockCount+' block'+(blockCount!==1?'s':'');
+}
+
+function autoResizeDesc(el){
+  el.style.height='auto';
+  el.style.height=el.scrollHeight+'px';
 }
 
 function renderBPColors(){
@@ -955,100 +5712,147 @@ function saveProgram(){
 }
 
 // ─────────────────────────────────────────────
-// BLOCK BUILDER
+// BLOCK BUILDER — INLINE EXPANDABLE
 // ─────────────────────────────────────────────
-function openBlockBuilder(blockIndex){
-  builderBlockIndex=blockIndex;
-  if(blockIndex!==null&&blockIndex>=0){
-    builderBlock=JSON.parse(JSON.stringify(builderProgram.days[blockIndex]));
-    document.getElementById('bb-title').textContent='EDIT BLOCK';
-  } else {
-    builderBlock={id:'block-'+Date.now(),name:'',desc:'',type:'lifting',tags:[],exercises:[],checks:[],isSimple:false};
-    document.getElementById('bb-title').textContent='NEW BLOCK';
-  }
-  document.getElementById('bb-name').value=builderBlock.name;
-  document.getElementById('bb-desc').value=builderBlock.desc||'';
-  renderBBTypeTags();
-  renderBBTags();
-  renderBBExercises();
-  renderBBChecks();
-  updateBBSections();
-  showScreen('builder-block-screen');
-}
+let expandedBlockIndex = null; // which block is currently expanded in the builder
+let pickerTargetBlockIndex = null; // which block the exercise picker is adding to
 
-function closeBlockBuilder(){showScreen('builder-program-screen');renderBPBlocks();}
-
-function renderBBTypeTags(){
-  const el=document.getElementById('bb-type-tags');el.innerHTML='';
-  BLOCK_TYPES.forEach(t=>{
-    const chip=document.createElement('div');
-    chip.className='tag-chip'+(builderBlock.type===t.id?' selected':'');
-    chip.textContent=t.label;
-    chip.onclick=()=>{
-      builderBlock.type=t.id;
-      builderBlock.isSimple=(t.id!=='lifting');
-      renderBBTypeTags();
-      updateBBSections();
-    };
-    el.appendChild(chip);
-  });
-}
-
-function renderBBTags(){
-  const el=document.getElementById('bb-tags');el.innerHTML='';
-  BLOCK_TAGS.forEach(t=>{
-    const chip=document.createElement('div');
-    chip.className='tag-chip'+((builderBlock.tags||[]).includes(t)?' selected':'');
-    chip.textContent=t;
-    chip.onclick=()=>{
-      if(!builderBlock.tags)builderBlock.tags=[];
-      if(builderBlock.tags.includes(t))builderBlock.tags=builderBlock.tags.filter(x=>x!==t);
-      else builderBlock.tags.push(t);
-      renderBBTags();
-    };
-    el.appendChild(chip);
-  });
-}
-
-function updateBBSections(){
-  document.getElementById('bb-lifting-section').style.display=builderBlock.isSimple?'none':'block';
-  document.getElementById('bb-simple-section').style.display=builderBlock.isSimple?'block':'none';
-}
-
-function renderBBExercises(){
-  const el=document.getElementById('bb-exercise-list');el.innerHTML='';
-  if(!(builderBlock.exercises||[]).length){
-    el.innerHTML='<div style="font-family:var(--mono);font-size:11px;color:var(--muted);text-align:center;padding:20px">No exercises yet — add one below.</div>';
+function renderBPBlocks(){
+  const el=document.getElementById('bp-block-list');el.innerHTML='';
+  if(!builderProgram.days.length){
+    el.innerHTML='<div style="font-family:var(--mono);font-size:11px;color:var(--muted);text-align:center;padding:20px 0">No blocks yet — add one below.</div>';
     return;
   }
-  builderBlock.exercises.forEach((ex,i)=>{
-    const item=document.createElement('div');item.className='ex-editor-item';
-    const tagsHtml=(ex.tags||[]).slice(0,5).map(t=>'<span class="ex-tag">'+t+'</span>').join('');
-    const accentColor=getExAccentColor(ex.tags||[]);
-    item.innerHTML=
-      '<div class="ex-editor-top">'+
-        '<div class="ex-editor-accent" style="background:'+accentColor+'"></div>'+
-        '<div class="ex-editor-main">'+
-          '<div class="ex-editor-name">'+ex.name+'</div>'+
-          '<div class="ex-editor-muscle">'+ex.muscleGroup+'</div>'+
-          (tagsHtml?'<div class="ex-editor-tags">'+tagsHtml+'</div>':'')+
-        '</div>'+
-        '<div style="display:flex;align-items:center;padding:0 14px;flex-shrink:0;">'+
-          '<div class="ex-remove-btn" onclick="removeExFromBlock('+i+')">X</div>'+
-        '</div>'+
-      '</div>'+
-      '<div class="ex-editor-controls">'+
-        '<span class="ex-ctrl-label">Sets</span>'+
-        '<input class="ex-ctrl-input sets-input" type="number" inputmode="numeric" value="'+ex.sets+'" min="1" max="20" onchange="updateExField('+i+',\'sets\',parseInt(this.value)||1)">'+
-        '<span class="ex-ctrl-label" style="margin-left:4px">Reps</span>'+
-        '<input class="ex-ctrl-input reps-input" type="text" inputmode="text" value="'+ex.reps+'" placeholder="e.g. 8-12" onchange="updateExField('+i+',\'reps\',this.value)">'+
-        '<input class="ex-note-input" type="text" value="'+(ex.note||'')+'" placeholder="Coaching note (optional)" onchange="updateExField('+i+',\'note\',this.value)">'+
-      '</div>';
-    el.appendChild(item);
+  builderProgram.days.forEach((day,i)=>{
+    el.appendChild(buildBlockTile(day, i));
   });
 }
 
+function buildBlockTile(day, i){
+  const isExpanded = expandedBlockIndex === i;
+  const accentColor = getAccColor(day.type||'lifting');
+  const setCount = day.isSimple
+    ? (day.checks||[]).length+' checks'
+    : (day.exercises||[]).reduce((a,e)=>a+e.sets,0)+' sets';
+  const tagsHtml = (day.tags||[]).map(t=>'<span class="ex-tag">'+t+'</span>').join('');
+
+  const tile = document.createElement('div');
+  tile.className = 'forge-tile'+(isExpanded?' expanded':'');
+  tile.id = 'block-tile-'+i;
+
+  // Header — tapping name/desc edits inline, tapping elsewhere toggles expand
+  tile.innerHTML =
+    '<div class="forge-tile-header" onclick="toggleBlockTile('+i+',event)">'+
+      '<div class="forge-tile-bar" style="background:'+accentColor+'"></div>'+
+      '<div class="forge-tile-main">'+
+        '<div class="forge-tile-name">'+
+          '<input id="bt-name-'+i+'" value="'+escHtml(day.name||'')+'" placeholder="BLOCK NAME"'+
+          ' autocapitalize="characters" autocomplete="off" spellcheck="false"'+
+          ' onclick="event.stopPropagation()"'+
+          ' oninput="updateBlockField('+i+',\'name\',this.value.toUpperCase())">'+
+        '</div>'+
+        '<div class="forge-tile-meta">'+
+          '<input id="bt-desc-'+i+'" value="'+escHtml(day.desc||'')+'" placeholder="Description (optional)"'+
+          ' autocomplete="off" spellcheck="false"'+
+          ' onclick="event.stopPropagation()"'+
+          ' oninput="updateBlockField('+i+',\'desc\',this.value)">'+
+        '</div>'+
+        (tagsHtml?'<div class="forge-tile-tags">'+tagsHtml+'</div>':'')+
+      '</div>'+
+      '<div class="forge-tile-actions">'+
+        '<button class="tile-del-btn" onclick="confirmDeleteBlock('+i+',event)">DEL</button>'+
+        '<div class="tile-chevron">&#9660;</div>'+
+      '</div>'+
+    '</div>'+
+    '<div class="forge-tile-body">'+
+      buildBlockBody(day, i)+
+    '</div>';
+
+  return tile;
+}
+
+function buildBlockBody(day, i){
+  const isSimple = day.isSimple||false;
+
+  // Type selector
+  const typeSel = BLOCK_TYPES.map(t=>
+    '<div class="tag-chip'+(day.type===t.id?' selected':'')+'" onclick="updateBlockType('+i+',\''+t.id+'\')">'+t.label+'</div>'
+  ).join('');
+
+  // Tag selector
+  const tagSel = BLOCK_TAGS.map(t=>
+    '<div class="tag-chip'+((day.tags||[]).includes(t)?' selected':'')+'" onclick="toggleBlockTag('+i+',\''+escHtml(t)+'\')">'+t+'</div>'
+  ).join('');
+
+  let contentHtml = '';
+  if(!isSimple){
+    const exercises = day.exercises||[];
+    const exHtml = exercises.length
+      ? exercises.map((ex,ei)=>buildExTile(ex,i,ei)).join('')
+      : '<div style="font-family:var(--mono);font-size:11px;color:var(--muted);text-align:center;padding:12px 0">No exercises yet.</div>';
+    contentHtml =
+      '<div style="margin-bottom:10px">'+exHtml+'</div>'+
+      '<div class="block-action-row">'+
+        '<button class="block-action-add" onclick="openExPickerFor('+i+');event.stopPropagation()">+ ADD EXERCISE</button>'+
+        '<button class="block-action-close" onclick="collapseBlock('+i+');event.stopPropagation()">COLLAPSE</button>'+
+      '</div>';
+  } else {
+    const checks = day.checks||[];
+    const checkHtml = checks.map((c,ci)=>
+      '<div class="check-edit-row">'+
+        '<input class="check-edit-input" value="'+escHtml(c.label||'')+'" placeholder="Checklist item" oninput="updateCheckItemLabel('+i+','+ci+',this.value)">'+
+        '<button class="check-edit-del" onclick="removeCheckItemInline('+i+','+ci+')">DEL</button>'+
+      '</div>'
+    ).join('');
+    contentHtml =
+      (checkHtml||'<div style="font-family:var(--mono);font-size:11px;color:var(--muted);text-align:center;padding:12px 0">No items yet.</div>')+
+      '<div class="block-action-row" style="margin-top:8px">'+
+        '<button class="block-action-add" onclick="addCheckItemInline('+i+');event.stopPropagation()">+ ADD ITEM</button>'+
+        '<button class="block-action-close" onclick="collapseBlock('+i+');event.stopPropagation()">COLLAPSE</button>'+
+      '</div>';
+  }
+
+  return '<div style="margin-bottom:12px">'+
+    '<div style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Type</div>'+
+    '<div class="tag-row">'+typeSel+'</div>'+
+  '</div>'+
+  '<div style="margin-bottom:12px">'+
+    '<div style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Tags</div>'+
+    '<div class="tag-row">'+tagSel+'</div>'+
+  '</div>'+
+  '<div style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">'+(isSimple?'Checklist':'Exercises')+'</div>'+
+  contentHtml;
+}
+
+function buildExTile(ex, blockIdx, exIdx){
+  const accentColor = getExAccentColor(ex.tags||[]);
+  const tagsHtml = (ex.tags||[]).slice(0,4).map(t=>'<span class="ex-tag">'+t+'</span>').join('');
+  return '<div class="ex-tile">'+
+    '<div class="ex-tile-header">'+
+      '<div class="ex-tile-bar" style="background:'+accentColor+'"></div>'+
+      '<div class="ex-tile-main">'+
+        '<div class="ex-tile-name">'+escHtml(ex.name)+'</div>'+
+        '<div class="ex-tile-muscle">'+escHtml(ex.muscleGroup)+'</div>'+
+        (tagsHtml?'<div class="ex-tile-tags">'+tagsHtml+'</div>':'')+
+      '</div>'+
+      '<div class="ex-tile-remove">'+
+        '<button class="ex-tile-del" onclick="removeExInline('+blockIdx+','+exIdx+')">DEL</button>'+
+      '</div>'+
+    '</div>'+
+    '<div class="ex-tile-controls">'+
+      '<span class="ex-ctrl-label">Sets</span>'+
+      '<input class="ex-ctrl-input sets-input" type="number" inputmode="numeric" value="'+ex.sets+'" onchange="updateExInline('+blockIdx+','+exIdx+',\'sets\',parseInt(this.value)||1)">'+
+      '<span class="ex-ctrl-label">Reps</span>'+
+      '<input class="ex-ctrl-input reps-input" type="text" value="'+escHtml(ex.reps)+'" placeholder="8-12" onchange="updateExInline('+blockIdx+','+exIdx+',\'reps\',this.value)">'+
+      '<input class="ex-note-input" type="text" value="'+escHtml(ex.note||'')+'" placeholder="Note" onchange="updateExInline('+blockIdx+','+exIdx+',\'note\',this.value)">'+
+    '</div>'+
+  '</div>';
+}
+
+function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');}
+
 function getExAccentColor(tags){
+  if(!tags)return'#5a5a70';
   if(tags.includes('Chest')||tags.includes('Push'))return'#ff8c47';
   if(tags.includes('Back')||tags.includes('Pull'))return'#47b4ff';
   if(tags.includes('Legs')||tags.includes('Quads')||tags.includes('Hamstrings'))return'#e8ff47';
@@ -1058,60 +5862,165 @@ function getExAccentColor(tags){
   return'#5a5a70';
 }
 
-function updateExField(i,field,val){
-  if(!builderBlock.exercises[i])return;
-  builderBlock.exercises[i][field]=val;
+function toggleBlockTile(i, e){
+  // Only block toggle if clicking directly into a text input field
+  if(e && e.target && e.target.tagName==='INPUT') return;
+  expandedBlockIndex = expandedBlockIndex===i ? null : i;
+  renderBPBlocks();
+  updateBPPreview();
 }
 
-function removeExFromBlock(i){
-  builderBlock.exercises.splice(i,1);
-  renderBBExercises();
+function collapseBlock(i){
+  expandedBlockIndex = null;
+  renderBPBlocks();
+  updateBPPreview();
 }
 
-function renderBBChecks(){
-  const el=document.getElementById('bb-check-list');el.innerHTML='';
-  (builderBlock.checks||[]).forEach((c,i)=>{
-    const row=document.createElement('div');
-    row.style.cssText='display:flex;gap:8px;margin-bottom:8px;align-items:center;';
-    row.innerHTML=
-      '<input class="field-input" style="flex:1;padding:10px 12px;font-size:13px" value="'+c.label+'" placeholder="Item label" oninput="updateCheckLabel('+i+',this.value)">'+
-      '<div class="icon-btn del" onclick="removeCheckItem('+i+')">X</div>';
-    el.appendChild(row);
+function updateBlockField(i, field, val){
+  if(!builderProgram.days[i])return;
+  builderProgram.days[i][field]=val;
+  updateBPPreview();
+}
+
+function updateBlockType(i, typeId){
+  if(!builderProgram.days[i])return;
+  builderProgram.days[i].type=typeId;
+  builderProgram.days[i].isSimple=(typeId!=='lifting');
+  expandedBlockIndex=i;
+  renderBPBlocks();
+}
+
+function toggleBlockTag(i, tag){
+  if(!builderProgram.days[i])return;
+  const tags=builderProgram.days[i].tags||[];
+  builderProgram.days[i].tags=tags.includes(tag)?tags.filter(t=>t!==tag):[...tags,tag];
+  expandedBlockIndex=i;
+  renderBPBlocks();
+}
+
+function addBlockInline(){
+  const newBlock={id:'block-'+Date.now(),name:'',desc:'',type:'lifting',tags:[],exercises:[],checks:[],isSimple:false};
+  if(!builderProgram.days)builderProgram.days=[];
+  builderProgram.days.push(newBlock);
+  expandedBlockIndex=builderProgram.days.length-1;
+  renderBPBlocks();
+  updateBPPreview();
+  // Scroll to new block and focus name
+  setTimeout(()=>{
+    const tile=document.getElementById('block-tile-'+(builderProgram.days.length-1));
+    if(tile){tile.scrollIntoView({behavior:'smooth',block:'start'});}
+    const nameInput=document.getElementById('bt-name-'+(builderProgram.days.length-1));
+    if(nameInput)nameInput.focus();
+  },100);
+}
+
+function removeBlockInline(i){
+  builderProgram.days.splice(i,1);
+  if(expandedBlockIndex>=builderProgram.days.length)expandedBlockIndex=null;
+  renderBPBlocks();
+  updateBPPreview();
+  showToast('Block removed');
+}
+
+function updateExInline(blockIdx, exIdx, field, val){
+  if(!builderProgram.days[blockIdx]||!builderProgram.days[blockIdx].exercises[exIdx])return;
+  builderProgram.days[blockIdx].exercises[exIdx][field]=val;
+}
+
+function removeExInline(blockIdx, exIdx){
+  if(!builderProgram.days[blockIdx])return;
+  builderProgram.days[blockIdx].exercises.splice(exIdx,1);
+  expandedBlockIndex=blockIdx;
+  renderBPBlocks();
+}
+
+function addCheckItemInline(blockIdx){
+  if(!builderProgram.days[blockIdx])return;
+  if(!builderProgram.days[blockIdx].checks)builderProgram.days[blockIdx].checks=[];
+  builderProgram.days[blockIdx].checks.push({id:'ci-'+Date.now(),label:'',sub:''});
+  expandedBlockIndex=blockIdx;
+  renderBPBlocks();
+}
+
+function updateCheckItemLabel(blockIdx, checkIdx, val){
+  if(!builderProgram.days[blockIdx]||!builderProgram.days[blockIdx].checks[checkIdx])return;
+  builderProgram.days[blockIdx].checks[checkIdx].label=val;
+}
+
+function removeCheckItemInline(blockIdx, checkIdx){
+  if(!builderProgram.days[blockIdx])return;
+  builderProgram.days[blockIdx].checks.splice(checkIdx,1);
+  expandedBlockIndex=blockIdx;
+  renderBPBlocks();
+}
+
+// Exercise picker now targets a specific block by index
+function openExPickerFor(blockIdx){
+  pickerTargetBlockIndex=blockIdx;
+  pickerSelectedTags=[];
+  document.getElementById('picker-search').value='';
+  document.getElementById('new-ex-form').classList.add('hidden');
+  newExTags=[];
+  renderPickerTagFilters();
+  renderPickerList();
+  document.getElementById('ex-picker-sheet').classList.add('open');
+}
+
+function addExToBlock(exTemplate){
+  const idx = pickerTargetBlockIndex;
+  if(idx===null||idx===undefined||!builderProgram||!builderProgram.days||!builderProgram.days[idx]){
+    showToast('Could not add exercise — try again');
+    closeExPicker();
+    return;
+  }
+  if(!builderProgram.days[idx].exercises)builderProgram.days[idx].exercises=[];
+  const ex={...exTemplate,id:exTemplate.id+'-'+Date.now(),sets:exTemplate.sets||3,reps:exTemplate.reps||'8-12'};
+  builderProgram.days[idx].exercises.push(ex);
+  expandedBlockIndex=idx;
+  renderBPBlocks();
+  closeExPicker();
+  showToast(exTemplate.name+' added');
+}
+
+// Confirm dialog (replaces native confirm() which breaks in PWA)
+let confirmCallback=null;
+function showConfirm(title, body, yesLabel, cb){
+  document.getElementById('confirm-title').textContent=title;
+  document.getElementById('confirm-body').textContent=body;
+  document.getElementById('confirm-yes-btn').textContent=yesLabel||'DELETE';
+  confirmCallback=cb;
+  document.getElementById('confirm-sheet').classList.add('open');
+}
+function closeConfirm(){document.getElementById('confirm-sheet').classList.remove('open');confirmCallback=null;}
+function confirmDeleteProgram(){
+  showConfirm('Delete "'+builderProgram.name+'"?','This cannot be undone. All blocks will be lost.','DELETE',()=>{
+    const customs=getCustomProgs().filter(p=>p.id!==builderProgram.id);
+    saveCustomProgs(customs);
+    closeConfirm();
+    showToast('Program deleted');
+    closeProgramBuilder();
   });
 }
-
-function addCheckItem(){
-  if(!builderBlock.checks)builderBlock.checks=[];
-  builderBlock.checks.push({id:'ci-'+Date.now(),label:'',sub:''});
-  renderBBChecks();
+function confirmDeleteBlock(i,e){
+  e.stopPropagation();
+  showConfirm('Remove this block?','All exercises in this block will be lost.','REMOVE',()=>{
+    removeBlockInline(i);
+    closeConfirm();
+  });
 }
+document.getElementById('confirm-yes-btn').onclick=()=>{if(confirmCallback)confirmCallback();};
 
-function updateCheckLabel(i,val){
-  builderBlock.checks[i].label=val;
-}
-
-function removeCheckItem(i){
-  builderBlock.checks.splice(i,1);
-  renderBBChecks();
-}
-
-function saveBlock(){
-  const name=document.getElementById('bb-name').value.trim();
-  if(!name){showToast('Enter a block name');return;}
-  builderBlock.name=name.toUpperCase();
-  builderBlock.desc=document.getElementById('bb-desc').value.trim();
-  if(!builderProgram.days)builderProgram.days=[];
-  if(builderBlockIndex>=0)builderProgram.days[builderBlockIndex]=builderBlock;
-  else builderProgram.days.push(builderBlock);
-  closeBlockBuilder();
-  updateBPPreview();
-  showToast('Block saved');
-}
+// Legacy stubs no longer needed but kept to avoid reference errors
+function openBlockBuilder(i){addBlockInline();}
+function closeBlockBuilder(){}
+function saveBlock(){}
+function openExPicker(){if(pickerTargetBlockIndex!==null)openExPickerFor(pickerTargetBlockIndex);}
+function addCheckItem(){}
 
 // ─────────────────────────────────────────────
 // EXERCISE PICKER
 // ─────────────────────────────────────────────
-function openExPicker(){
+function openExPicker2(){  // renamed — use openExPickerFor(blockIdx) instead
   pickerSelectedTags=[];
   document.getElementById('picker-search').value='';
   document.getElementById('new-ex-form').classList.add('hidden');
@@ -1141,16 +6050,12 @@ function renderPickerTagFilters(){
 }
 
 function getAllExercises(){
-  const builtinExs=[];
-  BUILTIN_PROGRAMS.forEach(p=>p.days.forEach(d=>{
-    if(d.exercises)d.exercises.forEach(e=>{
-      if(!builtinExs.find(x=>x.id===e.id))builtinExs.push(e);
-    });
-  }));
-  const custom=getExLibrary();
-  const merged=[...builtinExs];
-  custom.forEach(e=>{if(!merged.find(x=>x.id===e.id))merged.push(e);});
-  return merged;
+  // Start with the master library
+  const lib = (typeof EXERCISE_LIBRARY !== 'undefined') ? [...EXERCISE_LIBRARY] : [];
+  // Add any user-created custom exercises that aren't already in the library
+  const custom = getExLibrary();
+  custom.forEach(e => { if(!lib.find(x => x.id === e.id)) lib.push(e); });
+  return lib;
 }
 
 function filterPicker(){renderPickerList();}
@@ -1170,18 +6075,25 @@ function renderPickerList(){
   }
   filtered.forEach(e=>{
     const item=document.createElement('div');item.className='picker-item';
-    item.innerHTML='<div><div class="picker-item-name">'+e.name+'</div><div class="picker-item-tags">'+e.muscleGroup+(e.tags&&e.tags.length?' · '+(e.tags.slice(0,3).join(', ')):'')+'</div></div>';
+    const bwBadge=e.bw?'<span style="font-family:var(--mono);font-size:9px;padding:2px 6px;border-radius:4px;background:var(--accent-dim);color:var(--accent);margin-left:6px;letter-spacing:1px">BW</span>':'';
+    item.innerHTML='<div style="flex:1"><div class="picker-item-name">'+e.name+bwBadge+'</div><div class="picker-item-tags">'+e.muscleGroup+(e.tags&&e.tags.length?' · '+(e.tags.slice(0,3).join(', ')):'')+'</div></div>';
     item.onclick=()=>{addExToBlock(e);};
     el.appendChild(item);
   });
 }
 
 function addExToBlock(exTemplate){
-  if(!builderBlock.exercises)builderBlock.exercises=[];
-  // Copy with fresh sets/reps prompt if not set
+  const idx=pickerTargetBlockIndex;
+  if(idx===null||idx===undefined||!builderProgram||!builderProgram.days||!builderProgram.days[idx]){
+    showToast('Could not add exercise — try again');
+    closeExPicker();
+    return;
+  }
+  if(!builderProgram.days[idx].exercises)builderProgram.days[idx].exercises=[];
   const ex={...exTemplate,id:exTemplate.id+'-'+Date.now(),sets:exTemplate.sets||3,reps:exTemplate.reps||'8-12'};
-  builderBlock.exercises.push(ex);
-  renderBBExercises();
+  builderProgram.days[idx].exercises.push(ex);
+  expandedBlockIndex=idx;
+  renderBPBlocks();
   closeExPicker();
   showToast(exTemplate.name+' added');
 }
@@ -1239,7 +6151,7 @@ function startWorkout(e,progId,blockId){
   showScreen('workout-screen');
   clearInterval(timerInterval);
   timerInterval=setInterval(updateTimer,1000);
-  document.getElementById('ai-messages').innerHTML='<div class="ai-msg system-msg">Started: '+prog.name+' — '+block.name+'. Ask me anything.</div>';
+  document.getElementById('ai-messages').innerHTML='<div class="ai-msg system-msg">'+prog.name+' — '+block.name+' is locked in. Ask me anything.</div>';
   aiHistory=[];
 }
 
@@ -1478,38 +6390,136 @@ function deleteHistoryEntry(idx){
 }
 
 // ─────────────────────────────────────────────
-// GOALS
+// GOALS — USER CONFIGURABLE
 // ─────────────────────────────────────────────
 function renderGoals(){
-  const gd=getGoalData(),list=document.getElementById('goals-list');list.innerHTML='';
-  GOALS.forEach(g=>{
-    const cur=parseFloat(gd[g.id]||0);
-    let pct=0;
-    if(g.invert&&cur>0){const worst=660;pct=Math.min(100,Math.max(0,(worst-cur)/(worst-g.target)*100));}
-    else if(!g.invert&&cur>0){pct=Math.min(100,cur/g.target*100);}
-    const displayVal=g.id==='mile'&&cur>0?Math.floor(cur/60)+':'+String(Math.round(cur%60)).padStart(2,'0'):cur>0?(g.id==='muscleup'?'Stage '+cur+'/5':cur+' lbs'):'Not set';
-    const msHtml=g.milestones.map(m=>{
-      const done=g.invert?(cur>0&&cur<=m.v):(cur>=m.v);
-      return '<div class="milestone'+(done?' done':'')+'"><div class="ms-dot"></div><div class="ms-label">'+m.l+'</div></div>';
-    }).join('');
-    const card=document.createElement('div');card.className='goal-card';
+  const goals=getUserGoals();
+  const list=document.getElementById('goals-list');
+  list.innerHTML='';
+  if(!goals.length){
+    list.innerHTML='<div class="empty-state"><div class="em-label">GOALS</div><div>No goals set yet.<br>Tap + Add Goal to get started.</div></div>';
+    return;
+  }
+  goals.forEach((g,i)=>{
+    const cur=parseFloat(g.current||0);
+    const tgt=parseFloat(g.target||0);
+    const pct=tgt>0&&cur>0?Math.min(100,(cur/tgt)*100):0;
+    const displayCur=cur>0?cur+' '+(g.unit||''):'Not set';
+    const card=document.createElement('div');
+    card.className='goal-card';
     card.innerHTML=
-      '<div class="goal-card-header"><div class="goal-card-icon-wrap '+g.colorClass+'"><div class="goal-card-icon-letter '+g.colorClass+'">'+g.letter+'</div></div><div><div class="goal-card-title">'+g.name+'</div><div class="goal-card-sub">Current: '+displayVal+'</div></div></div>'+
-      '<div class="goal-big-bar"><div class="goal-big-fill '+g.colorClass+'" style="width:'+pct.toFixed(1)+'%"></div></div>'+
-      '<div class="goal-pct">'+pct.toFixed(0)+'% to goal</div>'+
-      '<div class="goal-milestones">'+msHtml+'</div>'+
-      '<div class="goal-input-row"><input class="goal-input" id="gi-'+g.id+'" type="number" inputmode="decimal" placeholder="'+g.sub+'"><button class="goal-save-btn" onclick="saveGoal(\''+g.id+'\')">UPDATE</button></div>';
+      '<div class="goal-card-top">'+
+        '<div class="goal-card-bar" style="background:'+(g.color||'#e8ff47')+'"></div>'+
+        '<div class="goal-card-body">'+
+          '<div class="goal-card-name">'+escHtml(g.name)+'</div>'+
+          '<div class="goal-card-sub">Current: '+displayCur+' &nbsp;/&nbsp; Target: '+tgt+' '+(g.unit||'')+'</div>'+
+        '</div>'+
+        '<div class="goal-card-actions">'+
+          '<button class="goal-card-action-btn" onclick="openGoalBuilder('+i+')">EDIT</button>'+
+          '<button class="goal-card-action-btn del" onclick="confirmDeleteGoal('+i+')">DEL</button>'+
+        '</div>'+
+      '</div>'+
+      '<div class="goal-card-progress">'+
+        '<div class="goal-bar"><div class="goal-bar-fill" style="width:'+pct.toFixed(1)+'%;background:'+(g.color||'#e8ff47')+'"></div></div>'+
+        '<div class="goal-pct">'+pct.toFixed(0)+'% to target</div>'+
+      '</div>'+
+      '<div class="goal-update-row">'+
+        '<input class="goal-update-input" id="gu-'+i+'" type="number" inputmode="decimal" placeholder="Update current value ('+( g.unit||'')+ ')">'+
+        '<button class="goal-update-btn" onclick="updateGoalCurrent('+i+')">UPDATE</button>'+
+      '</div>';
     list.appendChild(card);
   });
 }
 
-function saveGoal(id){
-  const v=parseFloat(document.getElementById('gi-'+id).value);
-  if(isNaN(v)||v<=0){showToast('Enter a valid value');return;}
-  const d=getGoalData();d[id]=v;saveGoalData(d);
-  document.getElementById('gi-'+id).value='';
-  renderGoals();showToast('Goal updated');
+function updateGoalCurrent(i){
+  const v=parseFloat(document.getElementById('gu-'+i).value);
+  if(isNaN(v)||v<0){showToast('Enter a valid value');return;}
+  const goals=getUserGoals();
+  goals[i].current=v;
+  saveUserGoals(goals);
+  document.getElementById('gu-'+i).value='';
+  renderGoals();
+  showToast('Goal updated');
 }
+
+// Goal builder
+let goalBuilderIndex=null;
+let gbSelectedColor='#e8ff47';
+
+function openGoalBuilder(idx){
+  goalBuilderIndex=idx;
+  const goals=getUserGoals();
+  const g=idx!==null?goals[idx]:null;
+  document.getElementById('gb-title').textContent=g?'EDIT GOAL':'NEW GOAL';
+  document.getElementById('gb-name').value=g?g.name:'';
+  document.getElementById('gb-current').value=g?(g.current||0):'';
+  document.getElementById('gb-target').value=g?(g.target||''):'';
+  document.getElementById('gb-unit').value=g?(g.unit||''):'';
+  gbSelectedColor=g?(g.color||'#e8ff47'):'#e8ff47';
+  document.getElementById('gb-delete-btn').style.display=g?'block':'none';
+  renderGBColors();
+  document.getElementById('goal-builder-sheet').classList.add('open');
+  setTimeout(()=>document.getElementById('gb-name').focus(),100);
+}
+
+function closeGoalBuilder(){
+  document.getElementById('goal-builder-sheet').classList.remove('open');
+  goalBuilderIndex=null;
+}
+
+function renderGBColors(){
+  const el=document.getElementById('gb-colors');el.innerHTML='';
+  GOAL_COLORS.forEach(c=>{
+    const dot=document.createElement('div');
+    dot.className='gb-color-dot'+(gbSelectedColor===c?' selected':'');
+    dot.style.background=c;
+    dot.onclick=()=>{gbSelectedColor=c;renderGBColors();};
+    el.appendChild(dot);
+  });
+}
+
+function saveGoalFromBuilder(){
+  const name=document.getElementById('gb-name').value.trim();
+  if(!name){showToast('Enter a goal name');return;}
+  const current=parseFloat(document.getElementById('gb-current').value)||0;
+  const target=parseFloat(document.getElementById('gb-target').value)||0;
+  const unit=document.getElementById('gb-unit').value.trim();
+  const goals=getUserGoals();
+  const goal={id:'goal-'+Date.now(),name,current,target,unit,color:gbSelectedColor};
+  if(goalBuilderIndex!==null)goals[goalBuilderIndex]=goal;
+  else goals.push(goal);
+  saveUserGoals(goals);
+  closeGoalBuilder();
+  renderGoals();
+  showToast('Goal saved');
+}
+
+function deleteGoalFromBuilder(){
+  if(goalBuilderIndex===null)return;
+  showConfirm('Delete this goal?','Your progress data will be lost.','DELETE',()=>{
+    const goals=getUserGoals();
+    goals.splice(goalBuilderIndex,1);
+    saveUserGoals(goals);
+    closeGoalBuilder();
+    closeConfirm();
+    renderGoals();
+    showToast('Goal deleted');
+  });
+}
+
+function confirmDeleteGoal(i){
+  showConfirm('Delete this goal?','Your progress data will be lost.','DELETE',()=>{
+    const goals=getUserGoals();
+    goals.splice(i,1);
+    saveUserGoals(goals);
+    closeConfirm();
+    renderGoals();
+    showToast('Goal deleted');
+  });
+}
+
+// Keep saveGoal as stub so old references don't break
+function saveGoal(){}
 
 // ─────────────────────────────────────────────
 // NAV + UTILS
@@ -1533,7 +6543,17 @@ function showToast(msg){
 // AI
 // ─────────────────────────────────────────────
 let aiHistory=[],aiTyping=false;
-function openAI(){document.getElementById('ai-sheet').classList.add('open');document.getElementById('ai-input').focus();}
+function openAI(){
+  // If no active workout, reset to generic greeting
+  if(!currentWorkout){
+    const msgs=document.getElementById('ai-messages');
+    if(!msgs.querySelector('.ai-msg.user')){
+      msgs.innerHTML='<div class="ai-msg system-msg">Hey, I\'m Smith — your FORGE coach. Ask me anything about training, form, programming, or your goals.</div>';
+    }
+  }
+  document.getElementById('ai-sheet').classList.add('open');
+  document.getElementById('ai-input').focus();
+}
 function closeAI(){document.getElementById('ai-sheet').classList.remove('open');}
 function askQuick(q){document.getElementById('ai-input').value=q;sendAI();}
 
@@ -1545,11 +6565,11 @@ async function sendAI(){
   aiTyping=true;document.getElementById('ai-send-btn').disabled=true;
   const typing=addTyping();
   try{
-    const gd=getGoalData();
-    const benchVal=gd.bench?gd.bench+' lbs estimated 1RM':'not set';
-    const muVal=gd.muscleup?'Stage '+gd.muscleup+'/5':'not set';
-    const mileVal=gd.mile?Math.floor(gd.mile/60)+':'+String(Math.round(gd.mile%60)).padStart(2,'0'):'not set';
-    const system='You are FORGE AI — a direct, knowledgeable personal training coach. No fluff. Gym environment.\n\nUSER GOALS:\n1. 315 lb bench — current: '+benchVal+'\n2. First muscle up — current: '+muVal+'\n3. 6-minute mile — current: '+mileVal+'\n\nCURRENT WORKOUT:\n'+buildContext()+'\n\nBe specific. Reference actual logged numbers. Keep responses under 150 words unless a detailed plan is requested.';
+    const goals=getUserGoals();
+    const goalsText=goals.length
+      ? goals.map((g,i)=>(i+1)+'. '+g.name+' — target: '+g.target+' '+(g.unit||'')+', current: '+(g.current>0?g.current+' '+(g.unit||''):'not set')).join('\n')
+      : 'No goals set.';
+    const system='You are Smith — FORGE\'s built-in training coach. Direct, knowledgeable, no fluff. Gym environment.\n\nUSER GOALS:\n'+goalsText+'\n\nCURRENT WORKOUT:\n'+buildContext()+'\n\nBe specific. Reference actual logged numbers. Keep responses under 150 words unless a detailed plan is requested.';
     const res=await fetch('https://forge-ai.connormortoncbtx.workers.dev',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system,messages:aiHistory})});
     const data=await res.json();typing.remove();
     if(!res.ok){

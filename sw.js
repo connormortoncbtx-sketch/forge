@@ -1,9 +1,4 @@
-const CACHE = 'forge-v3';
-const ASSETS = [
-  'workout-tracker.html',
-  'manifest.json',
-  'https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap'
-];
+const CACHE = 'forge-v5';
 
 self.addEventListener('install', e => {
   e.waitUntil(
@@ -26,14 +21,16 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
-  // Never cache API calls
-  if (e.request.url.includes('anthropic.com') || e.request.url.includes('fonts.g')) {
-    e.respondWith(fetch(e.request).catch(() => new Response('', {status: 503})));
+  // Never cache — always live
+  if (e.request.url.includes('anthropic.com') ||
+      e.request.url.includes('workers.dev') ||
+      e.request.url.includes('fonts.g')) {
+    e.respondWith(fetch(e.request).catch(() => new Response('', { status: 503 })));
     return;
   }
 
-  // Network first for the main HTML file so updates always come through
-  if (e.request.url.includes('workout-tracker.html')) {
+  // Network first for main HTML — updates always come through immediately
+  if (e.request.url.includes('workout-tracker.html') || e.request.mode === 'navigate') {
     e.respondWith(
       fetch(e.request)
         .then(response => {
@@ -55,9 +52,7 @@ self.addEventListener('fetch', e => {
         const clone = response.clone();
         caches.open(CACHE).then(cache => cache.put(e.request, clone));
         return response;
-      }).catch(() => {
-        if (e.request.mode === 'navigate') return caches.match('workout-tracker.html');
-      });
+      }).catch(() => caches.match('workout-tracker.html'));
     })
   );
 });
