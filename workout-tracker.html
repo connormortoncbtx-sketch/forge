@@ -1550,7 +1550,7 @@ async function sendAI(){
     const muVal=gd.muscleup?'Stage '+gd.muscleup+'/5':'not set';
     const mileVal=gd.mile?Math.floor(gd.mile/60)+':'+String(Math.round(gd.mile%60)).padStart(2,'0'):'not set';
     const system='You are FORGE AI — a direct, knowledgeable personal training coach. No fluff. Gym environment.\n\nUSER GOALS:\n1. 315 lb bench — current: '+benchVal+'\n2. First muscle up — current: '+muVal+'\n3. 6-minute mile — current: '+mileVal+'\n\nCURRENT WORKOUT:\n'+buildContext()+'\n\nBe specific. Reference actual logged numbers. Keep responses under 150 words unless a detailed plan is requested.';
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':'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','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system,messages:aiHistory})});
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':'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','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system,messages:aiHistory})});
     const data=await res.json();typing.remove();
     if(!res.ok){
       const errMsg=data?.error?.message||'API error '+res.status;
