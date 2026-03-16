@@ -1,4 +1,4 @@
-const CACHE = 'forge-v1';
+const CACHE = 'forge-v3';
 const ASSETS = [
   'workout-tracker.html',
   'manifest.json',
@@ -8,8 +8,8 @@ const ASSETS = [
 self.addEventListener('install', e => {
   e.waitUntil(
     caches.open(CACHE).then(cache => {
-      // Cache local assets immediately, attempt remote fonts
-      cache.addAll(['workout-tracker.html', 'manifest.json']).catch(() => {});
+      cache.add('workout-tracker.html').catch(() => {});
+      cache.add('manifest.json').catch(() => {});
       cache.add('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap').catch(() => {});
     })
   );
@@ -26,13 +26,27 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
-  // For Anthropic API calls — always go to network, never cache
-  if (e.request.url.includes('anthropic.com')) {
-    e.respondWith(fetch(e.request));
+  // Never cache API calls
+  if (e.request.url.includes('anthropic.com') || e.request.url.includes('fonts.g')) {
+    e.respondWith(fetch(e.request).catch(() => new Response('', {status: 503})));
     return;
   }
 
-  // For everything else — cache first, fall back to network
+  // Network first for the main HTML file so updates always come through
+  if (e.request.url.includes('workout-tracker.html')) {
+    e.respondWith(
+      fetch(e.request)
+        .then(response => {
+          const clone = response.clone();
+          caches.open(CACHE).then(cache => cache.put(e.request, clone));
+          return response;
+        })
+        .catch(() => caches.match(e.request))
+    );
+    return;
+  }
+
+  // Cache first for everything else
   e.respondWith(
     caches.match(e.request).then(cached => {
       if (cached) return cached;
@@ -42,10 +56,7 @@ self.addEventListener('fetch', e => {
         caches.open(CACHE).then(cache => cache.put(e.request, clone));
         return response;
       }).catch(() => {
-        // If offline and not cached, return the main app for navigation requests
-        if (e.request.mode === 'navigate') {
-          return caches.match('workout-tracker.html');
-        }
+        if (e.request.mode === 'navigate') return caches.match('workout-tracker.html');
       });
     })
   );
