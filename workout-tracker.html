@@ -2342,11 +2342,11 @@ function addTyping(){
 }
 
 // ─────────────────────────────────────────────
-// DRAG TO REORDER — long press flows into drag
+// DRAG TO REORDER — single continuous touch gesture
 // ─────────────────────────────────────────────
 let drag=null;
 let dragPressTimer=null;
-let dragPressState=null; // holds touch info during press window
+let dragPressState=null;
 
 function attachDragHandles(){
   document.querySelectorAll('.drag-handle').forEach(el=>{
@@ -2361,96 +2361,197 @@ function onHandleTouchStart(e){
   e.stopPropagation();
   const handle=e.currentTarget;
   const touch=e.touches[0];
+  const type=handle.dataset.dtype;
+  const idx=parseInt(handle.dataset.didx);
+  const blockIdx=handle.dataset.dblock!==undefined?parseInt(handle.dataset.dblock):null;
 
-  // Store everything needed to start drag later
   dragPressState={
-    handle,
-    type:handle.dataset.dtype,
-    idx:parseInt(handle.dataset.didx),
-    blockIdx:handle.dataset.dblock!==undefined?parseInt(handle.dataset.dblock):null,
+    handle,type,idx,blockIdx,
     startX:touch.clientX,
     startY:touch.clientY,
-    touchId:touch.identifier,
+    activated:false,
   };
 
-  // Visual: handle scales up to signal "getting ready"
-  handle.style.transition='transform 0.28s ease';
-  handle.style.transform='scale(1.4)';
+  // Scale handle up — visual "warming up" cue
+  handle.style.transition='transform 0.25s ease,opacity 0.25s';
+  handle.style.transform='scale(1.5)';
   handle.style.opacity='1';
 
-  // While waiting for long press, track finger movement to cancel if scrolling
-  document.addEventListener('touchmove',onPressWatchMove,{passive:false});
-  document.addEventListener('touchend',onPressWatchEnd,{passive:false});
-  document.addEventListener('touchcancel',onPressWatchEnd,{passive:false});
+  // Register move/end ON THIS SAME TOUCH right now so iOS routes events to us
+  document.addEventListener('touchmove',onPressTouchMove,{passive:false});
+  document.addEventListener('touchend',onPressTouchEnd,{passive:false});
+  document.addEventListener('touchcancel',onPressTouchEnd,{passive:false});
 
+  // After 250ms with no significant movement, activate drag
   dragPressTimer=setTimeout(()=>{
-    // Long press fired — clean up press watchers
-    document.removeEventListener('touchmove',onPressWatchMove);
-    document.removeEventListener('touchend',onPressWatchEnd);
-    document.removeEventListener('touchcancel',onPressWatchEnd);
-
-    if(!dragPressState)return;
-    const {type,idx,blockIdx,startX,startY}=dragPressState;
-    dragPressState=null;
-
-    // Reset handle visual
+    if(!dragPressState||dragPressState.activated)return;
+    dragPressState.activated=true;
+    if(navigator.vibrate)navigator.vibrate(25);
     handle.style.transform='scale(1)';
     handle.style.transition='transform 0.1s';
-    setTimeout(()=>{handle.style.transform='';handle.style.transition='';handle.style.opacity='';},100);
-
-    if(navigator.vibrate)navigator.vibrate(25);
-
-    // Now initiate drag — finger is STILL down, touchmove/touchend will drive it
-    if(type==='block'&&expandedBlockIndex===idx){
-      expandedBlockIndex=null;
-      renderBPBlocks();
-      requestAnimationFrame(()=>{
-        const tile=document.getElementById('block-tile-'+idx);
-        if(tile)initDrag(startX,startY,type,idx,blockIdx,tile);
-      });
-    } else {
-      const srcEl=type==='block'
-        ?document.getElementById('block-tile-'+idx)
-        :document.querySelector(`#ex-list-${blockIdx} .ex-tile:nth-child(${idx+1})`);
-      if(srcEl)initDrag(startX,startY,type,idx,blockIdx,srcEl);
-    }
-  },280);
+    activateDrag();
+  },250);
 }
 
-function onPressWatchMove(e){
+function onPressTouchMove(e){
+  e.preventDefault();
   if(!dragPressState)return;
-  const touch=Array.from(e.touches).find(t=>t.identifier===dragPressState.touchId);
-  if(!touch)return;
-  const dx=Math.abs(touch.clientX-dragPressState.startX);
-  const dy=Math.abs(touch.clientY-dragPressState.startY);
-  if(dx>8||dy>8){
-    // Finger moved too much — cancel long press, let scroll happen
-    clearTimeout(dragPressTimer);
-    dragPressTimer=null;
-    document.removeEventListener('touchmove',onPressWatchMove);
-    document.removeEventListener('touchend',onPressWatchEnd);
-    document.removeEventListener('touchcancel',onPressWatchEnd);
-    if(dragPressState){
-      const h=dragPressState.handle;
-      h.style.transform='';h.style.transition='';h.style.opacity='';
-      dragPressState=null;
-    }
+  const touch=e.touches[0];
+  const dx=touch.clientX-dragPressState.startX;
+  const dy=touch.clientY-dragPressState.startY;
+
+  if(dragPressState.activated&&drag){
+    // Already dragging — move the clone
+    drag.clone.style.top=(drag.cloneStartTop+dy)+'px';
+    movePlaceholder(drag.cloneStartTop+dy);
+    return;
+  }
+
+  // Not yet activated — if moved too much vertically before hold, cancel
+  if(!dragPressState.activated&&(Math.abs(dx)>12||Math.abs(dy)>12)){
+    cancelPress();
   }
 }
 
-function onPressWatchEnd(e){
-  // Finger lifted before long press — cancel
+function onPressTouchEnd(e){
+  e.preventDefault();
+  if(dragPressState&&dragPressState.activated&&drag){
+    // Commit the drag
+    commitDrag();
+  } else {
+    cancelPress();
+  }
+}
+
+function cancelPress(){
   clearTimeout(dragPressTimer);
   dragPressTimer=null;
-  document.removeEventListener('touchmove',onPressWatchMove);
-  document.removeEventListener('touchend',onPressWatchEnd);
-  document.removeEventListener('touchcancel',onPressWatchEnd);
+  document.removeEventListener('touchmove',onPressTouchMove);
+  document.removeEventListener('touchend',onPressTouchEnd);
+  document.removeEventListener('touchcancel',onPressTouchEnd);
+  if(dragPressState){
+    const h=dragPressState.handle;
+    h.style.transform='';
+    h.style.transition='';
+    h.style.opacity='';
+    dragPressState=null;
+  }
+}
+
+function activateDrag(){
+  if(!dragPressState)return;
+  const {type,idx,blockIdx,startX,startY}=dragPressState;
+
+  const doInit=(srcEl)=>{
+    if(!srcEl)return;
+    const listEl=type==='block'
+      ?document.getElementById('bp-block-list')
+      :document.getElementById('ex-list-'+blockIdx);
+    if(!listEl)return;
+
+    const rect=srcEl.getBoundingClientRect();
+    const placeholder=document.createElement('div');
+    placeholder.dataset.placeholder='1';
+    placeholder.style.cssText=`height:${rect.height}px;margin-bottom:10px;border-radius:12px;background:rgba(232,255,71,0.06);border:1px dashed rgba(232,255,71,0.35);box-sizing:border-box;flex-shrink:0;pointer-events:none;`;
+    listEl.insertBefore(placeholder,srcEl);
+    srcEl.remove();
+
+    const clone=srcEl.cloneNode(true);
+    clone.style.cssText=`position:fixed;left:${rect.left}px;top:${rect.top}px;width:${rect.width}px;z-index:9999;pointer-events:none;box-shadow:0 16px 48px rgba(0,0,0,0.7);border-radius:12px;transform:scale(1.03);opacity:0.97;`;
+    document.body.appendChild(clone);
+
+    const selector=type==='block'?'.forge-tile':'.ex-tile';
+    drag={type,idx,blockIdx,listEl,srcEl,clone,placeholder,selector,
+      startY,cloneStartTop:rect.top};
+  };
+
+  if(type==='block'&&expandedBlockIndex===idx){
+    expandedBlockIndex=null;
+    renderBPBlocks();
+    requestAnimationFrame(()=>{
+      doInit(document.getElementById('block-tile-'+idx));
+    });
+  } else {
+    const srcEl=type==='block'
+      ?document.getElementById('block-tile-'+idx)
+      :document.querySelector(`#ex-list-${blockIdx} .ex-tile:nth-child(${idx+1})`);
+    doInit(srcEl);
+  }
+}
+
+function movePlaceholder(cloneTop){
+  if(!drag)return;
+  const cloneMidY=cloneTop+drag.clone.offsetHeight/2;
+  const siblings=Array.from(drag.listEl.children).filter(el=>
+    el===drag.placeholder||el.matches(drag.selector)
+  );
+  let insertBefore=null;
+  for(const el of siblings){
+    const r=el.getBoundingClientRect();
+    if(cloneMidY<r.top+r.height/2){insertBefore=el;break;}
+  }
+  if(drag.placeholder.nextSibling!==insertBefore){
+    drag.listEl.insertBefore(drag.placeholder,insertBefore||null);
+  }
+}
+
+function commitDrag(){
+  clearTimeout(dragPressTimer);
+  dragPressTimer=null;
+  document.removeEventListener('touchmove',onPressTouchMove);
+  document.removeEventListener('touchend',onPressTouchEnd);
+  document.removeEventListener('touchcancel',onPressTouchEnd);
+
   if(dragPressState){
     const h=dragPressState.handle;
     h.style.transform='';h.style.transition='';h.style.opacity='';
     dragPressState=null;
   }
+
+  if(!drag)return;
+  const {type,blockIdx,listEl,srcEl,clone,placeholder,selector}=drag;
+  drag=null;
+
+  listEl.insertBefore(srcEl,placeholder);
+  placeholder.remove();
+  clone.remove();
+
+  const newOrder=Array.from(listEl.querySelectorAll(':scope > '+selector));
+  if(type==='block'){
+    const reordered=newOrder.map(el=>{
+      const i=parseInt(el.id.replace('block-tile-',''));
+      return builderProgram.days[i];
+    }).filter(Boolean);
+    builderProgram.days=reordered;
+    expandedBlockIndex=null;
+    renderBPBlocks();
+    updateBPPreview();
+  } else {
+    const exercises=builderProgram.days[blockIdx].exercises;
+    const reordered=newOrder.map(el=>{
+      const i=parseInt(el.dataset.exidx);
+      return exercises[i];
+    }).filter(Boolean);
+    builderProgram.days[blockIdx].exercises=reordered;
+    expandedBlockIndex=blockIdx;
+    renderBPBlocks();
+  }
 }
+
+function cancelDrag(){
+  cancelPress();
+  if(drag){
+    drag.listEl.insertBefore(drag.srcEl,drag.placeholder);
+    drag.placeholder.remove();
+    drag.clone.remove();
+    drag=null;
+  }
+}
+
+// Stubs
+function startDragBlock(){}
+function startDragEx(){}
+function initDrag(){}
 
 function initDrag(touchX,touchY,type,idx,blockIdx,srcEl){
   // Safety: clean up any orphaned drag
@@ -2484,82 +2585,6 @@ function initDrag(touchX,touchY,type,idx,blockIdx,srcEl){
   document.addEventListener('touchend',onTouchEnd,{passive:false});
   document.addEventListener('touchcancel',cancelDrag,{passive:false});
 }
-
-function onTouchMove(e){
-  e.preventDefault();
-  if(!drag)return;
-  const t=e.touches[0];
-  const dy=t.clientY-drag.startY;
-  drag.clone.style.top=(drag.cloneStartTop+dy)+'px';
-
-  // Move placeholder to target slot
-  const cloneMidY=drag.cloneStartTop+dy+drag.clone.offsetHeight/2;
-  const siblings=Array.from(drag.listEl.children).filter(el=>
-    el===drag.placeholder||el.matches(drag.selector)
-  );
-  let insertBefore=null;
-  for(const el of siblings){
-    const r=el.getBoundingClientRect();
-    if(cloneMidY<r.top+r.height/2){insertBefore=el;break;}
-  }
-  if(drag.placeholder.nextSibling!==insertBefore){
-    drag.listEl.insertBefore(drag.placeholder,insertBefore||null);
-  }
-}
-
-function onTouchEnd(e){
-  e.preventDefault();
-  if(!drag)return;
-  const {type,blockIdx,listEl,srcEl,clone,placeholder,selector}=drag;
-  drag=null;
-
-  document.removeEventListener('touchmove',onTouchMove);
-  document.removeEventListener('touchend',onTouchEnd);
-  document.removeEventListener('touchcancel',cancelDrag);
-
-  // Slot src back where placeholder is
-  listEl.insertBefore(srcEl,placeholder);
-  placeholder.remove();
-  clone.remove();
-
-  // Commit new order to data
-  const newOrder=Array.from(listEl.querySelectorAll(':scope > '+selector));
-  if(type==='block'){
-    const reordered=newOrder.map(el=>{
-      const i=parseInt(el.id.replace('block-tile-',''));
-      return builderProgram.days[i];
-    }).filter(Boolean);
-    builderProgram.days=reordered;
-    expandedBlockIndex=null;
-    renderBPBlocks();
-    updateBPPreview();
-  } else {
-    const exercises=builderProgram.days[blockIdx].exercises;
-    const reordered=newOrder.map(el=>{
-      const i=parseInt(el.dataset.exidx);
-      return exercises[i];
-    }).filter(Boolean);
-    builderProgram.days[blockIdx].exercises=reordered;
-    expandedBlockIndex=blockIdx;
-    renderBPBlocks();
-  }
-}
-
-function cancelDrag(){
-  document.removeEventListener('touchmove',onTouchMove);
-  document.removeEventListener('touchend',onTouchEnd);
-  document.removeEventListener('touchcancel',cancelDrag);
-  if(!drag)return;
-  // Restore original state
-  drag.listEl.insertBefore(drag.srcEl,drag.placeholder);
-  drag.placeholder.remove();
-  drag.clone.remove();
-  drag=null;
-}
-
-// Legacy stubs — no longer used but keep so inline handlers don't throw
-function startDragBlock(){}
-function startDragEx(){}
 
 // ─────────────────────────────────────────────
 // INIT
