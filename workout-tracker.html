@@ -84,7 +84,7 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
 .block-action-add:active{opacity:0.85;}
 .block-action-close{flex:1;padding:13px;background:var(--card);border:1px solid var(--accent);border-radius:var(--radius);font-family:var(--display);font-size:17px;letter-spacing:1px;color:var(--accent);cursor:pointer;text-transform:uppercase;}
 .block-action-close:active{background:var(--accent-dim);}
-.save-bar{position:fixed;bottom:0;left:0;right:0;padding:14px 24px 30px;background:linear-gradient(0deg,var(--bg) 70%,transparent);z-index:25;}
+.save-bar{position:fixed;bottom:0;left:0;right:0;padding:14px 24px calc(30px + env(safe-area-inset-bottom,0px));background:linear-gradient(0deg,var(--bg) 80%,transparent);z-index:120;}
 .save-btn{width:100%;background:var(--accent);color:var(--accent-text);border:none;border-radius:var(--radius);padding:16px;font-family:var(--display);font-size:22px;letter-spacing:2px;cursor:pointer;}
 .save-btn:active{opacity:0.85;}
 .destructive-btn{width:100%;background:transparent;border:1px solid var(--red);color:var(--red);border-radius:var(--radius);padding:14px;font-family:var(--mono);font-size:12px;letter-spacing:1px;cursor:pointer;margin-top:10px;}
@@ -160,7 +160,7 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
 .forge-tile-bar{width:3px;flex-shrink:0;}
 .forge-tile-main{flex:1;padding:14px 14px 12px;min-width:0;}
 .forge-tile-name{font-family:var(--display);font-size:20px;letter-spacing:1px;line-height:1;}
-.forge-tile-name input{font-family:var(--display);font-size:20px;letter-spacing:1px;background:transparent;border:none;outline:none;color:var(--text);width:auto;max-width:100%;padding:0;caret-color:var(--accent);display:block;}
+.forge-tile-name input{font-family:var(--display);font-size:20px;letter-spacing:1px;background:transparent;border:none;outline:none;color:var(--text);width:auto;max-width:100%;padding:0 4px 0 0;caret-color:var(--accent);display:block;}
 .forge-tile-name input::placeholder{color:var(--muted);}
 .forge-tile-meta{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:3px;}
 .forge-tile-meta input{font-family:var(--mono);font-size:10px;color:var(--text-dim);background:transparent;border:none;outline:none;width:auto;max-width:100%;padding:0;caret-color:var(--accent);display:block;}
@@ -247,6 +247,8 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
 .new-ex-row input::placeholder{color:var(--muted);}
 .new-ex-confirm{width:100%;background:var(--accent);color:var(--accent-text);border:none;border-radius:8px;padding:12px;font-family:var(--display);font-size:18px;letter-spacing:1px;cursor:pointer;margin-top:4px;}
 .new-ex-confirm:active{opacity:0.85;}
+.nef-type-pill{font-family:var(--mono);font-size:10px;padding:5px 12px;border-radius:20px;border:1px solid var(--border);color:var(--muted);cursor:pointer;letter-spacing:1px;}
+.nef-type-pill.active{background:var(--accent-dim);border-color:var(--accent);color:var(--accent);}
 
 /* ── WORKOUT ── */
 #workout-screen{background:var(--bg);}
@@ -494,7 +496,7 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
     <div>
       <div class="logo">FORGE</div>
       <div class="home-subtitle">Training System</div>
-      <div style="font-family:var(--mono);font-size:9px;color:rgba(232,255,71,0.35);letter-spacing:1px;margin-top:4px;">v0.45</div>
+      <div style="font-family:var(--mono);font-size:9px;color:rgba(232,255,71,0.35);letter-spacing:1px;margin-top:4px;">v0.48</div>
     </div>
     <button onclick="openSettings()" style="background:var(--card);border:1px solid var(--border);border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;cursor:pointer;margin-top:4px;flex-shrink:0;color:var(--muted);font-size:17px;">⚙</button>
   </div>
@@ -713,32 +715,38 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
     <div class="picker-scroll" id="picker-scroll">
       <div id="picker-list"></div>
     </div>
-    <!-- Pinned bottom: form expands above button -->
+    <!-- Always-visible create button -->
+    <div id="picker-new-btn" onclick="toggleNewExForm()" style="flex-shrink:0;margin:0;padding:12px 20px;border-top:1px solid var(--border);background:var(--surface);font-family:var(--display);font-size:16px;letter-spacing:1px;color:var(--accent);cursor:pointer;text-align:center;">+ CREATE NEW EXERCISE</div>
+    <!-- Expandable form above button -->
     <div class="picker-bottom" id="picker-bottom">
       <div class="new-ex-form hidden" id="new-ex-form">
         <div class="new-ex-field">
           <div class="new-ex-field-label">Exercise Name</div>
-          <input id="nef-name" placeholder="e.g. Incline Cable Fly">
+          <input id="nef-name" placeholder="e.g. Easy Run (Zone 2)">
         </div>
         <div class="new-ex-field">
           <div class="new-ex-field-label">Muscle Group</div>
-          <input id="nef-muscle" placeholder="e.g. Chest">
+          <input id="nef-muscle" placeholder="e.g. Cardio">
         </div>
-        <div class="new-ex-row">
-          <div style="flex:1;min-width:0">
-            <div class="new-ex-field-label" style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px">Sets</div>
-            <input id="nef-sets" type="number" inputmode="numeric" placeholder="3">
+        <!-- Log type selector -->
+        <div class="new-ex-field">
+          <div class="new-ex-field-label">Type</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;" id="nef-type-pills">
+            <div class="nef-type-pill active" data-type="lifting" onclick="setNefType('lifting',this)">Lifting</div>
+            <div class="nef-type-pill" data-type="bodyweight" onclick="setNefType('bodyweight',this)">Bodyweight</div>
+            <div class="nef-type-pill" data-type="cardio" onclick="setNefType('cardio',this)">Cardio</div>
+            <div class="nef-type-pill" data-type="hiit" onclick="setNefType('hiit',this)">HIIT</div>
+            <div class="nef-type-pill" data-type="timed" onclick="setNefType('timed',this)">Timed</div>
           </div>
-          <div style="flex:2;min-width:0">
-            <div class="new-ex-field-label" style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px">Reps</div>
-            <input id="nef-reps" placeholder="e.g. 8-12">
-          </div>
+        </div>
+        <!-- Dynamic fields per type -->
+        <div id="nef-fields">
+          <!-- Populated by setNefType -->
         </div>
         <button class="new-ex-confirm" onclick="createAndAddExercise()">+ ADD EXERCISE</button>
         <div style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:14px;margin-bottom:6px">Tags (optional)</div>
         <div class="tag-row" id="nef-tags" style="margin-bottom:4px"></div>
       </div>
-      <div class="picker-new-btn" id="picker-new-btn" onclick="toggleNewExForm()">+ Create New Exercise</div>
     </div>
   </div>
 </div>
@@ -1687,6 +1695,7 @@ function openExPickerFor(blockIdx){
   pickerActiveTag=null;
   document.getElementById('picker-search').value='';
   document.getElementById('new-ex-form').classList.add('hidden');
+  document.getElementById('picker-new-btn').textContent='+ CREATE NEW EXERCISE';
   document.getElementById('picker-new-btn').style.display='block';
   document.getElementById('picker-scroll').style.display='';
   newExTags=[];
@@ -1851,16 +1860,81 @@ function addExToBlock(exTemplate){
   showToast(exTemplate.name+' added');
 }
 
+let nefType='lifting';
+
+function setNefType(type, el){
+  nefType=type;
+  document.querySelectorAll('.nef-type-pill').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  renderNefFields();
+}
+
+function renderNefFields(){
+  const el=document.getElementById('nef-fields');
+  if(!el)return;
+  if(nefType==='lifting'){
+    el.innerHTML=
+      '<div class="new-ex-row" style="margin-bottom:10px;">'+
+        '<div style="flex:1;min-width:0"><div class="new-ex-field-label" style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px">Sets</div>'+
+        '<input id="nef-sets" class="new-ex-row-input" type="number" inputmode="numeric" placeholder="3"></div>'+
+        '<div style="flex:2;min-width:0"><div class="new-ex-field-label" style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px">Reps</div>'+
+        '<input id="nef-reps" class="new-ex-row-input" placeholder="8-12"></div>'+
+      '</div>';
+  } else if(nefType==='bodyweight'){
+    el.innerHTML=
+      '<div class="new-ex-row" style="margin-bottom:10px;">'+
+        '<div style="flex:1;min-width:0"><div class="new-ex-field-label" style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px">Sets</div>'+
+        '<input id="nef-sets" class="new-ex-row-input" type="number" inputmode="numeric" placeholder="3"></div>'+
+        '<div style="flex:2;min-width:0"><div class="new-ex-field-label" style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px">Reps</div>'+
+        '<input id="nef-reps" class="new-ex-row-input" placeholder="10"></div>'+
+      '</div>';
+  } else if(nefType==='cardio'){
+    el.innerHTML=
+      '<div class="new-ex-row" style="margin-bottom:10px;">'+
+        '<div style="flex:1;min-width:0"><div class="new-ex-field-label" style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px">Efforts</div>'+
+        '<input id="nef-sets" class="new-ex-row-input" type="number" inputmode="numeric" placeholder="1"></div>'+
+        '<div style="flex:2;min-width:0"><div class="new-ex-field-label" style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px">Target Duration</div>'+
+        '<input id="nef-reps" class="new-ex-row-input" placeholder="30 min"></div>'+
+      '</div>';
+  } else if(nefType==='hiit'){
+    el.innerHTML=
+      '<div class="new-ex-row" style="margin-bottom:10px;">'+
+        '<div style="flex:1;min-width:0"><div class="new-ex-field-label" style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px">Rounds</div>'+
+        '<input id="nef-sets" class="new-ex-row-input" type="number" inputmode="numeric" placeholder="10"></div>'+
+        '<div style="flex:2;min-width:0"><div class="new-ex-field-label" style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px">Work Interval</div>'+
+        '<input id="nef-reps" class="new-ex-row-input" placeholder="40s on / 20s off"></div>'+
+      '</div>';
+  } else if(nefType==='timed'){
+    el.innerHTML=
+      '<div class="new-ex-row" style="margin-bottom:10px;">'+
+        '<div style="flex:1;min-width:0"><div class="new-ex-field-label" style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px">Sets</div>'+
+        '<input id="nef-sets" class="new-ex-row-input" type="number" inputmode="numeric" placeholder="3"></div>'+
+        '<div style="flex:2;min-width:0"><div class="new-ex-field-label" style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px">Hold Duration</div>'+
+        '<input id="nef-reps" class="new-ex-row-input" placeholder="30s"></div>'+
+      '</div>';
+  }
+  // Apply shared row input styles
+  el.querySelectorAll('.new-ex-row-input').forEach(i=>{
+    i.style.cssText='width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--sans);font-size:14px;padding:10px 12px;outline:none;box-sizing:border-box;';
+    i.addEventListener('focus',()=>i.style.borderColor='var(--accent)');
+    i.addEventListener('blur',()=>i.style.borderColor='var(--border)');
+  });
+}
+
 function toggleNewExForm(){
   const form=document.getElementById('new-ex-form');
   const btn=document.getElementById('picker-new-btn');
   const list=document.getElementById('picker-scroll');
   form.classList.toggle('hidden');
   const isOpen=!form.classList.contains('hidden');
-  // Hide list and button while creating — ADD EXERCISE is the only action visible
-  btn.style.display=isOpen?'none':'block';
+  btn.textContent=isOpen?'✕ CANCEL':'+ CREATE NEW EXERCISE';
   list.style.display=isOpen?'none':'';
   if(isOpen){
+    nefType='lifting';
+    document.querySelectorAll('.nef-type-pill').forEach(p=>p.classList.remove('active'));
+    const defaultPill=document.querySelector('.nef-type-pill[data-type="lifting"]');
+    if(defaultPill)defaultPill.classList.add('active');
+    renderNefFields();
     const el=document.getElementById('nef-tags');
     const refreshExTags=()=>renderTagPicker(el, EX_TAGS, 'ex', newExTags, t=>{
       if(newExTags.includes(t))newExTags=newExTags.filter(x=>x!==t);
@@ -1875,17 +1949,17 @@ function toggleNewExForm(){
 function createAndAddExercise(){
   const name=document.getElementById('nef-name').value.trim();
   const muscle=document.getElementById('nef-muscle').value.trim();
-  const sets=parseInt(document.getElementById('nef-sets').value)||3;
-  const reps=document.getElementById('nef-reps').value.trim()||'8-12';
+  const sets=parseInt(document.getElementById('nef-sets')?.value)||3;
+  const reps=document.getElementById('nef-reps')?.value.trim()||'8-12';
   if(!name){showToast('Enter exercise name');return;}
-  const ex={id:'custom-ex-'+Date.now(),name,muscleGroup:muscle||'General',sets,reps,note:'',tags:[...newExTags]};
+  // Store logType on the exercise so workout logging knows what fields to show
+  const ex={id:'custom-ex-'+Date.now(),name,muscleGroup:muscle||'General',sets,reps,note:'',tags:[...newExTags],bw:nefType==='bodyweight',logType:nefType};
   const lib=getExLibrary();lib.push(ex);saveExLibrary(lib);
   addExToBlock(ex);
   document.getElementById('nef-name').value='';
   document.getElementById('nef-muscle').value='';
-  document.getElementById('nef-sets').value='';
-  document.getElementById('nef-reps').value='';
   newExTags=[];
+  nefType='lifting';
   document.getElementById('new-ex-form').classList.add('hidden');
 }
 
@@ -1977,16 +2051,17 @@ function buildWorkoutBody(block){
       const cls=t==='315 Goal'?'bench':t==='Muscle Up'?'muscleup':'mile';
       return '<span class="ex-tag-pill '+cls+'">'+t+'</span>';
     }).join('');
-    let setsHtml='<div class="sets-header"><span>#</span><span>LBS</span><span>REPS</span><span>LOG</span></div>';
+    const type=getLogType(ex);
+    let setsHtml=getSetHeaderForType(type);
     for(let s=0;s<ex.sets;s++){
-      const prev=best?.sets?.[s];
-      setsHtml+='<div class="set-row" id="sr-'+ex.id+'-'+s+'">'+
-        '<div class="set-num">'+(s+1)+'</div>'+
-        '<input class="set-input" id="w-'+ex.id+'-'+s+'" type="number" inputmode="decimal" placeholder="'+(prev?prev.weight:'lbs')+'">'+
-        '<input class="set-input" id="r-'+ex.id+'-'+s+'" type="number" inputmode="numeric" placeholder="'+(prev?prev.reps:ex.reps)+'">'+
-        '<button class="log-btn" onclick="logSet(\''+ex.id+'\','+s+')">LOG</button>'+
-        '</div><div class="set-timestamp" id="ts-'+ex.id+'-'+s+'" style="display:none"></div>';
+      setsHtml+=buildSetInputs(ex,s,best);
+      setsHtml+='<div class="set-timestamp" id="ts-'+ex.id+'-'+s+'" style="display:none"></div>';
     }
+    const subLine=type==='cardio'?'Duration · '+ex.muscleGroup:
+                  type==='hiit'?'Rounds · '+ex.muscleGroup:
+                  type==='timed'?ex.sets+'x hold · '+ex.muscleGroup:
+                  type==='bodyweight'?ex.sets+'x'+ex.reps+' · BW':
+                  ex.sets+'x'+ex.reps+' · '+ex.muscleGroup;
     const card=document.createElement('div');
     card.className='exercise-card'+(idx===0?' expanded active-ex':'');
     card.id='ex-'+ex.id;
@@ -1995,7 +2070,7 @@ function buildWorkoutBody(block){
         '<div class="ex-num">'+(idx+1)+'</div>'+
         '<div class="ex-meta">'+
           '<div class="ex-name">'+ex.name+'</div>'+
-          '<div class="ex-sub">'+ex.sets+'x'+ex.reps+' · '+ex.muscleGroup+'</div>'+
+          '<div class="ex-sub">'+subLine+'</div>'+
           (tagsHtml?'<div class="ex-tags">'+tagsHtml+'</div>':'')+
         '</div>'+
         (best?'<button class="suggest-btn" id="sb-'+ex.id+'" onclick="toggleSuggest(\''+ex.id+'\',event)">Suggest</button>':'')+
@@ -2118,23 +2193,117 @@ function getProgression(ex, best){
 function getProgressionNote(ex, best){ return null; }
 
 // ─────────────────────────────────────────────
-// LOG SET
+// LOG TYPE — determines input fields per exercise
 // ─────────────────────────────────────────────
+function getLogType(ex){
+  if(ex.logType)return ex.logType; // explicit override from custom exercise
+  const tags=(ex.tags||[]).map(t=>t.toLowerCase());
+  const mg=(ex.muscleGroup||'').toLowerCase();
+  if(tags.includes('cardio')||tags.includes('zone 2')||tags.includes('running')||
+     mg.includes('cardio')||tags.includes('rowing')||tags.includes('cycling')||
+     ['stationary bike','assault bike','elliptical','stair climber','rowing machine'].includes((ex.name||'').toLowerCase()))
+    return 'cardio';
+  if(tags.includes('hiit')||tags.includes('interval'))
+    return 'hiit';
+  if(tags.includes('mobility')||tags.includes('flexibility')||tags.includes('stretch'))
+    return 'timed';
+  if(ex.bw&&!tags.some(t=>['barbell','dumbbell','cable','machine','kettlebell'].includes(t)))
+    return 'bodyweight';
+  return 'lifting'; // default
+}
+
+function buildSetInputs(ex, s, best){
+  const type=getLogType(ex);
+  const prev=best?.sets?.[s];
+  const id=ex.id;
+
+  if(type==='lifting'){
+    return '<div class="set-row" id="sr-'+id+'-'+s+'">'+
+      '<div class="set-num">'+(s+1)+'</div>'+
+      '<input class="set-input" id="w-'+id+'-'+s+'" type="number" inputmode="decimal" placeholder="'+(prev?prev.weight:'lbs')+'">'+
+      '<input class="set-input" id="r-'+id+'-'+s+'" type="number" inputmode="numeric" placeholder="'+(prev?prev.reps:ex.reps)+'">'+
+      '<button class="log-btn" onclick="logSet(\''+id+'\','+s+')">LOG</button>'+
+      '</div>';
+  }
+  if(type==='bodyweight'){
+    return '<div class="set-row" id="sr-'+id+'-'+s+'" style="grid-template-columns:26px 1fr 76px;">'+
+      '<div class="set-num">'+(s+1)+'</div>'+
+      '<input class="set-input" id="r-'+id+'-'+s+'" type="number" inputmode="numeric" placeholder="'+(prev?prev.reps:ex.reps)+' reps'+'">'+
+      '<button class="log-btn" onclick="logSet(\''+id+'\','+s+')">LOG</button>'+
+      '</div>';
+  }
+  if(type==='cardio'){
+    // One "set" = one session entry: duration + optional distance
+    return '<div class="set-row" id="sr-'+id+'-'+s+'" style="grid-template-columns:26px 1fr 1fr 76px;">'+
+      '<div class="set-num">'+(s+1)+'</div>'+
+      '<input class="set-input" id="w-'+id+'-'+s+'" type="text" inputmode="numeric" placeholder="'+(prev?prev.weight:'min')+'" style="text-align:center;">'+
+      '<input class="set-input" id="r-'+id+'-'+s+'" type="number" inputmode="decimal" placeholder="'+(prev?prev.reps:'mi (opt)')+'" style="font-size:10px;">'+
+      '<button class="log-btn" onclick="logSet(\''+id+'\','+s+')">LOG</button>'+
+      '</div>';
+  }
+  if(type==='hiit'){
+    // Rounds × work duration
+    return '<div class="set-row" id="sr-'+id+'-'+s+'" style="grid-template-columns:26px 1fr 1fr 76px;">'+
+      '<div class="set-num">'+(s+1)+'</div>'+
+      '<input class="set-input" id="w-'+id+'-'+s+'" type="number" inputmode="numeric" placeholder="'+(prev?prev.weight:'rounds')+'" style="text-align:center;">'+
+      '<input class="set-input" id="r-'+id+'-'+s+'" type="text" placeholder="'+(prev?prev.reps:'work')+'" style="font-size:10px;">'+
+      '<button class="log-btn" onclick="logSet(\''+id+'\','+s+')">LOG</button>'+
+      '</div>';
+  }
+  if(type==='timed'){
+    // Sets × hold/duration
+    return '<div class="set-row" id="sr-'+id+'-'+s+'" style="grid-template-columns:26px 1fr 76px;">'+
+      '<div class="set-num">'+(s+1)+'</div>'+
+      '<input class="set-input" id="r-'+id+'-'+s+'" type="text" placeholder="'+(prev?prev.reps:'30s')+'" style="text-align:center;">'+
+      '<button class="log-btn" onclick="logSet(\''+id+'\','+s+')">LOG</button>'+
+      '</div>';
+  }
+  return '';
+}
+
+function getSetHeaderForType(type){
+  if(type==='lifting')   return '<div class="sets-header"><span>#</span><span>LBS</span><span>REPS</span><span></span></div>';
+  if(type==='bodyweight')return '<div class="sets-header" style="grid-template-columns:26px 1fr 76px"><span>#</span><span>REPS</span><span></span></div>';
+  if(type==='cardio')    return '<div class="sets-header"><span>#</span><span>DURATION</span><span>DIST (MI)</span><span></span></div>';
+  if(type==='hiit')      return '<div class="sets-header"><span>#</span><span>ROUNDS</span><span>WORK</span><span></span></div>';
+  if(type==='timed')     return '<div class="sets-header" style="grid-template-columns:26px 1fr 76px"><span>#</span><span>DURATION</span><span></span></div>';
+  return '';
+}
 function logSet(exId,setIdx){
+  const ex=(currentWorkout.exercises||[]).find(e=>e.id===exId);
+  const type=ex?getLogType(ex):'lifting';
   const wEl=document.getElementById('w-'+exId+'-'+setIdx);
   const rEl=document.getElementById('r-'+exId+'-'+setIdx);
   const btn=document.querySelector('#sr-'+exId+'-'+setIdx+' .log-btn');
   const tsEl=document.getElementById('ts-'+exId+'-'+setIdx);
-  const w=parseFloat(wEl.value),r=parseInt(rEl.value);
-  if(isNaN(w)||isNaN(r)||w<=0||r<=0){showToast('Enter weight and reps first');return;}
+  let w=0,r=0;
+  if(type==='lifting'){
+    w=parseFloat(wEl?.value);r=parseInt(rEl?.value);
+    if(isNaN(w)||isNaN(r)||w<=0||r<=0){showToast('Enter weight and reps');return;}
+  } else if(type==='bodyweight'){
+    r=parseInt(rEl?.value);
+    if(isNaN(r)||r<=0){showToast('Enter reps');return;}
+    w=0;
+  } else if(type==='cardio'){
+    w=wEl?.value?.trim();
+    if(!w){showToast('Enter duration');return;}
+    r=parseFloat(rEl?.value)||0;
+  } else if(type==='hiit'){
+    w=parseInt(wEl?.value);r=rEl?.value?.trim()||'';
+    if(!w||w<=0){showToast('Enter rounds');return;}
+  } else if(type==='timed'){
+    r=rEl?.value?.trim();
+    if(!r){showToast('Enter duration');return;}
+    w=0;
+  }
   const ts=new Date();
   if(!sessionLogs[exId])sessionLogs[exId]={};
-  sessionLogs[exId][setIdx]={weight:w,reps:r,ts:ts.toISOString()};
-  wEl.classList.add('logged');rEl.classList.add('logged');
+  sessionLogs[exId][setIdx]={weight:w,reps:r,ts:ts.toISOString(),type};
+  if(wEl)wEl.classList.add('logged');
+  if(rEl)rEl.classList.add('logged');
   btn.classList.add('logged');btn.textContent='DONE';btn.disabled=true;
   tsEl.style.display='block';
   tsEl.textContent='Logged '+ts.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
-  const ex=(currentWorkout.exercises||[]).find(e=>e.id===exId);
   if(ex&&Object.keys(sessionLogs[exId]).length>=ex.sets){
     const card=document.getElementById('ex-'+exId);
     card.classList.add('done-ex');card.classList.remove('active-ex');
@@ -2145,7 +2314,7 @@ function logSet(exId,setIdx){
       if(nextCard){card.classList.remove('expanded');nextCard.classList.add('expanded','active-ex');setTimeout(()=>nextCard.scrollIntoView({behavior:'smooth',block:'start'}),100);}
     }
   }
-  showToast('Set '+(setIdx+1)+' logged');
+  showToast('Logged');
 }
 
 // ─────────────────────────────────────────────
@@ -2179,19 +2348,39 @@ function finishWorkout(early){
     let completedCount=0;
     (currentWorkout.exercises||[]).forEach(ex=>{
       const sets=sessionLogs[ex.id]||{},arr=Object.values(sets);if(!arr.length)return;
+      const type=getLogType(ex);
       const allDone=arr.length>=ex.sets;
-      const top=arr.reduce((a,b)=>a.weight*a.reps>b.weight*b.reps?a:b);
-      const vol=arr.reduce((a,b)=>a+b.weight*b.reps,0);
-      totalSets+=arr.length;totalVol+=vol;
-      if(allDone){
-        completedCount++;
-        const prev=bests[ex.id];
-        const isPR=!prev?.topSet||top.weight*top.reps>prev.topSet.weight*prev.topSet.reps;
-        if(isPR)prs++;
-        bests[ex.id]={topSet:top,sets:arr,date:new Date().toISOString()};
-        exBk.push({name:ex.name,topSet:top,vol,isPR,partial:false});
+      totalSets+=arr.length;
+
+      // Only calc volume/PR for lifting types
+      if(type==='lifting'||type==='bodyweight'){
+        const top=arr.reduce((a,b)=>{
+          const aV=(a.weight||0)*(a.reps||0), bV=(b.weight||0)*(b.reps||0);
+          return bV>aV?b:a;
+        });
+        const vol=type==='lifting'?arr.reduce((a,b)=>a+(b.weight||0)*(b.reps||0),0):0;
+        totalVol+=vol;
+        if(allDone){
+          completedCount++;
+          const prev=bests[ex.id];
+          const topVal=(top.weight||0)*(top.reps||1);
+          const isPR=type==='lifting'&&(!prev?.topSet||topVal>prev.topSet.weight*prev.topSet.reps);
+          if(isPR)prs++;
+          if(type==='lifting')bests[ex.id]={topSet:top,sets:arr,date:new Date().toISOString()};
+          exBk.push({name:ex.name,topSet:top,vol,isPR,partial:false,type});
+        } else {
+          const top2=arr[arr.length-1];
+          exBk.push({name:ex.name,topSet:top2,vol,isPR:false,partial:true,setsLogged:arr.length,setsTarget:ex.sets,type});
+        }
       } else {
-        exBk.push({name:ex.name,topSet:top,vol,isPR:false,partial:true,setsLogged:arr.length,setsTarget:ex.sets});
+        // Cardio/HIIT/timed — summarise differently
+        if(allDone)completedCount++;
+        const entry=arr[0];
+        const summary=type==='cardio'
+          ?(entry.weight?(entry.weight+' min'):'—')+(entry.reps?' · '+entry.reps+' mi':'')
+          :type==='hiit'?(entry.weight+' rounds'+(entry.reps?' · '+entry.reps:''))
+          :(entry.reps||'—');
+        exBk.push({name:ex.name,topSet:null,vol:0,isPR:false,partial:!allDone,setsLogged:arr.length,setsTarget:ex.sets,type,summary});
       }
     });
     saveBests(bests);
@@ -2208,13 +2397,22 @@ function finishWorkout(early){
     document.getElementById('summary-subtitle').textContent=early
       ?completedCount+'/'+(currentWorkout.exercises||[]).length+' exercises completed — partial sets not saved to bests'
       :currentWorkout.programName+' — '+currentWorkout.name+' complete';
-    document.getElementById('summary-ex-list').innerHTML=exBk.map(e=>
-      '<div class="sum-ex" style="'+(e.partial?'opacity:0.6':'')+'">'+
+    document.getElementById('summary-ex-list').innerHTML=exBk.map(e=>{
+      let progLine='';
+      if(e.topSet&&(e.type==='lifting'||e.type==='bodyweight')){
+        progLine=e.topSet.weight?e.topSet.weight+'lbs × '+e.topSet.reps:e.topSet.reps+' reps';
+        if(e.vol)progLine+=' · '+Math.round(e.vol).toLocaleString()+' lbs vol';
+        if(e.partial)progLine+=' · not saved to bests';
+      } else if(e.summary){
+        progLine=e.summary+(e.partial?' · '+e.setsLogged+'/'+e.setsTarget+' logged':'');
+      }
+      return '<div class="sum-ex" style="'+(e.partial?'opacity:0.6':'')+'">'+
         '<div class="sum-ex-icon '+(e.isPR?'pr':e.partial?'partial':'')+'">'+(e.isPR?'PR':e.partial?'!':'+')+'</div>'+
-        '<div style="flex:1"><div class="sum-ex-name">'+e.name+(e.partial?' <span style="font-family:var(--mono);font-size:10px;color:var(--red)">'+e.setsLogged+'/'+e.setsTarget+' sets</span>':'')+'</div>'+
-        '<div class="sum-ex-prog">'+e.topSet.weight+'lbs x '+e.topSet.reps+' &middot; '+Math.round(e.vol).toLocaleString()+' lbs vol'+(e.partial?' &middot; not saved to bests':'')+'</div></div>'+
-      '</div>'
-    ).join('');
+        '<div style="flex:1"><div class="sum-ex-name">'+e.name+(e.partial&&e.type==='lifting'?' <span style="font-family:var(--mono);font-size:10px;color:var(--red)">'+e.setsLogged+'/'+e.setsTarget+' sets</span>':'')+'</div>'+
+        (progLine?'<div class="sum-ex-prog">'+progLine+'</div>':'')+
+        '</div>'+
+      '</div>';
+    }).join('');
   }
   showScreen('summary-screen');
 }
@@ -2511,17 +2709,48 @@ function deleteHistoryEntry(idx){
 // ─────────────────────────────────────────────
 function renderGoals(){
   const goals=getUserGoals();
+  const bests=getBests();
   const list=document.getElementById('goals-list');
   list.innerHTML='';
   if(!goals.length){
     list.innerHTML='<div class="empty-state"><div class="em-label">GOALS</div><div>No goals set yet.<br>Tap + Add Goal to get started.</div></div>';
     return;
   }
+
+  // Build a name->e1RM lookup from bests
+  const e1rmLookup={};
+  Object.values(bests).forEach(b=>{
+    if(b.topSet&&b.topSet.weight&&b.topSet.reps){
+      // Try to find exercise name — scan history for this entry
+    }
+  });
+  // Scan history to match exercise names to bests e1RM
+  const h=getHistory();
+  const exBestMap={}; // exerciseName -> best e1RM
+  h.forEach(session=>{
+    (session.exercises||[]).forEach(e=>{
+      if(!e.topSet||!e.topSet.weight||!e.topSet.reps)return;
+      const e1rm=Math.round(e.topSet.weight*(1+e.topSet.reps/30));
+      if(!exBestMap[e.name]||e1rm>exBestMap[e.name])exBestMap[e.name]=e1rm;
+    });
+  });
+
   goals.forEach((g,i)=>{
-    const cur=parseFloat(g.current||0);
+    // Auto-populate current from history if goal name matches an exercise
+    let autoCurrent=null;
+    const goalNameLower=(g.name||'').toLowerCase();
+    Object.entries(exBestMap).forEach(([exName,e1rm])=>{
+      if(exName.toLowerCase().includes(goalNameLower)||goalNameLower.includes(exName.toLowerCase())){
+        if(autoCurrent===null||e1rm>autoCurrent)autoCurrent=e1rm;
+      }
+    });
+
+    const cur=autoCurrent!==null?autoCurrent:parseFloat(g.current||0);
     const tgt=parseFloat(g.target||0);
     const pct=tgt>0&&cur>0?Math.min(100,(cur/tgt)*100):0;
     const displayCur=cur>0?cur+' '+(g.unit||''):'Not set';
+    const autoLabel=autoCurrent!==null?'<span style="font-family:var(--mono);font-size:9px;color:var(--accent);margin-left:6px;letter-spacing:1px;">AUTO</span>':'';
+
     const card=document.createElement('div');
     card.className='goal-card';
     card.innerHTML=
@@ -2529,7 +2758,7 @@ function renderGoals(){
         '<div class="goal-card-bar" style="background:'+(g.color||'#e8ff47')+'"></div>'+
         '<div class="goal-card-body">'+
           '<div class="goal-card-name">'+escHtml(g.name)+'</div>'+
-          '<div class="goal-card-sub">Current: '+displayCur+' &nbsp;/&nbsp; Target: '+tgt+' '+(g.unit||'')+'</div>'+
+          '<div class="goal-card-sub">Current: '+displayCur+autoLabel+' &nbsp;/&nbsp; Target: '+tgt+' '+(g.unit||'')+'</div>'+
         '</div>'+
         '<div class="goal-card-actions">'+
           '<button class="goal-card-action-btn" onclick="openGoalBuilder('+i+')">EDIT</button>'+
@@ -2538,12 +2767,15 @@ function renderGoals(){
       '</div>'+
       '<div class="goal-card-progress">'+
         '<div class="goal-bar"><div class="goal-bar-fill" style="width:'+pct.toFixed(1)+'%;background:'+(g.color||'#e8ff47')+'"></div></div>'+
-        '<div class="goal-pct">'+pct.toFixed(0)+'% to target</div>'+
+        '<div class="goal-pct">'+pct.toFixed(0)+'% to target'+(autoCurrent!==null?' · from training history':'')+'</div>'+
       '</div>'+
-      '<div class="goal-update-row">'+
-        '<input class="goal-update-input" id="gu-'+i+'" type="number" inputmode="decimal" placeholder="Update current value ('+( g.unit||'')+ ')">'+
-        '<button class="goal-update-btn" onclick="updateGoalCurrent('+i+')">UPDATE</button>'+
-      '</div>';
+      (autoCurrent===null?
+        '<div class="goal-update-row">'+
+          '<input class="goal-update-input" id="gu-'+i+'" type="number" inputmode="decimal" placeholder="Update current value ('+( g.unit||'')+ ')">'+
+          '<button class="goal-update-btn" onclick="updateGoalCurrent('+i+')">UPDATE</button>'+
+        '</div>':
+        '<div style="font-family:var(--mono);font-size:9px;color:var(--muted);padding:8px 16px 12px;">Based on estimated 1RM from your logged sessions</div>'
+      );
     list.appendChild(card);
   });
 }
