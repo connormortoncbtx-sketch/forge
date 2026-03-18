@@ -1,4 +1,4 @@
-const CACHE = 'forge-v9';
+const CACHE = 'forge-v10';
 
 self.addEventListener('install', e => {
   e.waitUntil(
@@ -28,7 +28,6 @@ self.addEventListener('fetch', e => {
     e.respondWith(fetch(e.request).catch(() => new Response('', { status: 503 })));
     return;
   }
-
   if (e.request.url.includes('workout-tracker.html') || e.request.mode === 'navigate') {
     e.respondWith(
       fetch(e.request)
@@ -41,7 +40,6 @@ self.addEventListener('fetch', e => {
     );
     return;
   }
-
   e.respondWith(
     caches.match(e.request).then(cached => {
       if (cached) return cached;
