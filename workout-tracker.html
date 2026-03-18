@@ -307,10 +307,9 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
 .drag-handle{width:36px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;flex-shrink:0;padding:8px 6px;opacity:0.4;touch-action:none;user-select:none;-webkit-user-select:none;}
 .drag-handle span{display:block;width:18px;height:2px;background:var(--text);border-radius:1px;}
 .drag-handle:active{opacity:1;}
-.forge-tile.dragging{opacity:0.4;border:1px dashed var(--accent);}
-.forge-tile.drag-over{border-color:var(--accent);background:var(--accent-dim);}
-.ex-tile.dragging{opacity:0.4;}
-.ex-tile.drag-over{border-color:var(--accent);}
+.sortable-ghost{opacity:0.08;background:var(--accent-dim);border:1px dashed var(--accent);border-radius:12px;}
+.sortable-chosen{box-shadow:0 8px 32px rgba(0,0,0,0.5);}
+.sortable-drag{opacity:0.97;box-shadow:0 16px 48px rgba(0,0,0,0.7);border-radius:12px;transform:scale(1.03);}
 .ai-sheet{position:fixed;inset:0;z-index:100;display:none;flex-direction:column;}
 .ai-sheet.open{display:flex;}
 .ai-backdrop{position:absolute;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);}
@@ -702,6 +701,7 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
 </div>
 
 <script src="exercise-library.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
 <script>
 // Exercise library loaded from exercise-library.js
 // Fallback: empty array (exercises won't appear in picker)
@@ -2343,249 +2343,73 @@ function addTyping(){
 }
 
 // ─────────────────────────────────────────────
-// DRAG TO REORDER — single continuous touch gesture
+// DRAG TO REORDER — SortableJS
 // ─────────────────────────────────────────────
-let drag=null;
-let dragPressTimer=null;
-let dragPressState=null;
+let blockSortable=null;
+let exSortables={};
 
 function attachDragHandles(){
-  document.querySelectorAll('.drag-handle').forEach(el=>{
-    const fresh=el.cloneNode(true);
-    el.parentNode.replaceChild(fresh,el);
-    fresh.addEventListener('touchstart',onHandleTouchStart,{passive:false});
-  });
-}
-
-function onHandleTouchStart(e){
-  e.preventDefault();
-  e.stopPropagation();
-  const handle=e.currentTarget;
-  const touch=e.touches[0];
-  const type=handle.dataset.dtype;
-  const idx=parseInt(handle.dataset.didx);
-  const blockIdx=handle.dataset.dblock!==undefined?parseInt(handle.dataset.dblock):null;
-
-  dragPressState={
-    handle,type,idx,blockIdx,
-    startX:touch.clientX,
-    startY:touch.clientY,
-    activated:false,
-  };
-
-  // Scale handle up — visual "warming up" cue
-  handle.style.transition='transform 0.25s ease,opacity 0.25s';
-  handle.style.transform='scale(1.5)';
-  handle.style.opacity='1';
-
-  // Register move/end ON THIS SAME TOUCH right now so iOS routes events to us
-  document.addEventListener('touchmove',onPressTouchMove,{passive:false});
-  document.addEventListener('touchend',onPressTouchEnd,{passive:false});
-  document.addEventListener('touchcancel',onPressTouchEnd,{passive:false});
-
-  // After 250ms with no significant movement, activate drag
-  dragPressTimer=setTimeout(()=>{
-    if(!dragPressState||dragPressState.activated)return;
-    dragPressState.activated=true;
-    if(navigator.vibrate)navigator.vibrate(25);
-    handle.style.transform='scale(1)';
-    handle.style.transition='transform 0.1s';
-    activateDrag();
-  },250);
-}
-
-function onPressTouchMove(e){
-  e.preventDefault();
-  if(!dragPressState)return;
-  const touch=e.touches[0];
-  const dx=touch.clientX-dragPressState.startX;
-  const dy=touch.clientY-dragPressState.startY;
-
-  if(dragPressState.activated&&drag){
-    // Already dragging — move the clone
-    drag.clone.style.top=(drag.cloneStartTop+dy)+'px';
-    movePlaceholder(drag.cloneStartTop+dy);
-    return;
-  }
-
-  // Not yet activated — if moved too much vertically before hold, cancel
-  if(!dragPressState.activated&&(Math.abs(dx)>12||Math.abs(dy)>12)){
-    cancelPress();
-  }
-}
-
-function onPressTouchEnd(e){
-  e.preventDefault();
-  if(dragPressState&&dragPressState.activated&&drag){
-    // Commit the drag
-    commitDrag();
-  } else {
-    cancelPress();
-  }
-}
-
-function cancelPress(){
-  clearTimeout(dragPressTimer);
-  dragPressTimer=null;
-  document.removeEventListener('touchmove',onPressTouchMove);
-  document.removeEventListener('touchend',onPressTouchEnd);
-  document.removeEventListener('touchcancel',onPressTouchEnd);
-  if(dragPressState){
-    const h=dragPressState.handle;
-    h.style.transform='';
-    h.style.transition='';
-    h.style.opacity='';
-    dragPressState=null;
-  }
-}
-
-function activateDrag(){
-  if(!dragPressState)return;
-  const {type,idx,blockIdx,startX,startY}=dragPressState;
-
-  const doInit=(srcEl)=>{
-    if(!srcEl)return;
-    const listEl=type==='block'
-      ?document.getElementById('bp-block-list')
-      :document.getElementById('ex-list-'+blockIdx);
-    if(!listEl)return;
-
-    const rect=srcEl.getBoundingClientRect();
-    const placeholder=document.createElement('div');
-    placeholder.dataset.placeholder='1';
-    placeholder.style.cssText=`height:${rect.height}px;margin-bottom:10px;border-radius:12px;background:rgba(232,255,71,0.06);border:1px dashed rgba(232,255,71,0.35);box-sizing:border-box;flex-shrink:0;pointer-events:none;`;
-    listEl.insertBefore(placeholder,srcEl);
-    srcEl.remove();
-
-    const clone=srcEl.cloneNode(true);
-    clone.style.cssText=`position:fixed;left:${rect.left}px;top:${rect.top}px;width:${rect.width}px;z-index:9999;pointer-events:none;box-shadow:0 16px 48px rgba(0,0,0,0.7);border-radius:12px;transform:scale(1.03);opacity:0.97;`;
-    document.body.appendChild(clone);
-
-    const selector=type==='block'?'.forge-tile':'.ex-tile';
-    drag={type,idx,blockIdx,listEl,srcEl,clone,placeholder,selector,
-      startY,cloneStartTop:rect.top};
-  };
-
-  if(type==='block'&&expandedBlockIndex===idx){
-    expandedBlockIndex=null;
-    renderBPBlocks();
-    requestAnimationFrame(()=>{
-      doInit(document.getElementById('block-tile-'+idx));
+  // Block sortable
+  const blockList=document.getElementById('bp-block-list');
+  if(blockList){
+    if(blockSortable)blockSortable.destroy();
+    blockSortable=new Sortable(blockList,{
+      animation:150,
+      handle:'.drag-handle',
+      ghostClass:'sortable-ghost',
+      chosenClass:'sortable-chosen',
+      dragClass:'sortable-drag',
+      forceFallback:true,
+      fallbackTolerance:3,
+      delayOnTouchOnly:true,
+      delay:200,
+      onStart:()=>{
+        // Collapse any expanded block before sorting
+        if(expandedBlockIndex!==null){
+          expandedBlockIndex=null;
+          renderBPBlocks();
+        }
+      },
+      onEnd:(evt)=>{
+        const days=builderProgram.days;
+        const [moved]=days.splice(evt.oldIndex,1);
+        days.splice(evt.newIndex,0,moved);
+        expandedBlockIndex=null;
+        renderBPBlocks();
+        updateBPPreview();
+      }
     });
-  } else {
-    const srcEl=type==='block'
-      ?document.getElementById('block-tile-'+idx)
-      :document.querySelector(`#ex-list-${blockIdx} .ex-tile:nth-child(${idx+1})`);
-    doInit(srcEl);
-  }
-}
-
-function movePlaceholder(cloneTop){
-  if(!drag)return;
-  const cloneMidY=cloneTop+drag.clone.offsetHeight/2;
-  const siblings=Array.from(drag.listEl.children).filter(el=>
-    el===drag.placeholder||el.matches(drag.selector)
-  );
-  let insertBefore=null;
-  for(const el of siblings){
-    const r=el.getBoundingClientRect();
-    if(cloneMidY<r.top+r.height/2){insertBefore=el;break;}
-  }
-  if(drag.placeholder.nextSibling!==insertBefore){
-    drag.listEl.insertBefore(drag.placeholder,insertBefore||null);
-  }
-}
-
-function commitDrag(){
-  clearTimeout(dragPressTimer);
-  dragPressTimer=null;
-  document.removeEventListener('touchmove',onPressTouchMove);
-  document.removeEventListener('touchend',onPressTouchEnd);
-  document.removeEventListener('touchcancel',onPressTouchEnd);
-
-  if(dragPressState){
-    const h=dragPressState.handle;
-    h.style.transform='';h.style.transition='';h.style.opacity='';
-    dragPressState=null;
   }
 
-  if(!drag)return;
-  const {type,blockIdx,listEl,srcEl,clone,placeholder,selector}=drag;
-  drag=null;
-
-  listEl.insertBefore(srcEl,placeholder);
-  placeholder.remove();
-  clone.remove();
-
-  const newOrder=Array.from(listEl.querySelectorAll(':scope > '+selector));
-  if(type==='block'){
-    const reordered=newOrder.map(el=>{
-      const i=parseInt(el.id.replace('block-tile-',''));
-      return builderProgram.days[i];
-    }).filter(Boolean);
-    builderProgram.days=reordered;
-    expandedBlockIndex=null;
-    renderBPBlocks();
-    updateBPPreview();
-  } else {
-    const exercises=builderProgram.days[blockIdx].exercises;
-    const reordered=newOrder.map(el=>{
-      const i=parseInt(el.dataset.exidx);
-      return exercises[i];
-    }).filter(Boolean);
-    builderProgram.days[blockIdx].exercises=reordered;
-    expandedBlockIndex=blockIdx;
-    renderBPBlocks();
-  }
-}
-
-function cancelDrag(){
-  cancelPress();
-  if(drag){
-    drag.listEl.insertBefore(drag.srcEl,drag.placeholder);
-    drag.placeholder.remove();
-    drag.clone.remove();
-    drag=null;
-  }
+  // Exercise sortables — one per expanded block
+  document.querySelectorAll('[id^="ex-list-"]').forEach(exList=>{
+    const blockIdx=parseInt(exList.id.replace('ex-list-',''));
+    if(exSortables[blockIdx])exSortables[blockIdx].destroy();
+    exSortables[blockIdx]=new Sortable(exList,{
+      animation:150,
+      handle:'.drag-handle',
+      ghostClass:'sortable-ghost',
+      chosenClass:'sortable-chosen',
+      dragClass:'sortable-drag',
+      forceFallback:true,
+      fallbackTolerance:3,
+      delayOnTouchOnly:true,
+      delay:200,
+      onEnd:(evt)=>{
+        const exercises=builderProgram.days[blockIdx].exercises;
+        const [moved]=exercises.splice(evt.oldIndex,1);
+        exercises.splice(evt.newIndex,0,moved);
+        expandedBlockIndex=blockIdx;
+        renderBPBlocks();
+      }
+    });
+  });
 }
 
 // Stubs
 function startDragBlock(){}
 function startDragEx(){}
-function initDrag(){}
-
-function initDrag(touchX,touchY,type,idx,blockIdx,srcEl){
-  // Safety: clean up any orphaned drag
-  if(drag){cancelDrag();}
-
-  const listEl=type==='block'
-    ?document.getElementById('bp-block-list')
-    :document.getElementById('ex-list-'+blockIdx);
-  if(!listEl||!srcEl)return;
-
-  const rect=srcEl.getBoundingClientRect();
-
-  // Placeholder holds the space
-  const placeholder=document.createElement('div');
-  placeholder.dataset.placeholder='1';
-  placeholder.style.cssText=`height:${rect.height}px;margin-bottom:10px;border-radius:12px;background:rgba(232,255,71,0.06);border:1px dashed rgba(232,255,71,0.3);box-sizing:border-box;flex-shrink:0;pointer-events:none;`;
-  listEl.insertBefore(placeholder,srcEl);
-  srcEl.remove();
-
-  // Floating clone follows finger
-  const clone=srcEl.cloneNode(true);
-  clone.style.cssText=`position:fixed;left:${rect.left}px;top:${rect.top}px;width:${rect.width}px;z-index:9999;pointer-events:none;box-shadow:0 16px 48px rgba(0,0,0,0.7);border-radius:12px;transform:scale(1.03);opacity:0.96;`;
-  document.body.appendChild(clone);
-
-  const selector=type==='block'?'.forge-tile':'.ex-tile';
-
-  drag={type,idx,blockIdx,listEl,srcEl,clone,placeholder,selector,
-    startY:touchY,cloneStartTop:rect.top};
-
-  document.addEventListener('touchmove',onTouchMove,{passive:false});
-  document.addEventListener('touchend',onTouchEnd,{passive:false});
-  document.addEventListener('touchcancel',cancelDrag,{passive:false});
-}
+function cancelDrag(){}
 
 // ─────────────────────────────────────────────
 // INIT
