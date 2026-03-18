@@ -2342,86 +2342,114 @@ function addTyping(){
 }
 
 // ─────────────────────────────────────────────
-// DRAG TO REORDER — long press + iOS Safari
+// DRAG TO REORDER — long press flows into drag
 // ─────────────────────────────────────────────
 let drag=null;
 let dragPressTimer=null;
-let dragPressHandle=null;
+let dragPressState=null; // holds touch info during press window
 
 function attachDragHandles(){
   document.querySelectorAll('.drag-handle').forEach(el=>{
     const fresh=el.cloneNode(true);
     el.parentNode.replaceChild(fresh,el);
-    fresh.addEventListener('touchstart',onHandlePressStart,{passive:false});
-    fresh.addEventListener('touchend',onHandlePressCancel,{passive:false});
-    fresh.addEventListener('touchcancel',onHandlePressCancel,{passive:false});
-    fresh.addEventListener('touchmove',onHandlePressMove,{passive:false});
+    fresh.addEventListener('touchstart',onHandleTouchStart,{passive:false});
   });
 }
 
-function onHandlePressStart(e){
+function onHandleTouchStart(e){
   e.preventDefault();
   e.stopPropagation();
-  dragPressHandle=e.currentTarget;
+  const handle=e.currentTarget;
   const touch=e.touches[0];
-  dragPressHandle._pressStartX=touch.clientX;
-  dragPressHandle._pressStartY=touch.clientY;
 
-  // Visual feedback — pulse the handle
-  dragPressHandle.style.opacity='1';
-  dragPressHandle.style.transition='transform 0.3s ease';
-  dragPressHandle.style.transform='scale(1.3)';
+  // Store everything needed to start drag later
+  dragPressState={
+    handle,
+    type:handle.dataset.dtype,
+    idx:parseInt(handle.dataset.didx),
+    blockIdx:handle.dataset.dblock!==undefined?parseInt(handle.dataset.dblock):null,
+    startX:touch.clientX,
+    startY:touch.clientY,
+    touchId:touch.identifier,
+  };
+
+  // Visual: handle scales up to signal "getting ready"
+  handle.style.transition='transform 0.28s ease';
+  handle.style.transform='scale(1.4)';
+  handle.style.opacity='1';
+
+  // While waiting for long press, track finger movement to cancel if scrolling
+  document.addEventListener('touchmove',onPressWatchMove,{passive:false});
+  document.addEventListener('touchend',onPressWatchEnd,{passive:false});
+  document.addEventListener('touchcancel',onPressWatchEnd,{passive:false});
 
   dragPressTimer=setTimeout(()=>{
-    if(!dragPressHandle)return;
-    // Vibrate if available (Android + some iOS)
-    if(navigator.vibrate)navigator.vibrate(30);
-    dragPressHandle.style.transform='scale(1)';
-    dragPressHandle.style.transition='';
-    beginDragFromHandle(dragPressHandle,touch.clientX,touch.clientY);
-    dragPressHandle=null;
+    // Long press fired — clean up press watchers
+    document.removeEventListener('touchmove',onPressWatchMove);
+    document.removeEventListener('touchend',onPressWatchEnd);
+    document.removeEventListener('touchcancel',onPressWatchEnd);
+
+    if(!dragPressState)return;
+    const {type,idx,blockIdx,startX,startY}=dragPressState;
+    dragPressState=null;
+
+    // Reset handle visual
+    handle.style.transform='scale(1)';
+    handle.style.transition='transform 0.1s';
+    setTimeout(()=>{handle.style.transform='';handle.style.transition='';handle.style.opacity='';},100);
+
+    if(navigator.vibrate)navigator.vibrate(25);
+
+    // Now initiate drag — finger is STILL down, touchmove/touchend will drive it
+    if(type==='block'&&expandedBlockIndex===idx){
+      expandedBlockIndex=null;
+      renderBPBlocks();
+      requestAnimationFrame(()=>{
+        const tile=document.getElementById('block-tile-'+idx);
+        if(tile)initDrag(startX,startY,type,idx,blockIdx,tile);
+      });
+    } else {
+      const srcEl=type==='block'
+        ?document.getElementById('block-tile-'+idx)
+        :document.querySelector(`#ex-list-${blockIdx} .ex-tile:nth-child(${idx+1})`);
+      if(srcEl)initDrag(startX,startY,type,idx,blockIdx,srcEl);
+    }
   },280);
 }
 
-function onHandlePressCancel(e){
+function onPressWatchMove(e){
+  if(!dragPressState)return;
+  const touch=Array.from(e.touches).find(t=>t.identifier===dragPressState.touchId);
+  if(!touch)return;
+  const dx=Math.abs(touch.clientX-dragPressState.startX);
+  const dy=Math.abs(touch.clientY-dragPressState.startY);
+  if(dx>8||dy>8){
+    // Finger moved too much — cancel long press, let scroll happen
+    clearTimeout(dragPressTimer);
+    dragPressTimer=null;
+    document.removeEventListener('touchmove',onPressWatchMove);
+    document.removeEventListener('touchend',onPressWatchEnd);
+    document.removeEventListener('touchcancel',onPressWatchEnd);
+    if(dragPressState){
+      const h=dragPressState.handle;
+      h.style.transform='';h.style.transition='';h.style.opacity='';
+      dragPressState=null;
+    }
+  }
+}
+
+function onPressWatchEnd(e){
+  // Finger lifted before long press — cancel
   clearTimeout(dragPressTimer);
   dragPressTimer=null;
-  if(dragPressHandle){
-    dragPressHandle.style.transform='';
-    dragPressHandle.style.transition='';
-    dragPressHandle.style.opacity='';
-    dragPressHandle=null;
+  document.removeEventListener('touchmove',onPressWatchMove);
+  document.removeEventListener('touchend',onPressWatchEnd);
+  document.removeEventListener('touchcancel',onPressWatchEnd);
+  if(dragPressState){
+    const h=dragPressState.handle;
+    h.style.transform='';h.style.transition='';h.style.opacity='';
+    dragPressState=null;
   }
-}
-
-function onHandlePressMove(e){
-  if(!dragPressHandle)return;
-  const t=e.touches[0];
-  const dx=Math.abs(t.clientX-dragPressHandle._pressStartX);
-  const dy=Math.abs(t.clientY-dragPressHandle._pressStartY);
-  // Cancel press if finger moves more than 8px before long press fires
-  if(dx>8||dy>8)onHandlePressCancel(e);
-}
-
-function beginDragFromHandle(handle,touchX,touchY){
-  const type=handle.dataset.dtype;
-  const idx=parseInt(handle.dataset.didx);
-  const blockIdx=handle.dataset.dblock!==undefined?parseInt(handle.dataset.dblock):null;
-
-  if(type==='block'&&expandedBlockIndex===idx){
-    expandedBlockIndex=null;
-    renderBPBlocks();
-    requestAnimationFrame(()=>{
-      const tile=document.getElementById('block-tile-'+idx);
-      if(tile)initDrag(touchX,touchY,type,idx,blockIdx,tile);
-    });
-    return;
-  }
-
-  const srcEl=type==='block'
-    ?document.getElementById('block-tile-'+idx)
-    :document.querySelector(`#ex-list-${blockIdx} .ex-tile:nth-child(${idx+1})`);
-  if(srcEl)initDrag(touchX,touchY,type,idx,blockIdx,srcEl);
 }
 
 function initDrag(touchX,touchY,type,idx,blockIdx,srcEl){
