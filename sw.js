@@ -1,9 +1,10 @@
-const CACHE = 'forge-v7';
+const CACHE = 'forge-v8';
 
 self.addEventListener('install', e => {
   e.waitUntil(
     caches.open(CACHE).then(cache => {
       cache.add('workout-tracker.html').catch(() => {});
+      cache.add('exercise-library.js').catch(() => {});
       cache.add('manifest.json').catch(() => {});
       cache.add('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap').catch(() => {});
     })
