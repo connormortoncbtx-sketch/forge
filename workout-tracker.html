@@ -127,10 +127,10 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
 .forge-tile-bar{width:3px;flex-shrink:0;}
 .forge-tile-main{flex:1;padding:14px 14px 12px;min-width:0;}
 .forge-tile-name{font-family:var(--display);font-size:20px;letter-spacing:1px;line-height:1;}
-.forge-tile-name input{font-family:var(--display);font-size:20px;letter-spacing:1px;background:transparent;border:none;outline:none;color:var(--text);width:auto;max-width:100%;min-width:80px;padding:0;caret-color:var(--accent);display:block;}
+.forge-tile-name input{font-family:var(--display);font-size:20px;letter-spacing:1px;background:transparent;border:none;outline:none;color:var(--text);width:auto;max-width:100%;padding:0;caret-color:var(--accent);display:block;}
 .forge-tile-name input::placeholder{color:var(--muted);}
 .forge-tile-meta{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:3px;}
-.forge-tile-meta input{font-family:var(--mono);font-size:10px;color:var(--text-dim);background:transparent;border:none;outline:none;width:auto;max-width:100%;min-width:60px;padding:0;caret-color:var(--accent);display:block;}
+.forge-tile-meta input{font-family:var(--mono);font-size:10px;color:var(--text-dim);background:transparent;border:none;outline:none;width:auto;max-width:100%;padding:0;caret-color:var(--accent);display:block;}
 .forge-tile-meta input::placeholder{color:var(--muted);}
 .forge-tile-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;}
 .forge-tile-actions{display:flex;align-items:center;padding:0 6px 0 8px;gap:6px;flex-shrink:0;}
@@ -209,7 +209,7 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
 .new-ex-field input:focus{border-color:var(--accent);}
 .new-ex-field input::placeholder{color:var(--muted);}
 .new-ex-row{display:flex;gap:8px;margin-bottom:10px;}
-.new-ex-row input{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--sans);font-size:14px;padding:10px 12px;outline:none;}
+.new-ex-row input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--sans);font-size:14px;padding:10px 12px;outline:none;box-sizing:border-box;}
 .new-ex-row input:focus{border-color:var(--accent);}
 .new-ex-row input::placeholder{color:var(--muted);}
 .new-ex-confirm{width:100%;background:var(--accent);color:#0a0a0c;border:none;border-radius:8px;padding:12px;font-family:var(--display);font-size:18px;letter-spacing:1px;cursor:pointer;margin-top:4px;}
@@ -311,15 +311,7 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
 .sortable-ghost{opacity:0.08;background:var(--accent-dim);border:1px dashed var(--accent);border-radius:12px;}
 .sortable-chosen{box-shadow:0 8px 32px rgba(0,0,0,0.5);}
 .sortable-drag{opacity:0.97;box-shadow:0 16px 48px rgba(0,0,0,0.7);border-radius:12px;transform:scale(1.03);}
-.ai-sheet{position:fixed;inset:0;z-index:100;display:none;flex-direction:column;}
-.ai-sheet.open{display:flex;}
-.ai-backdrop{position:absolute;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);}
-.ai-panel{position:relative;margin-top:auto;background:var(--surface);border-top:1px solid var(--border);border-radius:24px 24px 0 0;display:flex;flex-direction:column;max-height:82dvh;z-index:1;}
-.ai-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:12px auto 4px;flex-shrink:0;}
-.ai-header{padding:6px 18px 12px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);flex-shrink:0;}
-.ai-logo{font-family:var(--display);font-size:20px;letter-spacing:1px;color:var(--accent);}
-.ai-powered{font-family:var(--mono);font-size:10px;color:var(--muted);}
-.ai-close{margin-left:auto;width:30px;height:30px;background:var(--card);border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-family:var(--mono);font-size:12px;color:var(--muted);}
+#smith-screen{padding-bottom:0;overflow:hidden;}
 .ai-messages{flex:1;overflow-y:auto;padding:14px 18px;display:flex;flex-direction:column;gap:10px;-webkit-overflow-scrolling:touch;}
 .ai-msg{max-width:90%;padding:10px 14px;border-radius:12px;font-size:14px;line-height:1.5;}
 .ai-msg.user{background:var(--accent);color:#0a0a0c;margin-left:auto;border-radius:12px 12px 2px 12px;font-weight:500;}
@@ -329,12 +321,11 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
 .ai-typing span{width:6px;height:6px;background:var(--muted);border-radius:50%;animation:bounce 1s infinite;}
 .ai-typing span:nth-child(2){animation-delay:0.15s;}
 .ai-typing span:nth-child(3){animation-delay:0.3s;}
-@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
 .ai-quick-btns{display:flex;gap:8px;padding:0 18px 8px;overflow-x:auto;flex-shrink:0;scrollbar-width:none;}
 .ai-quick-btns::-webkit-scrollbar{display:none;}
 .quick-btn{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:6px 13px;font-family:var(--mono);font-size:10px;color:var(--text-dim);cursor:pointer;white-space:nowrap;flex-shrink:0;}
 .quick-btn:active{border-color:var(--accent);color:var(--accent);}
-.ai-input-row{display:flex;gap:10px;padding:10px 18px 28px;border-top:1px solid var(--border);flex-shrink:0;}
+.ai-input-row{display:flex;gap:10px;padding:10px 18px calc(28px + 68px);border-top:1px solid var(--border);flex-shrink:0;background:var(--surface);}
 .ai-input{flex:1;background:var(--card);border:1px solid var(--border);border-radius:24px;color:var(--text);font-family:var(--sans);font-size:15px;padding:11px 16px;outline:none;}
 .ai-input:focus{border-color:var(--accent);}
 .ai-input::placeholder{color:var(--muted);}
@@ -364,19 +355,44 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
 .done-home-btn{width:100%;background:var(--accent);color:#0a0a0c;border:none;border-radius:var(--radius);padding:17px;font-family:var(--display);font-size:22px;letter-spacing:2px;cursor:pointer;}
 
 /* ── HISTORY ── */
-#history-screen{padding:52px 22px 100px;overflow-y:auto;}
-#history-screen h2{font-family:var(--display);font-size:36px;letter-spacing:2px;margin-bottom:18px;}
-.history-item-wrap{position:relative;overflow:hidden;border-radius:10px;margin-bottom:10px;}
-.history-item-wrap .delete-bg{position:absolute;right:0;top:0;bottom:0;width:80px;background:var(--red);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;color:#fff;letter-spacing:1px;border-radius:0 10px 10px 0;}
-.history-entry{position:relative;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;transition:transform 0.15s ease;touch-action:pan-y;margin-bottom:0;}
+#history-screen{overflow:hidden;}
+.history-item-wrap{position:relative;overflow:hidden;border-radius:var(--radius);margin-bottom:10px;}
+.history-item-wrap .delete-bg{position:absolute;right:0;top:0;bottom:0;width:80px;background:var(--red);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;color:#fff;letter-spacing:1px;border-radius:0 var(--radius) var(--radius) 0;}
+.history-entry{position:relative;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;transition:transform 0.15s ease;touch-action:pan-y;cursor:pointer;}
 .history-entry.swiping{transition:none;}
 .history-entry.deleting{transition:transform 0.2s ease,opacity 0.2s ease;transform:translateX(-100%) !important;opacity:0;}
+.history-entry.expanded{border-color:var(--accent);}
 .h-date{font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
 .h-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:5px;}
 .h-prog-tag{font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:4px;display:inline-block;letter-spacing:1px;text-transform:uppercase;background:var(--surface);border:1px solid var(--border);color:var(--muted);}
 .h-incomplete-tag{font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:4px;background:rgba(255,71,71,0.12);color:var(--red);display:inline-block;letter-spacing:1px;text-transform:uppercase;}
-.h-workout{font-family:var(--display);font-size:18px;letter-spacing:0.5px;margin-bottom:4px;}
-.h-sets{font-size:12px;color:var(--text-dim);}
+.h-workout{font-family:var(--display);font-size:20px;letter-spacing:0.5px;margin-bottom:4px;}
+.h-stats{display:flex;gap:14px;flex-wrap:wrap;}
+.h-stat{font-family:var(--mono);font-size:11px;color:var(--muted);}
+.h-stat.pr{color:var(--accent);}
+.h-exercises{margin-top:12px;border-top:1px solid var(--border);padding-top:12px;display:none;}
+.history-entry.expanded .h-exercises{display:block;}
+.h-ex-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(37,37,48,0.4);}
+.h-ex-row:last-child{border-bottom:none;}
+.h-ex-name{flex:1;font-size:13px;font-weight:500;}
+.h-ex-top{font-family:var(--mono);font-size:11px;color:var(--muted);flex-shrink:0;}
+.h-ex-pr{font-family:var(--mono);font-size:9px;padding:2px 6px;border-radius:4px;background:var(--accent-dim);color:var(--accent);letter-spacing:1px;flex-shrink:0;}
+.h-ex-partial{font-family:var(--mono);font-size:9px;color:var(--red);flex-shrink:0;}
+/* Exercise history list */
+.hist-ex-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:10px;cursor:pointer;}
+.hist-ex-card:active{border-color:var(--accent);}
+.hist-ex-card-name{font-family:var(--display);font-size:18px;letter-spacing:0.5px;margin-bottom:3px;}
+.hist-ex-card-meta{font-family:var(--mono);font-size:10px;color:var(--muted);}
+/* Chart */
+.hist-chart-wrap{margin-bottom:20px;}
+.hist-chart-title{font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;}
+.hist-chart-svg{width:100%;overflow:visible;}
+/* Exercise detail session log */
+.ex-detail-session{padding:10px 0;border-bottom:1px solid var(--border);}
+.ex-detail-session:last-child{border-bottom:none;}
+.ex-detail-date{font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:3px;}
+.ex-detail-sets{font-size:13px;color:var(--text);}
+.ex-detail-pr{font-family:var(--mono);font-size:9px;padding:2px 6px;border-radius:4px;background:var(--accent-dim);color:var(--accent);margin-left:8px;}
 
 /* ── GOALS ── */
 #goals-screen{overflow-y:auto;}
@@ -444,7 +460,7 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
   <div class="home-header">
     <div class="logo">FORGE</div>
     <div class="home-subtitle">Training System</div>
-    <div style="font-family:var(--mono);font-size:9px;color:rgba(232,255,71,0.35);letter-spacing:1px;margin-top:4px;">v0.27</div>
+    <div style="font-family:var(--mono);font-size:9px;color:rgba(232,255,71,0.35);letter-spacing:1px;margin-top:4px;">v0.41</div>
   </div>
   <div class="stats-strip">
     <div class="stat-pill"><div class="val" id="stat-week">0</div><div class="lbl">This Week</div></div>
@@ -464,7 +480,55 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
 </div>
 
 <!-- HISTORY -->
-<div class="screen" id="history-screen"><h2>HISTORY</h2><div id="history-list"></div></div>
+<div class="screen" id="history-screen">
+  <!-- Header -->
+  <div style="padding:52px 24px 16px;">
+    <div style="font-family:var(--display);font-size:36px;letter-spacing:2px;">HISTORY</div>
+  </div>
+  <!-- Stats strip -->
+  <div class="stats-strip" style="padding:0 24px 18px;">
+    <div class="stat-pill"><div class="val" id="hs-sessions">0</div><div class="lbl">Sessions</div></div>
+    <div class="stat-pill"><div class="val" id="hs-volume">0</div><div class="lbl">Total lbs</div></div>
+    <div class="stat-pill"><div class="val" id="hs-prs">0</div><div class="lbl">Total PRs</div></div>
+  </div>
+  <!-- Toggle -->
+  <div class="prog-pill-row" style="padding:0 24px 14px;">
+    <div class="prog-pill active" id="hist-pill-sessions" onclick="switchHistTab('sessions',this)">Sessions</div>
+    <div class="prog-pill" id="hist-pill-exercises" onclick="switchHistTab('exercises',this)">Exercises</div>
+  </div>
+  <!-- Sessions view -->
+  <div id="hist-sessions-view" style="padding:0 24px 100px;overflow-y:auto;flex:1;">
+    <!-- Filter pills -->
+    <div style="display:flex;gap:8px;margin-bottom:14px;">
+      <div class="prog-pill active" id="hf-all" onclick="setHistFilter('all',this)" style="flex:none;padding:7px 16px;">All</div>
+      <div class="prog-pill" id="hf-week" onclick="setHistFilter('week',this)" style="flex:none;padding:7px 16px;">Week</div>
+      <div class="prog-pill" id="hf-month" onclick="setHistFilter('month',this)" style="flex:none;padding:7px 16px;">Month</div>
+    </div>
+    <div id="history-list"></div>
+  </div>
+  <!-- Exercises view -->
+  <div id="hist-exercises-view" style="display:none;flex:1;overflow:hidden;flex-direction:column;">
+    <div style="padding:0 24px 12px;flex-shrink:0;">
+      <input id="hist-ex-search" placeholder="Search exercises you've logged..."
+        style="width:100%;background:var(--card);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:var(--sans);font-size:14px;padding:10px 14px;outline:none;box-sizing:border-box;"
+        oninput="filterHistExercises()">
+    </div>
+    <div id="hist-ex-list" style="padding:0 24px 100px;overflow-y:auto;flex:1;"></div>
+  </div>
+</div>
+
+<!-- Exercise detail sheet -->
+<div class="picker-sheet" id="ex-detail-sheet">
+  <div class="picker-backdrop" onclick="closeExDetail()"></div>
+  <div class="picker-panel">
+    <div class="picker-handle"></div>
+    <div class="picker-header">
+      <div class="picker-title" id="ex-detail-title">Exercise</div>
+      <div class="picker-close" onclick="closeExDetail()">✕</div>
+    </div>
+    <div class="picker-scroll" id="ex-detail-content" style="padding:16px 20px;"></div>
+  </div>
+</div>
 
 <!-- GOALS -->
 <div class="screen" id="goals-screen">
@@ -515,7 +579,7 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
 <div class="bottom-nav" id="main-nav">
   <div class="nav-tab active" onclick="showTab('home-screen',this)"><div class="nav-lbl">Home</div></div>
   <div class="nav-tab" onclick="showTab('goals-screen',this);renderGoals()"><div class="nav-lbl">Goals</div></div>
-  <div class="nav-tab" onclick="openAI()"><div class="nav-lbl">Smith</div></div>
+  <div class="nav-tab" onclick="showTab('smith-screen',this)"><div class="nav-lbl">Smith</div></div>
   <div class="nav-tab" onclick="showTab('history-screen',this);renderHistory()"><div class="nav-lbl">History</div></div>
 </div>
 
@@ -625,18 +689,18 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
           <input id="nef-muscle" placeholder="e.g. Chest">
         </div>
         <div class="new-ex-row">
-          <div style="flex:1">
+          <div style="flex:1;min-width:0">
             <div class="new-ex-field-label" style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px">Sets</div>
             <input id="nef-sets" type="number" inputmode="numeric" placeholder="3">
           </div>
-          <div style="flex:2">
+          <div style="flex:2;min-width:0">
             <div class="new-ex-field-label" style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px">Reps</div>
             <input id="nef-reps" placeholder="e.g. 8-12">
           </div>
         </div>
-        <div style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Tags</div>
-        <div class="tag-row" id="nef-tags" style="margin-bottom:12px"></div>
-        <button class="new-ex-confirm" onclick="createAndAddExercise()">ADD EXERCISE</button>
+        <button class="new-ex-confirm" onclick="createAndAddExercise()">+ ADD EXERCISE</button>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:14px;margin-bottom:6px">Tags (optional)</div>
+        <div class="tag-row" id="nef-tags" style="margin-bottom:4px"></div>
       </div>
       <div class="picker-new-btn" id="picker-new-btn" onclick="toggleNewExForm()">+ Create New Exercise</div>
     </div>
@@ -678,30 +742,28 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
 </div>
 
 <!-- AI -->
-<div class="ai-sheet" id="ai-sheet">
-  <div class="ai-backdrop" onclick="closeAI()"></div>
-  <div class="ai-panel">
-    <div class="ai-handle"></div>
-    <div class="ai-header">
-      <div class="ai-logo">SMITH</div>
-      <div class="ai-powered">by FORGE · powered by Claude</div>
-      <div class="ai-close" onclick="closeAI()">X</div>
+<!-- SMITH SCREEN -->
+<div class="screen" id="smith-screen">
+  <div style="padding:52px 24px 16px;display:flex;align-items:flex-end;justify-content:space-between;flex-shrink:0;">
+    <div>
+      <div style="font-family:var(--display);font-size:36px;letter-spacing:2px;color:var(--accent);">SMITH</div>
     </div>
-    <div class="ai-messages" id="ai-messages">
-      <div class="ai-msg system-msg">Hey, I'm Smith — your FORGE coach. Ask me anything about training, form, programming, or your goals.</div>
-    </div>
-    <div class="ai-quick-btns">
-      <div class="quick-btn" onclick="askQuick('How am I pacing today?')">Pace check</div>
-      <div class="quick-btn" onclick="askQuick('Suggest a weight for my next set based on what I have logged')">Push weight</div>
-      <div class="quick-btn" onclick="askQuick('Give me form cues for the current exercise')">Form cues</div>
-      <div class="quick-btn" onclick="askQuick('How is my progress toward my goals based on today?')">Goal check</div>
-      <div class="quick-btn" onclick="askQuick('Should I push harder or dial back intensity today?')">Intensity</div>
-      <div class="quick-btn" onclick="askQuick('Recommend a program for my goals')">Program advice</div>
-    </div>
-    <div class="ai-input-row">
-      <input class="ai-input" id="ai-input" placeholder="Ask anything..." onkeydown="if(event.key==='Enter')sendAI()">
-      <button class="ai-send" id="ai-send-btn" onclick="sendAI()">&#8250;</button>
-    </div>
+    <button onclick="clearSmith()" style="font-family:var(--mono);font-size:10px;color:var(--muted);background:none;border:1px solid var(--border);border-radius:6px;padding:6px 10px;cursor:pointer;letter-spacing:1px;">CLEAR</button>
+  </div>
+  <div class="ai-messages" id="ai-messages" style="flex:1;overflow-y:auto;padding:0 18px 12px;">
+    <div class="ai-msg system-msg">Hey, I'm Smith — your FORGE coach. Ask me anything about training, form, programming, or your goals.</div>
+  </div>
+  <div class="ai-quick-btns">
+    <div class="quick-btn" onclick="askQuick('What program would suit my goals?')">Program advice</div>
+    <div class="quick-btn" onclick="askQuick('How do I improve my bench press?')">Bench tips</div>
+    <div class="quick-btn" onclick="askQuick('Give me a warm up routine')">Warm up</div>
+    <div class="quick-btn" onclick="askQuick('How should I structure a push pull legs split?')">PPL help</div>
+    <div class="quick-btn" onclick="askQuick('What should I eat around my workouts?')">Nutrition</div>
+    <div class="quick-btn" onclick="askQuick('How do I progress faster?')">Progress faster</div>
+  </div>
+  <div class="ai-input-row">
+    <input class="ai-input" id="ai-input" placeholder="Ask Smith anything..." onkeydown="if(event.key==='Enter')sendAI()">
+    <button class="ai-send" id="ai-send-btn" onclick="sendAI()">&#8250;</button>
   </div>
 </div>
 
@@ -716,7 +778,7 @@ if(typeof EXERCISE_LIBRARY==='undefined'){console.warn('exercise-library.js not 
 // CONSTANTS
 // ─────────────────────────────────────────────
 const ACCENT_COLORS = ['#e8ff47','#ff8c47','#47b4ff','#c847ff','#ff4774','#47ffd4','#ffffff'];
-const STYLE_TAGS = ['PPL','Bro Split','Full Body','Upper/Lower','Strength','Hypertrophy','Explosive','Cardio','Mobility','Custom'];
+const STYLE_TAGS = ['PPL','Bro Split','Full Body','Upper/Lower','Strength','Hypertrophy','Explosive','Cardio','Mobility'];
 const BLOCK_TYPES = [
   {id:'lifting',label:'Lifting'},
   {id:'cardio',label:'Cardio'},
@@ -1047,6 +1109,9 @@ const getCustomProgs=()=>JSON.parse(localStorage.getItem('forge_custom_progs')||
 const saveCustomProgs=p=>localStorage.setItem('forge_custom_progs',JSON.stringify(p));
 const getExLibrary =()=>JSON.parse(localStorage.getItem('forge_ex_lib')||'[]');
 const saveExLibrary=l=>localStorage.setItem('forge_ex_lib',JSON.stringify(l));
+// Custom user tags per context: 'style' | 'block' | 'ex'
+const getCustomTags=ctx=>JSON.parse(localStorage.getItem('forge_tags_'+ctx)||'[]');
+const saveCustomTags=(ctx,t)=>localStorage.setItem('forge_tags_'+ctx,JSON.stringify(t));
 
 function getAllPrograms(){return [...BUILTIN_PROGRAMS,...getCustomProgs()];}
 
@@ -1184,19 +1249,53 @@ function closeProgramBuilder(){
   renderHome();
 }
 
-function renderBPStyleTags(){
-  const el=document.getElementById('bp-style-tags');el.innerHTML='';
-  STYLE_TAGS.forEach(t=>{
+// ─────────────────────────────────────────────
+// SHARED TAG PICKER — with add-new capability
+// ─────────────────────────────────────────────
+function renderTagPicker(el, builtinTags, ctx, selectedArr, onToggle){
+  el.innerHTML='';
+  const custom=getCustomTags(ctx);
+  const allTags=[...builtinTags,...custom];
+  allTags.forEach(t=>{
     const chip=document.createElement('div');
-    chip.className='tag-chip'+(builderProgram.tags.includes(t)?' selected':'');
+    chip.className='tag-chip'+(selectedArr.includes(t)?' selected':'');
     chip.textContent=t;
-    chip.onclick=()=>{
-      if(builderProgram.tags.includes(t))builderProgram.tags=builderProgram.tags.filter(x=>x!==t);
-      else builderProgram.tags.push(t);
-      renderBPStyleTags();
-      updateBPPreview();
-    };
+    chip.onclick=()=>onToggle(t);
     el.appendChild(chip);
+  });
+  // Add tag input
+  const addWrap=document.createElement('div');
+  addWrap.style.cssText='display:flex;gap:6px;align-items:center;margin-top:4px;width:100%;';
+  addWrap.innerHTML=
+    '<input class="add-tag-input" placeholder="+ New tag..." '+
+    'style="flex:1;background:var(--surface);border:1px dashed var(--border);border-radius:20px;'+
+    'color:var(--text);font-family:var(--mono);font-size:10px;padding:5px 12px;outline:none;letter-spacing:1px;">'+
+    '<button style="background:var(--accent);color:#0a0a0c;border:none;border-radius:20px;font-family:var(--mono);font-size:10px;padding:5px 12px;cursor:pointer;letter-spacing:1px;white-space:nowrap;">ADD</button>';
+  const input=addWrap.querySelector('input');
+  const btn=addWrap.querySelector('button');
+  const addTag=()=>{
+    const val=input.value.trim().toUpperCase();
+    if(!val)return;
+    const existing=[...builtinTags,...getCustomTags(ctx)];
+    if(!existing.includes(val)){
+      const updated=[...getCustomTags(ctx),val];
+      saveCustomTags(ctx,updated);
+    }
+    onToggle(val);
+    input.value='';
+  };
+  btn.onclick=addTag;
+  input.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();addTag();}};
+  el.appendChild(addWrap);
+}
+
+function renderBPStyleTags(){
+  const el=document.getElementById('bp-style-tags');
+  renderTagPicker(el, STYLE_TAGS, 'style', builderProgram.tags, t=>{
+    if(builderProgram.tags.includes(t)) builderProgram.tags=builderProgram.tags.filter(x=>x!==t);
+    else builderProgram.tags.push(t);
+    renderBPStyleTags();
+    updateBPPreview();
   });
 }
 
@@ -1287,7 +1386,22 @@ function renderBPBlocks(){
   builderProgram.days.forEach((day,i)=>{
     el.appendChild(buildBlockTile(day, i));
   });
+  attachBlockTagPickers();
   attachDragHandles();
+}
+
+function attachBlockTagPickers(){
+  builderProgram.days.forEach((day,i)=>{
+    const el=document.getElementById('block-tag-row-'+i);
+    if(!el)return;
+    renderTagPicker(el, BLOCK_TAGS, 'block', day.tags||[], t=>{
+      if(!builderProgram.days[i].tags)builderProgram.days[i].tags=[];
+      const tags=builderProgram.days[i].tags;
+      if(tags.includes(t))builderProgram.days[i].tags=tags.filter(x=>x!==t);
+      else tags.push(t);
+      attachBlockTagPickers(); // re-render just the tag rows
+    });
+  });
 }
 
 function buildBlockTile(day, i){
@@ -1302,22 +1416,28 @@ function buildBlockTile(day, i){
   tile.className = 'forge-tile'+(isExpanded?' expanded':'');
   tile.id = 'block-tile-'+i;
 
-  // Header — tapping name/desc edits inline, tapping elsewhere toggles expand
+  const nameVal=day.name||'';
+  const descVal=day.desc||'';
+  const nameSize=Math.max(nameVal.length||10, 10);
+  const descSize=Math.max(descVal.length||22, 22); // "Description (optional)" = 22 chars
+
   tile.innerHTML =
     '<div class="forge-tile-header" onclick="toggleBlockTile('+i+',event)">'+
       '<div class="forge-tile-bar" style="background:'+accentColor+'"></div>'+
       '<div class="forge-tile-main">'+
         '<div class="forge-tile-name">'+
-          '<input id="bt-name-'+i+'" value="'+escHtml(day.name||'')+'" placeholder="BLOCK NAME"'+
+          '<input id="bt-name-'+i+'" value="'+escHtml(nameVal)+'" placeholder="BLOCK NAME"'+
+          ' size="'+nameSize+'"'+
           ' autocapitalize="characters" autocomplete="off" spellcheck="false"'+
-          ' onclick="event.stopPropagation()"'+
-          ' oninput="updateBlockField('+i+',\'name\',this.value.toUpperCase())">'+
+          ' onfocus="event.stopPropagation()"'+
+          ' oninput="updateBlockField('+i+',\'name\',this.value.toUpperCase());this.size=Math.max(this.value.length||10,10)">'+
         '</div>'+
         '<div class="forge-tile-meta">'+
-          '<input id="bt-desc-'+i+'" value="'+escHtml(day.desc||'')+'" placeholder="Description (optional)"'+
+          '<input id="bt-desc-'+i+'" value="'+escHtml(descVal)+'" placeholder="Description (optional)"'+
+          ' size="'+descSize+'"'+
           ' autocomplete="off" spellcheck="false"'+
-          ' onclick="event.stopPropagation()"'+
-          ' oninput="updateBlockField('+i+',\'desc\',this.value)">'+
+          ' onfocus="event.stopPropagation()"'+
+          ' oninput="updateBlockField('+i+',\'desc\',this.value);this.size=Math.max(this.value.length||22,22)">'+
         '</div>'+
         (tagsHtml?'<div class="forge-tile-tags">'+tagsHtml+'</div>':'')+
       '</div>'+
@@ -1340,10 +1460,8 @@ function buildBlockBody(day, i){
     '<div class="tag-chip'+(day.type===t.id?' selected':'')+'" onclick="updateBlockType('+i+',\''+t.id+'\')">'+t.label+'</div>'
   ).join('');
 
-  // Tag selector
-  const tagSel = BLOCK_TAGS.map(t=>
-    '<div class="tag-chip'+((day.tags||[]).includes(t)?' selected':'')+'" onclick="toggleBlockTag('+i+',\''+escHtml(t)+'\')">'+t+'</div>'
-  ).join('');
+  // Tag selector — rendered via renderTagPicker after DOM insertion
+  const tagSel = ''; // populated by attachBlockTagPickers()
 
   let contentHtml = '';
   if(!isSimple){
@@ -1375,7 +1493,7 @@ function buildBlockBody(day, i){
 
   return '<div style="margin-bottom:12px">'+
     '<div style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Tags</div>'+
-    '<div class="tag-row">'+tagSel+'</div>'+
+    '<div class="tag-row" id="block-tag-row-'+i+'"></div>'+
   '</div>'+
   '<div style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Exercises</div>'+
   contentHtml;
@@ -1590,7 +1708,9 @@ let pickerActiveTag = null; // single select
 
 function renderPickerTagFilters(){
   const el=document.getElementById('picker-tag-filters');el.innerHTML='';
-  PICKER_QUICK_TAGS.forEach(t=>{
+  const custom=getCustomTags('picker');
+  const allTags=[...PICKER_QUICK_TAGS,...custom];
+  allTags.forEach(t=>{
     const chip=document.createElement('div');
     chip.className='picker-tag'+(pickerActiveTag===t?' active':'');
     chip.textContent=t;
@@ -1601,6 +1721,25 @@ function renderPickerTagFilters(){
     };
     el.appendChild(chip);
   });
+  // Inline add tag input
+  const input=document.createElement('input');
+  input.placeholder='+ Tag...';
+  input.style.cssText='width:70px;background:transparent;border:1px dashed rgba(232,255,71,0.3);border-radius:20px;color:var(--muted);font-family:var(--mono);font-size:9px;padding:5px 10px;outline:none;letter-spacing:1px;flex-shrink:0;';
+  const addPickerTag=()=>{
+    const val=input.value.trim().toUpperCase();
+    if(!val)return;
+    const existing=[...PICKER_QUICK_TAGS,...getCustomTags('picker')];
+    if(!existing.includes(val)){
+      saveCustomTags('picker',[...getCustomTags('picker'),val]);
+    }
+    pickerActiveTag=val;
+    input.value='';
+    renderPickerTagFilters();
+    renderPickerList();
+  };
+  input.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();addPickerTag();}};
+  input.onblur=()=>{if(input.value.trim())addPickerTag();};
+  el.appendChild(input);
 }
 
 function getAllExercises(){
@@ -1670,24 +1809,14 @@ function toggleNewExForm(){
   btn.style.display=isOpen?'none':'block';
   list.style.display=isOpen?'none':'';
   if(isOpen){
-    const el=document.getElementById('nef-tags');el.innerHTML='';
-    EX_TAGS.forEach(t=>{
-      const chip=document.createElement('div');
-      chip.className='tag-chip'+(newExTags.includes(t)?' selected':'');
-      chip.textContent=t;
-      chip.onclick=()=>{
-        if(newExTags.includes(t))newExTags=newExTags.filter(x=>x!==t);
-        else newExTags.push(t);
-        const chips=el.querySelectorAll('.tag-chip');
-        EX_TAGS.forEach((tag,i)=>{
-          if(chips[i])chips[i].className='tag-chip'+(newExTags.includes(tag)?' selected':'');
-        });
-      };
-      el.appendChild(chip);
+    const el=document.getElementById('nef-tags');
+    const refreshExTags=()=>renderTagPicker(el, EX_TAGS, 'ex', newExTags, t=>{
+      if(newExTags.includes(t))newExTags=newExTags.filter(x=>x!==t);
+      else newExTags.push(t);
+      refreshExTags();
     });
-    setTimeout(()=>{
-      document.getElementById('nef-name').focus();
-    },100);
+    refreshExTags();
+    setTimeout(()=>document.getElementById('nef-name').focus(),100);
   }
 }
 
@@ -2047,24 +2176,256 @@ function goHome(){renderHome();showScreen('home-screen');}
 // ─────────────────────────────────────────────
 // HISTORY
 // ─────────────────────────────────────────────
+// ─────────────────────────────────────────────
+// HISTORY
+// ─────────────────────────────────────────────
+let histTab='sessions';
+let histFilter='all';
+
 function renderHistory(){
-  const h=getHistory(),list=document.getElementById('history-list');
-  list.innerHTML='';
-  if(!h.length){list.innerHTML='<div class="empty-state"><div class="em-label">LOG</div><div>No sessions logged yet.</div></div>';return;}
-  h.forEach((x,idx)=>{
+  const h=getHistory();
+  // Stats strip
+  const totalVol=h.reduce((a,x)=>a+(x.totalVolume||0),0);
+  const totalPRs=h.reduce((a,x)=>a+(x.prs||0),0);
+  document.getElementById('hs-sessions').textContent=h.length;
+  document.getElementById('hs-volume').textContent=totalVol>999999?(totalVol/1000000).toFixed(1)+'M':totalVol>999?(totalVol/1000).toFixed(0)+'k':Math.round(totalVol);
+  document.getElementById('hs-prs').textContent=totalPRs;
+
+  if(histTab==='sessions') renderSessionList();
+  else renderExerciseList();
+}
+
+function switchHistTab(tab,el){
+  histTab=tab;
+  document.querySelectorAll('#hist-pill-sessions,#hist-pill-exercises').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('hist-sessions-view').style.display=tab==='sessions'?'':'none';
+  const exView=document.getElementById('hist-exercises-view');
+  exView.style.display=tab==='exercises'?'flex':'none';
+  if(tab==='exercises')renderExerciseList();
+  else renderSessionList();
+}
+
+function setHistFilter(f,el){
+  histFilter=f;
+  document.querySelectorAll('#hf-all,#hf-week,#hf-month').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  renderSessionList();
+}
+
+function renderSessionList(){
+  const h=getHistory();
+  const now=new Date();
+  const filtered=h.filter(x=>{
+    if(histFilter==='week')return (now-new Date(x.date))/86400000<=7;
+    if(histFilter==='month')return (now-new Date(x.date))/86400000<=30;
+    return true;
+  });
+  const list=document.getElementById('history-list');list.innerHTML='';
+  if(!filtered.length){
+    list.innerHTML='<div class="empty-state"><div class="em-label">LOG</div><div>No sessions in this range.</div></div>';
+    return;
+  }
+  filtered.forEach((x,filtIdx)=>{
+    const realIdx=h.indexOf(x);
     const d=new Date(x.date).toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+    const exRows=(x.exercises||[]).map(e=>
+      '<div class="h-ex-row">'+
+        '<div class="h-ex-name">'+escHtml(e.name)+'</div>'+
+        (e.isPR?'<div class="h-ex-pr">PR</div>':'')+(e.partial?'<div class="h-ex-partial">'+e.setsLogged+'/'+e.setsTarget+'</div>':'')+
+        '<div class="h-ex-top">'+(e.topSet?e.topSet.weight+'×'+e.topSet.reps:'—')+'</div>'+
+      '</div>'
+    ).join('');
     const wrap=document.createElement('div');wrap.className='history-item-wrap';
-    wrap.innerHTML='<div class="delete-bg">DEL</div>'+
-      '<div class="history-entry">'+
-        '<div class="h-date">'+d+' &middot; '+(x.duration||'—')+'</div>'+
-        '<div class="h-tags"><span class="h-prog-tag">'+(x.programName||'—')+'</span>'+(x.incomplete?'<span class="h-incomplete-tag">Ended Early</span>':'')+'</div>'+
-        '<div class="h-workout">'+(x.dayName||'—')+'</div>'+
-        '<div class="h-sets">'+x.totalSets+' sets'+(x.totalVolume?' &middot; '+Math.round(x.totalVolume).toLocaleString()+' lbs':'')+(x.prs?' &middot; '+x.prs+' PR'+(x.prs>1?'s':''):'')+
+    wrap.innerHTML=
+      '<div class="delete-bg">DEL</div>'+
+      '<div class="history-entry" id="hentry-'+filtIdx+'">'+
+        '<div class="h-date">'+d+' · '+(x.duration||'—')+'</div>'+
+        '<div class="h-tags">'+
+          '<span class="h-prog-tag">'+(x.programName||'—')+'</span>'+
+          (x.incomplete?'<span class="h-incomplete-tag">Ended Early</span>':'')+
         '</div>'+
+        '<div class="h-workout">'+(x.dayName||'—')+'</div>'+
+        '<div class="h-stats">'+
+          '<span class="h-stat">'+(x.totalSets||0)+' sets</span>'+
+          (x.totalVolume?'<span class="h-stat">'+Math.round(x.totalVolume).toLocaleString()+' lbs</span>':'')+
+          (x.prs?'<span class="h-stat pr">'+x.prs+' PR'+(x.prs>1?'s':'')+'</span>':'')+
+          (x.exercises?'<span class="h-stat">'+x.exercises.length+' exercises</span>':'')+
+        '</div>'+
+        (exRows?'<div class="h-exercises">'+exRows+'</div>':'')+
       '</div>';
     list.appendChild(wrap);
-    addSwipeToDelete(wrap.querySelector('.history-entry'),idx);
+    const entry=wrap.querySelector('.history-entry');
+    entry.addEventListener('click',()=>{
+      entry.classList.toggle('expanded');
+    });
+    addSwipeToDelete(entry,realIdx);
   });
+}
+
+// ── EXERCISE HISTORY ──
+function renderExerciseList(){
+  const h=getHistory();
+  // Build map: exerciseName -> [{date, topSet, vol, isPR}]
+  const exMap={};
+  h.forEach(session=>{
+    (session.exercises||[]).forEach(e=>{
+      if(!exMap[e.name])exMap[e.name]=[];
+      exMap[e.name].push({date:session.date,topSet:e.topSet,vol:e.vol,isPR:e.isPR,sessionName:session.dayName,programName:session.programName});
+    });
+  });
+  const names=Object.keys(exMap).sort();
+  const query=document.getElementById('hist-ex-search').value.trim().toLowerCase();
+  const filtered=query?names.filter(n=>n.toLowerCase().includes(query)):names;
+  const list=document.getElementById('hist-ex-list');list.innerHTML='';
+  if(!filtered.length){
+    list.innerHTML='<div class="empty-state"><div class="em-label">—</div><div>'+(names.length?'No matches.':'Log some sessions first.')+'</div></div>';
+    return;
+  }
+  filtered.forEach(name=>{
+    const entries=exMap[name];
+    const best=entries.reduce((a,b)=>{
+      const aE=a.topSet?Math.round(a.topSet.weight*(1+a.topSet.reps/30)):0;
+      const bE=b.topSet?Math.round(b.topSet.weight*(1+b.topSet.reps/30)):0;
+      return bE>aE?b:a;
+    },entries[0]);
+    const bestE1rm=best.topSet?Math.round(best.topSet.weight*(1+best.topSet.reps/30)):null;
+    const hasPR=entries.some(e=>e.isPR);
+    const card=document.createElement('div');card.className='hist-ex-card';
+    card.innerHTML=
+      '<div style="display:flex;align-items:center;gap:8px;">'+
+        '<div class="hist-ex-card-name">'+escHtml(name)+'</div>'+
+        (hasPR?'<span class="h-ex-pr">PR</span>':'')+
+      '</div>'+
+      '<div class="hist-ex-card-meta">'+entries.length+' session'+(entries.length>1?'s':'')+
+        (bestE1rm?' · Best e1RM: ~'+bestE1rm+' lbs':'')+
+        (best.topSet?' ('+best.topSet.weight+'×'+best.topSet.reps+')':'')+
+      '</div>';
+    card.onclick=()=>openExDetail(name,exMap[name]);
+    list.appendChild(card);
+  });
+}
+
+function filterHistExercises(){renderExerciseList();}
+
+function openExDetail(name, entries){
+  document.getElementById('ex-detail-title').textContent=name;
+  const content=document.getElementById('ex-detail-content');
+  content.innerHTML='';
+
+  const validEntries=entries.filter(e=>e.topSet).slice().reverse();
+
+  // Chart filter state
+  let chartRange=30; // days, 0 = all time
+
+  // Epley formula: estimated 1RM = weight × (1 + reps/30)
+  const e1rm=s=>s?Math.round(s.weight*(1+s.reps/30)):null;
+
+  function drawChart(){
+    const chartWrap=document.getElementById('ex-chart-wrap');
+    if(!chartWrap)return;
+    chartWrap.innerHTML='';
+
+    const now=new Date();
+    const chartEntries=chartRange===0
+      ? validEntries
+      : validEntries.filter(e=>(now-new Date(e.date))/86400000<=chartRange);
+
+    if(chartEntries.length<2){
+      chartWrap.innerHTML='<div style="font-family:var(--mono);font-size:11px;color:var(--muted);text-align:center;padding:24px 0">Not enough data in this range.</div>';
+      return;
+    }
+
+    const W=320,H=120,pad=36;
+    const vals=chartEntries.map(e=>e1rm(e.topSet)).filter(Boolean);
+    if(!vals.length){chartWrap.innerHTML='<div style="font-family:var(--mono);font-size:11px;color:var(--muted);text-align:center;padding:24px 0">No data.</div>';return;}
+    const minV=Math.min(...vals),maxV=Math.max(...vals);
+    const range=maxV-minV||1;
+    const pts=chartEntries.map((e,i)=>{
+      const v=e1rm(e.topSet);
+      if(!v)return null;
+      const x=pad+(i/(chartEntries.length-1))*(W-pad*2);
+      const y=H-pad-((v-minV)/range)*(H-pad*2);
+      return{x,y,v,e};
+    }).filter(Boolean);
+    const pathD=pts.map((p,i)=>(i===0?'M':'L')+p.x.toFixed(1)+' '+p.y.toFixed(1)).join(' ');
+    const areaD=pathD+' L'+pts[pts.length-1].x.toFixed(1)+' '+(H-pad)+' L'+pts[0].x.toFixed(1)+' '+(H-pad)+' Z';
+    const dots=pts.map(p=>
+      '<circle cx="'+p.x.toFixed(1)+'" cy="'+p.y.toFixed(1)+'" r="'+(p.e.isPR?5:3)+'" fill="'+(p.e.isPR?'var(--accent)':'var(--blue)')+'" stroke="var(--surface)" stroke-width="1.5"/>'+
+      (p.e.isPR?'<text x="'+p.x.toFixed(1)+'" y="'+(p.y-9)+'" text-anchor="middle" font-family="var(--mono)" font-size="8" fill="var(--accent)">PR</text>':'')
+    ).join('');
+    const yLabels=
+      '<text x="'+(pad-6)+'" y="'+(pad+4)+'" text-anchor="end" font-family="var(--mono)" font-size="9" fill="var(--muted)">'+maxV+'</text>'+
+      '<text x="'+(pad-6)+'" y="'+(H-pad+4)+'" text-anchor="end" font-family="var(--mono)" font-size="9" fill="var(--muted)">'+minV+'</text>';
+    const xLabel1=new Date(chartEntries[0].date).toLocaleDateString('en-US',{month:'short',day:'numeric'});
+    const xLabelN=new Date(chartEntries[chartEntries.length-1].date).toLocaleDateString('en-US',{month:'short',day:'numeric'});
+    const xLabels=
+      '<text x="'+pad+'" y="'+(H-4)+'" text-anchor="middle" font-family="var(--mono)" font-size="8" fill="var(--muted)">'+xLabel1+'</text>'+
+      '<text x="'+(W-pad)+'" y="'+(H-4)+'" text-anchor="middle" font-family="var(--mono)" font-size="8" fill="var(--muted)">'+xLabelN+'</text>';
+    chartWrap.innerHTML=
+      '<svg class="hist-chart-svg" viewBox="0 0 '+W+' '+H+'" height="'+H+'">'+
+        '<defs><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1">'+
+          '<stop offset="0%" stop-color="var(--accent)" stop-opacity="0.15"/>'+
+          '<stop offset="100%" stop-color="var(--accent)" stop-opacity="0"/>'+
+        '</linearGradient></defs>'+
+        '<path d="'+areaD+'" fill="url(#cg)"/>'+
+        '<path d="'+pathD+'" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round"/>'+
+        dots+yLabels+xLabels+
+      '</svg>';
+  }
+
+  // Filter pills
+  const filterWrap=document.createElement('div');
+  filterWrap.style.cssText='display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;';
+  [{label:'30D',days:30},{label:'90D',days:90},{label:'6M',days:180},{label:'1Y',days:365},{label:'All',days:0}].forEach(({label,days})=>{
+    const pill=document.createElement('div');
+    pill.className='prog-pill'+(days===30?' active':'');
+    pill.style.cssText='flex:none;padding:6px 14px;font-size:10px;';
+    pill.textContent=label;
+    pill.onclick=()=>{
+      chartRange=days;
+      filterWrap.querySelectorAll('.prog-pill').forEach(p=>p.classList.remove('active'));
+      pill.classList.add('active');
+      drawChart();
+    };
+    filterWrap.appendChild(pill);
+  });
+
+  const chartSection=document.createElement('div');
+  chartSection.className='hist-chart-wrap';
+  chartSection.innerHTML='<div class="hist-chart-title">Estimated 1RM (lbs) · Epley Formula</div>';
+  chartSection.appendChild(filterWrap);
+  const chartWrapDiv=document.createElement('div');
+  chartWrapDiv.id='ex-chart-wrap';
+  chartSection.appendChild(chartWrapDiv);
+  content.appendChild(chartSection);
+
+  drawChart();
+
+  // Session log — show actual set + estimated 1RM
+  const logTitle=document.createElement('div');
+  logTitle.style.cssText='font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin:16px 0 10px;';
+  logTitle.textContent='All Sessions ('+entries.length+')';
+  content.appendChild(logTitle);
+
+  [...entries].reverse().forEach(e=>{
+    const d=new Date(e.date).toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+    const est=e1rm(e.topSet);
+    const row=document.createElement('div');row.className='ex-detail-session';
+    row.innerHTML=
+      '<div class="ex-detail-date">'+d+' · '+escHtml(e.sessionName||'')+(e.programName?' · '+escHtml(e.programName):'')+'</div>'+
+      '<div class="ex-detail-sets">'+(e.topSet?e.topSet.weight+' lbs × '+e.topSet.reps+' reps':'—')+
+        (est?'<span style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-left:8px;">~'+est+' e1RM</span>':'')+
+        (e.isPR?'<span class="ex-detail-pr">PR</span>':'')+
+      '</div>';
+    content.appendChild(row);
+  });
+
+  document.getElementById('ex-detail-sheet').classList.add('open');
+}
+
+function closeExDetail(){
+  document.getElementById('ex-detail-sheet').classList.remove('open');
 }
 
 function addSwipeToDelete(el,idx){
@@ -2240,22 +2601,24 @@ function showToast(msg){
 }
 
 // ─────────────────────────────────────────────
-// AI
+// SMITH AI
 // ─────────────────────────────────────────────
 let aiHistory=[],aiTyping=false;
-function openAI(){
-  // If no active workout, reset to generic greeting
-  if(!currentWorkout){
-    const msgs=document.getElementById('ai-messages');
-    if(!msgs.querySelector('.ai-msg.user')){
-      msgs.innerHTML='<div class="ai-msg system-msg">Hey, I\'m Smith — your FORGE coach. Ask me anything about training, form, programming, or your goals.</div>';
-    }
-  }
-  document.getElementById('ai-sheet').classList.add('open');
-  document.getElementById('ai-input').focus();
+
+function clearSmith(){
+  aiHistory=[];
+  document.getElementById('ai-messages').innerHTML=
+    '<div class="ai-msg system-msg">Hey, I\'m Smith — your FORGE coach. Ask me anything about training, form, programming, or your goals.</div>';
 }
-function closeAI(){document.getElementById('ai-sheet').classList.remove('open');}
-function askQuick(q){document.getElementById('ai-input').value=q;sendAI();}
+
+// Keep stubs so any remaining references don't throw
+function openAI(){showTab('smith-screen',document.querySelector('.nav-tab:nth-child(3)'));}
+function closeAI(){}
+
+function askQuick(q){
+  document.getElementById('ai-input').value=q;
+  sendAI();
+}
 
 async function sendAI(){
   if(aiTyping)return;
@@ -2269,7 +2632,7 @@ async function sendAI(){
     const goalsText=goals.length
       ? goals.map((g,i)=>(i+1)+'. '+g.name+' — target: '+g.target+' '+(g.unit||'')+', current: '+(g.current>0?g.current+' '+(g.unit||''):'not set')).join('\n')
       : 'No goals set.';
-    const system='You are Smith — FORGE\'s built-in training coach. Direct, knowledgeable, no fluff. Gym environment. Plain text only — no markdown, no asterisks, no bullet symbols, no headers.\n\nUSER GOALS:\n'+goalsText+'\n\nCURRENT WORKOUT:\n'+buildContext()+'\n\nBe specific. Reference actual logged numbers. Keep responses under 150 words unless a detailed plan is requested.';
+    const system='You are Smith — FORGE\'s built-in training coach. Direct, knowledgeable, no fluff. Gym environment. Plain text only — no markdown, no asterisks, no bullet symbols, no headers.\n\nUSER GOALS:\n'+goalsText+'\n\nBe specific and practical. Keep responses under 150 words unless a detailed plan is requested.';
     const body=JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system,messages:aiHistory});
     const fallbackBody=JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:1000,system,messages:aiHistory});
 
@@ -2369,9 +2732,6 @@ function attachDragHandles(){
       filter:'.tile-del-btn, .forge-tile-body, input, textarea, button',
       preventOnFilter:false,
       onStart:(evt)=>{
-        // onStart fires after SortableJS has cloned the element and locked position
-        // Collapse the tile body NOW — after clone is made, so clone shows expanded
-        // but the real tile collapses, keeping scroll stable
         const chosenIdx=parseInt(evt.item.id.replace('block-tile-',''));
         if(!isNaN(chosenIdx)&&expandedBlockIndex===chosenIdx){
           const body=evt.item.querySelector('.forge-tile-body');
@@ -2379,8 +2739,19 @@ function attachDragHandles(){
             const screen=document.getElementById('builder-program-screen');
             const scrollBefore=screen.scrollTop;
             const lostHeight=body.offsetHeight;
+            const headerHeight=evt.item.querySelector('.forge-tile-header').offsetHeight;
+            // Collapse real tile
             evt.item.classList.remove('expanded');
             expandedBlockIndex=null;
+            // Collapse the drag clone — force it to header height only
+            const clone=document.querySelector('.sortable-drag');
+            if(clone){
+              clone.classList.remove('expanded');
+              const cloneBody=clone.querySelector('.forge-tile-body');
+              if(cloneBody){cloneBody.style.display='none';}
+              clone.style.height=headerHeight+'px';
+              clone.style.overflow='hidden';
+            }
             screen.scrollTop=Math.max(0,scrollBefore-lostHeight);
           }
         }
