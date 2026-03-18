@@ -444,7 +444,7 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
   <div class="home-header">
     <div class="logo">FORGE</div>
     <div class="home-subtitle">Training System</div>
-    <div style="font-family:var(--mono);font-size:9px;color:rgba(232,255,71,0.35);letter-spacing:1px;margin-top:4px;">v0.24</div>
+    <div style="font-family:var(--mono);font-size:9px;color:rgba(232,255,71,0.35);letter-spacing:1px;margin-top:4px;">v0.27</div>
   </div>
   <div class="stats-strip">
     <div class="stat-pill"><div class="val" id="stat-week">0</div><div class="lbl">This Week</div></div>
@@ -2357,23 +2357,6 @@ function attachDragHandles(){
   if(blockList){
     if(blockSortable)blockSortable.destroy();
 
-    // On touchstart of a different tile: visually collapse the expanded one
-    // WITHOUT re-rendering — just toggle CSS so the DOM stays stable for SortableJS
-    blockList.addEventListener('touchstart',function(e){
-      if(expandedBlockIndex===null)return;
-      const tile=e.target.closest('.forge-tile');
-      if(!tile)return;
-      const touchedIdx=parseInt(tile.id.replace('block-tile-',''));
-      if(!isNaN(touchedIdx)&&touchedIdx!==expandedBlockIndex){
-        // Visually collapse without re-render
-        const expandedTile=document.getElementById('block-tile-'+expandedBlockIndex);
-        if(expandedTile){
-          expandedTile.classList.remove('expanded');
-        }
-        expandedBlockIndex=null;
-      }
-    },{passive:true});
-
     blockSortable=new Sortable(blockList,{
       animation:150,
       ghostClass:'sortable-ghost',
@@ -2385,13 +2368,21 @@ function attachDragHandles(){
       delay:300,
       filter:'.tile-del-btn, .forge-tile-body, input, textarea, button',
       preventOnFilter:false,
-      onChoose:(evt)=>{
-        // Hold threshold reached — visually collapse this tile if expanded
-        // Don't re-render, just toggle CSS so SortableJS isn't interrupted
+      onStart:(evt)=>{
+        // onStart fires after SortableJS has cloned the element and locked position
+        // Collapse the tile body NOW — after clone is made, so clone shows expanded
+        // but the real tile collapses, keeping scroll stable
         const chosenIdx=parseInt(evt.item.id.replace('block-tile-',''));
         if(!isNaN(chosenIdx)&&expandedBlockIndex===chosenIdx){
-          evt.item.classList.remove('expanded');
-          expandedBlockIndex=null;
+          const body=evt.item.querySelector('.forge-tile-body');
+          if(body){
+            const screen=document.getElementById('builder-program-screen');
+            const scrollBefore=screen.scrollTop;
+            const lostHeight=body.offsetHeight;
+            evt.item.classList.remove('expanded');
+            expandedBlockIndex=null;
+            screen.scrollTop=Math.max(0,scrollBefore-lostHeight);
+          }
         }
       },
       onEnd:(evt)=>{
