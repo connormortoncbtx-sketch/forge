@@ -1279,6 +1279,7 @@ function renderBPBlocks(){
   builderProgram.days.forEach((day,i)=>{
     el.appendChild(buildBlockTile(day, i));
   });
+  attachDragHandles();
 }
 
 function buildBlockTile(day, i){
@@ -1296,7 +1297,7 @@ function buildBlockTile(day, i){
   // Header — tapping name/desc edits inline, tapping elsewhere toggles expand
   tile.innerHTML =
     '<div class="forge-tile-header" onclick="toggleBlockTile('+i+',event)">'+
-      '<div class="drag-handle" data-drag="block" data-idx="'+i+'" onpointerdown="startDragBlock(event,'+i+')" ontouchstart="startDragBlock(event,'+i+')"><span></span><span></span><span></span></div>'+
+      '<div class="drag-handle" data-dtype="block" data-didx="'+i+'"><span></span><span></span><span></span></div>'+
       '<div class="forge-tile-bar" style="background:'+accentColor+'"></div>'+
       '<div class="forge-tile-main">'+
         '<div class="forge-tile-name">'+
@@ -1379,7 +1380,7 @@ function buildExTile(ex, blockIdx, exIdx){
   const tagsHtml = (ex.tags||[]).slice(0,4).map(t=>'<span class="ex-tag">'+t+'</span>').join('');
   return '<div class="ex-tile" data-exidx="'+exIdx+'">'+ 
     '<div class="ex-tile-header">'+
-      '<div class="drag-handle" style="padding:0 4px" onpointerdown="startDragEx(event,'+blockIdx+','+exIdx+')" ontouchstart="startDragEx(event,'+blockIdx+','+exIdx+')"><span></span><span></span><span></span></div>'+
+      '<div class="drag-handle" style="padding:0 4px" data-dtype="ex" data-didx="'+exIdx+'" data-dblock="'+blockIdx+'"><span></span><span></span><span></span></div>'+
       '<div class="ex-tile-bar" style="background:'+accentColor+'"></div>'+
       '<div class="ex-tile-main">'+
         '<div class="ex-tile-name">'+escHtml(ex.name)+'</div>'+
@@ -2341,112 +2342,127 @@ function addTyping(){
 }
 
 // ─────────────────────────────────────────────
-// DRAG TO REORDER — live DOM reorder
+// DRAG TO REORDER — iOS Safari compatible
 // ─────────────────────────────────────────────
 let drag=null;
 
-function startDragBlock(e,idx){
+// Attach non-passive touchstart listeners to drag handles after render
+function attachDragHandles(){
+  document.querySelectorAll('.drag-handle').forEach(el=>{
+    // Remove old listeners by replacing the element clone
+    const fresh=el.cloneNode(true);
+    el.parentNode.replaceChild(fresh,el);
+    fresh.addEventListener('touchstart',onDragHandleTouch,{passive:false});
+  });
+}
+
+function onDragHandleTouch(e){
+  e.preventDefault(); // Must be here, not in handler — stops scroll immediately
   e.stopPropagation();
-  if(expandedBlockIndex===idx){
+  const handle=e.currentTarget;
+  const type=handle.dataset.dtype;
+  const idx=parseInt(handle.dataset.didx);
+  const blockIdx=handle.dataset.dblock!==undefined?parseInt(handle.dataset.dblock):null;
+
+  if(type==='block'&&expandedBlockIndex===idx){
+    // Collapse first, then start drag at same touch position
+    const touchY=e.touches[0].clientY;
+    const touchX=e.touches[0].clientX;
     expandedBlockIndex=null;
     renderBPBlocks();
-    setTimeout(()=>initDrag(e,'block',idx,null),50);
+    // Re-attach after render and start drag
+    requestAnimationFrame(()=>{
+      const newHandle=document.querySelector(
+        `.drag-handle[data-dtype="block"][data-didx="${idx}"]`
+      );
+      if(newHandle){
+        const tile=document.getElementById('block-tile-'+idx);
+        if(tile)initDrag(touchX,touchY,type,idx,blockIdx,tile);
+      }
+    });
     return;
   }
-  initDrag(e,'block',idx,null);
+
+  const srcEl=type==='block'
+    ?document.getElementById('block-tile-'+idx)
+    :document.querySelector(`#ex-list-${blockIdx} .ex-tile:nth-child(${idx+1})`);
+  if(!srcEl)return;
+  initDrag(e.touches[0].clientX,e.touches[0].clientY,type,idx,blockIdx,srcEl);
 }
 
-function startDragEx(e,blockIdx,exIdx){
-  e.stopPropagation();
-  initDrag(e,'ex',exIdx,blockIdx);
-}
+function initDrag(touchX,touchY,type,idx,blockIdx,srcEl){
+  // Safety: clean up any orphaned drag
+  if(drag){cancelDrag();}
 
-function initDrag(e,type,idx,blockIdx){
-  const touch=e.touches?e.touches[0]:e;
   const listEl=type==='block'
     ?document.getElementById('bp-block-list')
     :document.getElementById('ex-list-'+blockIdx);
-  if(!listEl)return;
-
-  const selector=type==='block'?'.forge-tile':'.ex-tile';
-  const items=()=>Array.from(listEl.querySelectorAll(':scope > '+selector));
-  const srcEl=items()[idx];
-  if(!srcEl)return;
+  if(!listEl||!srcEl)return;
 
   const rect=srcEl.getBoundingClientRect();
 
-  // Insert a same-size placeholder where the source was
+  // Placeholder holds the space
   const placeholder=document.createElement('div');
-  placeholder.style.cssText=`height:${rect.height}px;margin-bottom:10px;border-radius:12px;background:var(--accent-dim);border:1px dashed var(--accent);box-sizing:border-box;flex-shrink:0;`;
+  placeholder.dataset.placeholder='1';
+  placeholder.style.cssText=`height:${rect.height}px;margin-bottom:10px;border-radius:12px;background:rgba(232,255,71,0.06);border:1px dashed rgba(232,255,71,0.3);box-sizing:border-box;flex-shrink:0;pointer-events:none;`;
   listEl.insertBefore(placeholder,srcEl);
-  srcEl.remove(); // take out of flow
+  srcEl.remove();
 
-  // Floating clone
+  // Floating clone follows finger
   const clone=srcEl.cloneNode(true);
-  clone.style.cssText=`
-    position:fixed;left:${rect.left}px;top:${rect.top}px;
-    width:${rect.width}px;z-index:999;pointer-events:none;
-    box-shadow:0 12px 40px rgba(0,0,0,0.6);border-radius:12px;
-    transform:scale(1.025);will-change:top;
-  `;
+  clone.style.cssText=`position:fixed;left:${rect.left}px;top:${rect.top}px;width:${rect.width}px;z-index:9999;pointer-events:none;box-shadow:0 16px 48px rgba(0,0,0,0.7);border-radius:12px;transform:scale(1.03);opacity:0.96;`;
   document.body.appendChild(clone);
 
-  drag={type,blockIdx,listEl,srcEl,clone,placeholder,selector,
-    startY:touch.clientY,cloneStartTop:rect.top};
+  const selector=type==='block'?'.forge-tile':'.ex-tile';
 
-  if(e.touches){
-    document.addEventListener('touchmove',onDragMoveTouch,{passive:false});
-    document.addEventListener('touchend',onDragEnd);
-  } else {
-    document.addEventListener('pointermove',onDragMovePointer);
-    document.addEventListener('pointerup',onDragEnd);
-  }
+  drag={type,idx,blockIdx,listEl,srcEl,clone,placeholder,selector,
+    startY:touchY,cloneStartTop:rect.top};
+
+  document.addEventListener('touchmove',onTouchMove,{passive:false});
+  document.addEventListener('touchend',onTouchEnd,{passive:false});
+  document.addEventListener('touchcancel',cancelDrag,{passive:false});
 }
 
-function onDragMoveTouch(e){e.preventDefault();moveDrag(e.touches[0].clientY);}
-function onDragMovePointer(e){moveDrag(e.clientY);}
-
-function moveDrag(clientY){
+function onTouchMove(e){
+  e.preventDefault();
   if(!drag)return;
-  const dy=clientY-drag.startY;
+  const t=e.touches[0];
+  const dy=t.clientY-drag.startY;
   drag.clone.style.top=(drag.cloneStartTop+dy)+'px';
 
-  // Find which item the clone's center is over and move placeholder there
+  // Move placeholder to target slot
   const cloneMidY=drag.cloneStartTop+dy+drag.clone.offsetHeight/2;
-  const siblings=Array.from(drag.listEl.querySelectorAll(':scope > '+drag.selector+', :scope > [data-placeholder]'));
-
-  let target=null,insertBefore=null;
+  const siblings=Array.from(drag.listEl.children).filter(el=>
+    el===drag.placeholder||el.matches(drag.selector)
+  );
+  let insertBefore=null;
   for(const el of siblings){
     const r=el.getBoundingClientRect();
     if(cloneMidY<r.top+r.height/2){insertBefore=el;break;}
   }
-
-  // Only move placeholder if its position would change
-  const currentNext=drag.placeholder.nextSibling;
-  if(insertBefore!==currentNext){
+  if(drag.placeholder.nextSibling!==insertBefore){
     drag.listEl.insertBefore(drag.placeholder,insertBefore||null);
   }
 }
 
-function onDragEnd(){
-  document.removeEventListener('touchmove',onDragMoveTouch);
-  document.removeEventListener('touchend',onDragEnd);
-  document.removeEventListener('pointermove',onDragMovePointer);
-  document.removeEventListener('pointerup',onDragEnd);
+function onTouchEnd(e){
+  e.preventDefault();
   if(!drag)return;
-
   const {type,blockIdx,listEl,srcEl,clone,placeholder,selector}=drag;
   drag=null;
 
-  // Place source element where placeholder is, remove placeholder
+  document.removeEventListener('touchmove',onTouchMove);
+  document.removeEventListener('touchend',onTouchEnd);
+  document.removeEventListener('touchcancel',cancelDrag);
+
+  // Slot src back where placeholder is
   listEl.insertBefore(srcEl,placeholder);
   placeholder.remove();
   clone.remove();
 
-  // Read the new order from the DOM and commit to data
+  // Commit new order to data
   const newOrder=Array.from(listEl.querySelectorAll(':scope > '+selector));
   if(type==='block'){
-    // Map DOM order back to program days by tile id
     const reordered=newOrder.map(el=>{
       const i=parseInt(el.id.replace('block-tile-',''));
       return builderProgram.days[i];
@@ -2456,7 +2472,6 @@ function onDragEnd(){
     renderBPBlocks();
     updateBPPreview();
   } else {
-    // Exercise tiles don't have stable ids — read from data-exidx attribute
     const exercises=builderProgram.days[blockIdx].exercises;
     const reordered=newOrder.map(el=>{
       const i=parseInt(el.dataset.exidx);
@@ -2467,6 +2482,22 @@ function onDragEnd(){
     renderBPBlocks();
   }
 }
+
+function cancelDrag(){
+  document.removeEventListener('touchmove',onTouchMove);
+  document.removeEventListener('touchend',onTouchEnd);
+  document.removeEventListener('touchcancel',cancelDrag);
+  if(!drag)return;
+  // Restore original state
+  drag.listEl.insertBefore(drag.srcEl,drag.placeholder);
+  drag.placeholder.remove();
+  drag.clone.remove();
+  drag=null;
+}
+
+// Legacy stubs — no longer used but keep so inline handlers don't throw
+function startDragBlock(){}
+function startDragEx(){}
 
 // ─────────────────────────────────────────────
 // INIT
