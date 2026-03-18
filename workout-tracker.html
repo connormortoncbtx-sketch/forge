@@ -127,14 +127,15 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
 .forge-tile-bar{width:3px;flex-shrink:0;}
 .forge-tile-main{flex:1;padding:14px 14px 12px;min-width:0;}
 .forge-tile-name{font-family:var(--display);font-size:20px;letter-spacing:1px;line-height:1;}
-.forge-tile-name input{font-family:var(--display);font-size:20px;letter-spacing:1px;background:transparent;border:none;outline:none;color:var(--text);width:100%;padding:0;caret-color:var(--accent);}
+.forge-tile-name input{font-family:var(--display);font-size:20px;letter-spacing:1px;background:transparent;border:none;outline:none;color:var(--text);width:auto;max-width:100%;min-width:80px;padding:0;caret-color:var(--accent);display:block;}
 .forge-tile-name input::placeholder{color:var(--muted);}
 .forge-tile-meta{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:3px;}
-.forge-tile-meta input{font-family:var(--mono);font-size:10px;color:var(--text-dim);background:transparent;border:none;outline:none;width:100%;padding:0;caret-color:var(--accent);}
+.forge-tile-meta input{font-family:var(--mono);font-size:10px;color:var(--text-dim);background:transparent;border:none;outline:none;width:auto;max-width:100%;min-width:60px;padding:0;caret-color:var(--accent);display:block;}
 .forge-tile-meta input::placeholder{color:var(--muted);}
 .forge-tile-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;}
-.forge-tile-actions{display:flex;align-items:center;padding:0 14px;gap:8px;flex-shrink:0;}
-.tile-chevron{font-family:var(--mono);font-size:12px;color:var(--muted);transition:transform 0.2s;}
+.forge-tile-actions{display:flex;align-items:center;padding:0 6px 0 8px;gap:6px;flex-shrink:0;}
+.tile-toggle{display:flex;align-items:center;justify-content:center;width:44px;height:100%;cursor:pointer;padding:0 4px;}
+.tile-chevron{font-family:var(--mono);font-size:14px;color:var(--muted);transition:transform 0.2s;pointer-events:none;}
 .forge-tile.expanded .tile-chevron{transform:rotate(180deg);}
 .tile-del-btn{font-family:var(--mono);font-size:10px;color:var(--muted);background:none;border:1px solid var(--border);border-radius:6px;padding:5px 8px;cursor:pointer;letter-spacing:1px;}
 .tile-del-btn:active{border-color:var(--red);color:var(--red);}
@@ -443,7 +444,7 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
   <div class="home-header">
     <div class="logo">FORGE</div>
     <div class="home-subtitle">Training System</div>
-    <div style="font-family:var(--mono);font-size:9px;color:rgba(232,255,71,0.35);letter-spacing:1px;margin-top:4px;">v0.12</div>
+    <div style="font-family:var(--mono);font-size:9px;color:rgba(232,255,71,0.35);letter-spacing:1px;margin-top:4px;">v0.24</div>
   </div>
   <div class="stats-strip">
     <div class="stat-pill"><div class="val" id="stat-week">0</div><div class="lbl">This Week</div></div>
@@ -523,7 +524,6 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
   <div class="page-header">
     <div class="page-back" onclick="closeProgramBuilder()">&#8592;</div>
     <div class="page-title" id="bp-title">NEW PROGRAM</div>
-    <button class="page-action" onclick="saveProgram()">SAVE</button>
   </div>
 
   <!-- Interactive program card — tap to edit inline -->
@@ -564,7 +564,12 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
   <div style="padding:14px 24px 0;" id="bp-delete-wrap">
     <button class="destructive-btn" onclick="confirmDeleteProgram()">DELETE PROGRAM</button>
   </div>
-  <div style="height:20px"></div>
+  <div style="height:120px"></div>
+</div>
+
+<!-- Program builder save bar — outside scrollable screen so fixed positioning works -->
+<div class="save-bar" id="bp-save-bar" style="display:none;">
+  <button class="save-btn" onclick="saveProgram()">SAVE PROGRAM</button>
 </div>
 
 <!-- START BLOCK SHEET -->
@@ -1154,6 +1159,7 @@ function openProgramBuilder(progId){
   renderBPBlocks();
   updateBPPreview();
   showScreen('builder-program-screen');
+  document.getElementById('bp-save-bar').style.display='block';
   // Auto-resize desc if editing existing program
   const descEl=document.getElementById('bp-desc');
   setTimeout(()=>{autoResizeDesc(descEl);if(!builderProgram.name)document.getElementById('bp-name').focus();},50);
@@ -1168,6 +1174,7 @@ function deleteProgram(){
 }
 
 function closeProgramBuilder(){
+  document.getElementById('bp-save-bar').style.display='none';
   showScreen('home-screen');
   // Switch to custom tab so user sees their program
   progTab='custom';
@@ -1298,7 +1305,6 @@ function buildBlockTile(day, i){
   // Header — tapping name/desc edits inline, tapping elsewhere toggles expand
   tile.innerHTML =
     '<div class="forge-tile-header" onclick="toggleBlockTile('+i+',event)">'+
-      '<div class="drag-handle" data-dtype="block" data-didx="'+i+'"><span></span><span></span><span></span></div>'+
       '<div class="forge-tile-bar" style="background:'+accentColor+'"></div>'+
       '<div class="forge-tile-main">'+
         '<div class="forge-tile-name">'+
@@ -1317,7 +1323,6 @@ function buildBlockTile(day, i){
       '</div>'+
       '<div class="forge-tile-actions">'+
         '<button class="tile-del-btn" onclick="confirmDeleteBlock('+i+',event)">DEL</button>'+
-        '<div class="tile-chevron">&#9660;</div>'+
       '</div>'+
     '</div>'+
     '<div class="forge-tile-body">'+
@@ -1381,7 +1386,6 @@ function buildExTile(ex, blockIdx, exIdx){
   const tagsHtml = (ex.tags||[]).slice(0,4).map(t=>'<span class="ex-tag">'+t+'</span>').join('');
   return '<div class="ex-tile" data-exidx="'+exIdx+'">'+ 
     '<div class="ex-tile-header">'+
-      '<div class="drag-handle" style="padding:0 4px" data-dtype="ex" data-didx="'+exIdx+'" data-dblock="'+blockIdx+'"><span></span><span></span><span></span></div>'+
       '<div class="ex-tile-bar" style="background:'+accentColor+'"></div>'+
       '<div class="ex-tile-main">'+
         '<div class="ex-tile-name">'+escHtml(ex.name)+'</div>'+
@@ -2349,25 +2353,45 @@ let blockSortable=null;
 let exSortables={};
 
 function attachDragHandles(){
-  // Block sortable
   const blockList=document.getElementById('bp-block-list');
   if(blockList){
     if(blockSortable)blockSortable.destroy();
+
+    // On touchstart of a different tile: visually collapse the expanded one
+    // WITHOUT re-rendering — just toggle CSS so the DOM stays stable for SortableJS
+    blockList.addEventListener('touchstart',function(e){
+      if(expandedBlockIndex===null)return;
+      const tile=e.target.closest('.forge-tile');
+      if(!tile)return;
+      const touchedIdx=parseInt(tile.id.replace('block-tile-',''));
+      if(!isNaN(touchedIdx)&&touchedIdx!==expandedBlockIndex){
+        // Visually collapse without re-render
+        const expandedTile=document.getElementById('block-tile-'+expandedBlockIndex);
+        if(expandedTile){
+          expandedTile.classList.remove('expanded');
+        }
+        expandedBlockIndex=null;
+      }
+    },{passive:true});
+
     blockSortable=new Sortable(blockList,{
       animation:150,
-      handle:'.drag-handle',
       ghostClass:'sortable-ghost',
       chosenClass:'sortable-chosen',
       dragClass:'sortable-drag',
       forceFallback:true,
-      fallbackTolerance:3,
+      fallbackTolerance:5,
       delayOnTouchOnly:true,
-      delay:200,
-      onStart:()=>{
-        // Collapse any expanded block before sorting
-        if(expandedBlockIndex!==null){
+      delay:300,
+      filter:'.tile-del-btn, .forge-tile-body, input, textarea, button',
+      preventOnFilter:false,
+      onChoose:(evt)=>{
+        // Hold threshold reached — visually collapse this tile if expanded
+        // Don't re-render, just toggle CSS so SortableJS isn't interrupted
+        const chosenIdx=parseInt(evt.item.id.replace('block-tile-',''));
+        if(!isNaN(chosenIdx)&&expandedBlockIndex===chosenIdx){
+          evt.item.classList.remove('expanded');
           expandedBlockIndex=null;
-          renderBPBlocks();
         }
       },
       onEnd:(evt)=>{
@@ -2381,20 +2405,20 @@ function attachDragHandles(){
     });
   }
 
-  // Exercise sortables — one per expanded block
   document.querySelectorAll('[id^="ex-list-"]').forEach(exList=>{
     const blockIdx=parseInt(exList.id.replace('ex-list-',''));
     if(exSortables[blockIdx])exSortables[blockIdx].destroy();
     exSortables[blockIdx]=new Sortable(exList,{
       animation:150,
-      handle:'.drag-handle',
       ghostClass:'sortable-ghost',
       chosenClass:'sortable-chosen',
       dragClass:'sortable-drag',
       forceFallback:true,
-      fallbackTolerance:3,
+      fallbackTolerance:5,
       delayOnTouchOnly:true,
-      delay:200,
+      delay:300,
+      filter:'.ex-tile-del, .ex-tile-controls, input, button',
+      preventOnFilter:false,
       onEnd:(evt)=>{
         const exercises=builderProgram.days[blockIdx].exercises;
         const [moved]=exercises.splice(evt.oldIndex,1);

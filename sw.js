@@ -1,8 +1,6 @@
-const CACHE = 'forge-v14';
+const CACHE = 'forge-v24';
 const PRECACHE = [
-  'workout-tracker.html',
-  'exercise-library.js',
-  'manifest.json',
+  'workout-tracker.html','exercise-library.js','manifest.json',
   'https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js',
   'https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap',
 ];
