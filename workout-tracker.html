@@ -18,6 +18,33 @@
   --muted:#5a5a70; --text:#e8e8f0; --text-dim:#9090a8;
   --radius:14px; --mono:'DM Mono',monospace; --sans:'DM Sans',sans-serif; --display:'Bebas Neue',sans-serif;
 }
+/* ── THEMES ── */
+[data-theme="slate"] {
+  --bg:#1a1f2e; --surface:#20263a; --card:#242938; --border:#2e3448;
+  --accent:#64b5f6; --accent-dim:rgba(100,181,246,0.12);
+  --muted:#546e7a; --text:#e0e6f0; --text-dim:#7a90a8;
+}
+[data-theme="ember"] {
+  --bg:#1c1410; --surface:#221a12; --card:#241a12; --border:#3a2518;
+  --accent:#ff8c42; --accent-dim:rgba(255,140,66,0.12);
+  --muted:#6b4c35; --text:#f0e4d4; --text-dim:#a07858;
+}
+[data-theme="chalk"] {
+  --bg:#f4f2ee; --surface:#eeece8; --card:#ffffff; --border:#d8d4cc;
+  --accent:#1a1a1a; --accent-dim:rgba(26,26,26,0.08);
+  --muted:#999990; --text:#1a1a1a; --text-dim:#666660;
+  --red:#cc3333; --blue:#2266cc; --orange:#cc6622; --purple:#882299; --teal:#227766;
+}
+[data-theme="forest"] {
+  --bg:#0f1a14; --surface:#142018; --card:#162012; --border:#1e2e1f;
+  --accent:#69d98c; --accent-dim:rgba(105,217,140,0.12);
+  --muted:#3d5c47; --text:#d4edd8; --text-dim:#6a9a74;
+}
+[data-theme="midnight"] {
+  --bg:#10101e; --surface:#161628; --card:#181828; --border:#252540;
+  --accent:#b39ddb; --accent-dim:rgba(179,157,219,0.12);
+  --muted:#44445a; --text:#ddd8f0; --text-dim:#7070a0;
+}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100dvh;overflow-x:hidden;}
 .screen{display:none;min-height:100dvh;flex-direction:column;}
@@ -457,10 +484,13 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
 
 <!-- HOME -->
 <div class="screen active" id="home-screen">
-  <div class="home-header">
-    <div class="logo">FORGE</div>
-    <div class="home-subtitle">Training System</div>
-    <div style="font-family:var(--mono);font-size:9px;color:rgba(232,255,71,0.35);letter-spacing:1px;margin-top:4px;">v0.41</div>
+  <div class="home-header" style="display:flex;align-items:flex-start;justify-content:space-between;">
+    <div>
+      <div class="logo">FORGE</div>
+      <div class="home-subtitle">Training System</div>
+      <div style="font-family:var(--mono);font-size:9px;color:rgba(232,255,71,0.35);letter-spacing:1px;margin-top:4px;">v0.43</div>
+    </div>
+    <button onclick="openSettings()" style="background:var(--card);border:1px solid var(--border);border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;cursor:pointer;margin-top:4px;flex-shrink:0;color:var(--muted);font-size:17px;">⚙</button>
   </div>
   <div class="stats-strip">
     <div class="stat-pill"><div class="val" id="stat-week">0</div><div class="lbl">This Week</div></div>
@@ -537,7 +567,7 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
       <div style="font-family:var(--display);font-size:36px;letter-spacing:2px;">GOALS</div>
       <div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:3px;">Track your personal targets</div>
     </div>
-    <button class="add-program-btn" onclick="openGoalBuilder(null)">+ Add Goal</button>
+    <button onclick="openGoalBuilder(null)" style="font-family:var(--mono);font-size:11px;color:var(--accent);background:var(--accent-dim);border:1px solid var(--accent);border-radius:20px;padding:8px 14px;cursor:pointer;letter-spacing:1px;white-space:nowrap;flex-shrink:0;">+ ADD GOAL</button>
   </div>
   <div style="padding:0 24px 100px;" id="goals-list"></div>
 </div>
@@ -764,6 +794,22 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
   <div class="ai-input-row">
     <input class="ai-input" id="ai-input" placeholder="Ask Smith anything..." onkeydown="if(event.key==='Enter')sendAI()">
     <button class="ai-send" id="ai-send-btn" onclick="sendAI()">&#8250;</button>
+  </div>
+</div>
+
+<!-- SETTINGS SHEET -->
+<div class="picker-sheet" id="settings-sheet">
+  <div class="picker-backdrop" onclick="closeSettings()"></div>
+  <div class="picker-panel" style="max-height:70vh;">
+    <div class="picker-handle"></div>
+    <div class="picker-header">
+      <div class="picker-title">Settings</div>
+      <div class="picker-close" onclick="closeSettings()">✕</div>
+    </div>
+    <div class="picker-scroll" style="padding:20px;">
+      <div style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;">Theme</div>
+      <div id="theme-grid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;"></div>
+    </div>
   </div>
 </div>
 
@@ -2594,6 +2640,67 @@ function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
+
+// ─────────────────────────────────────────────
+// SETTINGS & THEMES
+// ─────────────────────────────────────────────
+const THEMES = [
+  { id:'forge',    label:'FORGE',    bg:'#0a0a0c', accent:'#e8ff47',  card:'#16161c', text:'#e8e8f0' },
+  { id:'slate',    label:'SLATE',    bg:'#1a1f2e', accent:'#64b5f6',  card:'#242938', text:'#e0e6f0' },
+  { id:'ember',    label:'EMBER',    bg:'#1c1410', accent:'#ff8c42',  card:'#241a12', text:'#f0e4d4' },
+  { id:'chalk',    label:'CHALK',    bg:'#f4f2ee', accent:'#1a1a1a',  card:'#ffffff', text:'#1a1a1a' },
+  { id:'forest',   label:'FOREST',   bg:'#0f1a14', accent:'#69d98c',  card:'#162012', text:'#d4edd8' },
+  { id:'midnight', label:'MIDNIGHT', bg:'#10101e', accent:'#b39ddb',  card:'#181828', text:'#ddd8f0' },
+];
+
+function applyTheme(id){
+  if(id==='forge') document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme', id);
+  // Update meta theme-color to match bg
+  const t=THEMES.find(x=>x.id===id)||THEMES[0];
+  document.querySelector('meta[name="theme-color"]').content=t.bg;
+  localStorage.setItem('forge_theme', id);
+  renderThemeGrid();
+}
+
+function renderThemeGrid(){
+  const current=localStorage.getItem('forge_theme')||'forge';
+  const grid=document.getElementById('theme-grid');
+  if(!grid)return;
+  grid.innerHTML='';
+  THEMES.forEach(t=>{
+    const active=t.id===current;
+    const swatch=document.createElement('div');
+    swatch.onclick=()=>applyTheme(t.id);
+    swatch.style.cssText=
+      'background:'+t.bg+';border-radius:10px;overflow:hidden;cursor:pointer;'+
+      'border:2px solid '+(active?t.accent:'transparent')+';transition:border-color 0.15s;';
+    swatch.innerHTML=
+      '<div style="padding:8px 10px 6px;">'+
+        '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:15px;letter-spacing:2px;color:'+t.accent+';">'+t.label+'</div>'+
+      '</div>'+
+      '<div style="margin:0 6px 6px;background:'+t.card+';border-radius:6px;padding:6px 8px;">'+
+        '<div style="font-size:9px;font-weight:600;color:'+t.text+';letter-spacing:0.5px;">PUSH DAY</div>'+
+        '<div style="height:2px;background:'+t.accent+';border-radius:1px;margin-top:4px;width:55%;"></div>'+
+      '</div>'+
+      (active?'<div style="font-family:monospace;font-size:8px;text-align:center;padding:0 0 5px;color:'+t.accent+';">✓ ACTIVE</div>':'');
+    grid.appendChild(swatch);
+  });
+}
+
+function openSettings(){
+  renderThemeGrid();
+  document.getElementById('settings-sheet').classList.add('open');
+}
+function closeSettings(){
+  document.getElementById('settings-sheet').classList.remove('open');
+}
+
+// Apply saved theme on load
+(()=>{
+  const saved=localStorage.getItem('forge_theme');
+  if(saved&&saved!=='forge')applyTheme(saved);
+})();
 
 function showToast(msg){
   const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
