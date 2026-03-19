@@ -496,7 +496,7 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
     <div>
       <div class="logo">FORGE</div>
       <div class="home-subtitle">Training System</div>
-      <div style="font-family:var(--mono);font-size:9px;color:var(--text-dim);letter-spacing:1px;margin-top:4px;opacity:0.6;">v0.70</div>
+      <div style="font-family:var(--mono);font-size:9px;color:var(--text-dim);letter-spacing:1px;margin-top:4px;opacity:0.6;" id="version-label" onclick="handleVersionTap()">v0.71</div>
     </div>
     <button onclick="openSettings()" style="background:var(--card);border:1px solid var(--border);border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;cursor:pointer;margin-top:4px;flex-shrink:0;">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -3289,8 +3289,152 @@ function showScreen(id){
 }
 
 // ─────────────────────────────────────────────
-// SETTINGS & THEMES
+// DEV — TRIPLE TAP VERSION FOR TEST DATA
 // ─────────────────────────────────────────────
+let _vTaps=0,_vTimer=null;
+function handleVersionTap(){
+  _vTaps++;
+  clearTimeout(_vTimer);
+  _vTimer=setTimeout(()=>{ _vTaps=0; },600);
+  if(_vTaps>=3){
+    _vTaps=0;
+    showConfirm('Load Test Data?','This will add sample programs, sessions, and goals. Existing data is preserved.','LOAD',loadTestData);
+  }
+}
+
+function loadTestData(){
+  closeConfirm();
+
+  // ── Custom Programs ──
+  const existing=getCustomProgs();
+  if(!existing.find(p=>p.id==='test-prog-1')){
+    const progs=[
+      {id:'test-prog-1',name:'PUSH PULL LEGS',desc:'Classic 6-day PPL split',tags:['PPL','Hypertrophy'],accentColor:'#e8ff47',builtin:false,days:[
+        {id:'test-b-push',name:'PUSH',desc:'Chest, Shoulders, Triceps',type:'lifting',tags:['Push','Chest'],exercises:[
+          {id:'test-ex-bench',name:'Barbell Bench Press',muscleGroup:'Chest',sets:4,reps:'8-12',tags:['Barbell','Chest'],bw:false},
+          {id:'test-ex-ohp',name:'Overhead Press',muscleGroup:'Shoulders',sets:3,reps:'8-10',tags:['Barbell','Shoulders'],bw:false},
+          {id:'test-ex-tri',name:'Tricep Pushdown',muscleGroup:'Triceps',sets:3,reps:'12-15',tags:['Cable','Arms'],bw:false},
+        ],checks:[],isSimple:false},
+        {id:'test-b-pull',name:'PULL',desc:'Back, Biceps',type:'lifting',tags:['Pull','Back'],exercises:[
+          {id:'test-ex-row',name:'Barbell Row',muscleGroup:'Back',sets:4,reps:'8-10',tags:['Barbell','Back'],bw:false},
+          {id:'test-ex-pullup',name:'Pull Up',muscleGroup:'Back',sets:3,reps:'6-10',tags:['Bodyweight','Back'],bw:true},
+          {id:'test-ex-curl',name:'Dumbbell Curl',muscleGroup:'Biceps',sets:3,reps:'10-12',tags:['Dumbbell','Arms'],bw:false},
+        ],checks:[],isSimple:false},
+        {id:'test-b-legs',name:'LEGS',desc:'Quads, Hamstrings, Calves',type:'lifting',tags:['Legs','Compound'],exercises:[
+          {id:'test-ex-squat',name:'Barbell Back Squat',muscleGroup:'Legs',sets:4,reps:'6-8',tags:['Barbell','Legs'],bw:false},
+          {id:'test-ex-rdl',name:'Romanian Deadlift',muscleGroup:'Hamstrings',sets:3,reps:'10-12',tags:['Barbell','Legs'],bw:false},
+          {id:'test-ex-legpress',name:'Leg Press',muscleGroup:'Quads',sets:3,reps:'12-15',tags:['Machine','Legs'],bw:false},
+        ],checks:[],isSimple:false},
+      ]},
+      {id:'test-prog-2',name:'CONDITIONING',desc:'Cardio and HIIT work',tags:['Cardio','HIIT'],accentColor:'#47b4ff',builtin:false,days:[
+        {id:'test-b-zone2',name:'ZONE 2 RUN',desc:'Easy aerobic base work',type:'lifting',tags:['Cardio','Zone 2'],exercises:[
+          {id:'test-ex-run',name:'Easy Run (Zone 2)',muscleGroup:'Cardio',sets:1,reps:'30 min',tags:['Cardio','Zone 2','Running'],bw:true,logType:'cardio'},
+        ],checks:[],isSimple:false},
+      ]},
+    ];
+    saveCustomProgs([...existing,...progs]);
+  }
+
+  // ── Goals ──
+  const existingGoals=getUserGoals();
+  if(!existingGoals.find(g=>g.id==='test-goal-bench')){
+    saveUserGoals([...existingGoals,
+      {id:'test-goal-bench',name:'Bench Press',unit:'lbs',target:315,current:0,color:'#ff8c47'},
+      {id:'test-goal-squat',name:'Back Squat',unit:'lbs',target:405,current:0,color:'#e8ff47'},
+      {id:'test-goal-dead',name:'Deadlift',unit:'lbs',target:495,current:0,color:'#47b4ff'},
+    ]);
+  }
+
+  // ── History — 12 sessions over 6 weeks ──
+  const h=getHistory();
+  if(!h.find(x=>x.blockId==='test-session-1')){
+    const now=Date.now();
+    const day=86400000;
+    const sessions=[
+      // Bench progression: 185→195→205→215→225×5
+      {blockId:'test-session-1',dayName:'PUSH',programName:'PUSH PULL LEGS',date:new Date(now-42*day).toISOString(),duration:'52:10',totalSets:10,totalVolume:14200,prs:0,incomplete:false,completedCount:3,totalEx:3,
+        exercises:[
+          {name:'Barbell Bench Press',topSet:{weight:185,reps:8},vol:5920,isPR:false,partial:false,type:'lifting'},
+          {name:'Overhead Press',topSet:{weight:115,reps:8},vol:2760,isPR:false,partial:false,type:'lifting'},
+          {name:'Tricep Pushdown',topSet:{weight:60,reps:12},vol:2160,isPR:false,partial:false,type:'lifting'},
+        ]},
+      {blockId:'test-session-2',dayName:'PULL',programName:'PUSH PULL LEGS',date:new Date(now-40*day).toISOString(),duration:'48:22',totalSets:10,totalVolume:13800,prs:0,incomplete:false,completedCount:3,totalEx:3,
+        exercises:[
+          {name:'Barbell Row',topSet:{weight:155,reps:8},vol:4960,isPR:false,partial:false,type:'lifting'},
+          {name:'Pull Up',topSet:{weight:0,reps:8},vol:0,isPR:false,partial:false,type:'bodyweight'},
+          {name:'Dumbbell Curl',topSet:{weight:40,reps:10},vol:1600,isPR:false,partial:false,type:'lifting'},
+        ]},
+      {blockId:'test-session-3',dayName:'LEGS',programName:'PUSH PULL LEGS',date:new Date(now-38*day).toISOString(),duration:'58:45',totalSets:10,totalVolume:22400,prs:0,incomplete:false,completedCount:3,totalEx:3,
+        exercises:[
+          {name:'Barbell Back Squat',topSet:{weight:225,reps:6},vol:8100,isPR:false,partial:false,type:'lifting'},
+          {name:'Romanian Deadlift',topSet:{weight:185,reps:10},vol:5550,isPR:false,partial:false,type:'lifting'},
+          {name:'Leg Press',topSet:{weight:320,reps:12},vol:11520,isPR:false,partial:false,type:'lifting'},
+        ]},
+      {blockId:'test-session-4',dayName:'PUSH',programName:'PUSH PULL LEGS',date:new Date(now-35*day).toISOString(),duration:'54:00',totalSets:10,totalVolume:15400,prs:1,incomplete:false,completedCount:3,totalEx:3,
+        exercises:[
+          {name:'Barbell Bench Press',topSet:{weight:195,reps:8},vol:6240,isPR:true,partial:false,type:'lifting'},
+          {name:'Overhead Press',topSet:{weight:120,reps:8},vol:2880,isPR:false,partial:false,type:'lifting'},
+          {name:'Tricep Pushdown',topSet:{weight:65,reps:12},vol:2340,isPR:false,partial:false,type:'lifting'},
+        ]},
+      {blockId:'test-session-5',dayName:'PULL',programName:'PUSH PULL LEGS',date:new Date(now-33*day).toISOString(),duration:'47:15',totalSets:10,totalVolume:14600,prs:1,incomplete:false,completedCount:3,totalEx:3,
+        exercises:[
+          {name:'Barbell Row',topSet:{weight:165,reps:8},vol:5280,isPR:true,partial:false,type:'lifting'},
+          {name:'Pull Up',topSet:{weight:0,reps:9},vol:0,isPR:false,partial:false,type:'bodyweight'},
+          {name:'Dumbbell Curl',topSet:{weight:42,reps:10},vol:1680,isPR:false,partial:false,type:'lifting'},
+        ]},
+      {blockId:'test-session-6',dayName:'LEGS',programName:'PUSH PULL LEGS',date:new Date(now-31*day).toISOString(),duration:'61:30',totalSets:10,totalVolume:24200,prs:1,incomplete:false,completedCount:3,totalEx:3,
+        exercises:[
+          {name:'Barbell Back Squat',topSet:{weight:235,reps:6},vol:8460,isPR:true,partial:false,type:'lifting'},
+          {name:'Romanian Deadlift',topSet:{weight:190,reps:10},vol:5700,isPR:false,partial:false,type:'lifting'},
+          {name:'Leg Press',topSet:{weight:340,reps:12},vol:12240,isPR:false,partial:false,type:'lifting'},
+        ]},
+      {blockId:'test-session-7',dayName:'PUSH',programName:'PUSH PULL LEGS',date:new Date(now-28*day).toISOString(),duration:'55:20',totalSets:10,totalVolume:16200,prs:1,incomplete:false,completedCount:3,totalEx:3,
+        exercises:[
+          {name:'Barbell Bench Press',topSet:{weight:205,reps:8},vol:6560,isPR:true,partial:false,type:'lifting'},
+          {name:'Overhead Press',topSet:{weight:125,reps:8},vol:3000,isPR:false,partial:false,type:'lifting'},
+          {name:'Tricep Pushdown',topSet:{weight:70,reps:12},vol:2520,isPR:false,partial:false,type:'lifting'},
+        ]},
+      {blockId:'test-session-8',dayName:'ZONE 2 RUN',programName:'CONDITIONING',date:new Date(now-26*day).toISOString(),duration:'35:00',totalSets:1,totalVolume:0,prs:0,incomplete:false,completedCount:1,totalEx:1,
+        exercises:[{name:'Easy Run (Zone 2)',topSet:null,vol:0,isPR:false,partial:false,type:'cardio',summary:'30 min · 3.1 mi'}]},
+      {blockId:'test-session-9',dayName:'LEGS',programName:'PUSH PULL LEGS',date:new Date(now-24*day).toISOString(),duration:'59:10',totalSets:10,totalVolume:25800,prs:1,incomplete:false,completedCount:3,totalEx:3,
+        exercises:[
+          {name:'Barbell Back Squat',topSet:{weight:245,reps:6},vol:8820,isPR:true,partial:false,type:'lifting'},
+          {name:'Romanian Deadlift',topSet:{weight:195,reps:10},vol:5850,isPR:false,partial:false,type:'lifting'},
+          {name:'Leg Press',topSet:{weight:360,reps:12},vol:12960,isPR:false,partial:false,type:'lifting'},
+        ]},
+      {blockId:'test-session-10',dayName:'PUSH',programName:'PUSH PULL LEGS',date:new Date(now-21*day).toISOString(),duration:'53:45',totalSets:10,totalVolume:17000,prs:1,incomplete:false,completedCount:3,totalEx:3,
+        exercises:[
+          {name:'Barbell Bench Press',topSet:{weight:215,reps:8},vol:6880,isPR:true,partial:false,type:'lifting'},
+          {name:'Overhead Press',topSet:{weight:130,reps:7},vol:2730,isPR:false,partial:false,type:'lifting'},
+          {name:'Tricep Pushdown',topSet:{weight:70,reps:15},vol:3150,isPR:false,partial:false,type:'lifting'},
+        ]},
+      {blockId:'test-session-11',dayName:'ZONE 2 RUN',programName:'CONDITIONING',date:new Date(now-14*day).toISOString(),duration:'38:00',totalSets:1,totalVolume:0,prs:0,incomplete:false,completedCount:1,totalEx:1,
+        exercises:[{name:'Easy Run (Zone 2)',topSet:null,vol:0,isPR:false,partial:false,type:'cardio',summary:'35 min · 3.5 mi'}]},
+      {blockId:'test-session-12',dayName:'PUSH',programName:'PUSH PULL LEGS',date:new Date(now-7*day).toISOString(),duration:'56:30',totalSets:10,totalVolume:17800,prs:1,incomplete:false,completedCount:3,totalEx:3,
+        exercises:[
+          {name:'Barbell Bench Press',topSet:{weight:225,reps:5},vol:7200,isPR:true,partial:false,type:'lifting'},
+          {name:'Overhead Press',topSet:{weight:135,reps:6},vol:2430,isPR:false,partial:false,type:'lifting'},
+          {name:'Tricep Pushdown',topSet:{weight:75,reps:12},vol:2700,isPR:false,partial:false,type:'lifting'},
+        ]},
+    ];
+    // Prepend in reverse so most recent is first
+    saveHistory([...sessions.reverse(),...h]);
+
+    // Update bests
+    const bests=getBests();
+    bests['test-ex-bench']={topSet:{weight:225,reps:5},sets:[{weight:225,reps:5},{weight:215,reps:8},{weight:205,reps:8}],date:new Date(now-7*day).toISOString()};
+    bests['test-ex-squat']={topSet:{weight:245,reps:6},sets:[{weight:245,reps:6},{weight:235,reps:6},{weight:225,reps:6}],date:new Date(now-24*day).toISOString()};
+    bests['test-ex-row']={topSet:{weight:165,reps:8},sets:[{weight:165,reps:8},{weight:155,reps:8}],date:new Date(now-33*day).toISOString()};
+    bests['test-ex-ohp']={topSet:{weight:135,reps:6},sets:[{weight:135,reps:6}],date:new Date(now-7*day).toISOString()};
+    saveBests(bests);
+  }
+
+  renderHome();
+  renderGoals();
+  showToast('Test data loaded ✓');
+}
+
+
 const THEMES = [
   { id:'forge',    label:'FORGE',    bg:'#0a0a0c', accent:'#e8ff47',  card:'#16161c', text:'#e8e8f0' },
   { id:'steel',    label:'STEEL',    bg:'#1a1f2e', accent:'#f5c842',  card:'#242938', text:'#e0e6f0' },
