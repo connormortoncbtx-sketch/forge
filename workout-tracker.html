@@ -208,7 +208,7 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
 .ex-tag{font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:4px;background:var(--surface);color:var(--text-dim);border:1px solid var(--border);text-transform:uppercase;letter-spacing:1px;}
 
 /* Exercise picker sheet */
-.picker-sheet{position:fixed;inset:0;z-index:80;display:none;flex-direction:column;}
+.picker-sheet{position:fixed;inset:0;z-index:95;display:none;flex-direction:column;}
 .picker-sheet.open{display:flex;}
 .picker-backdrop{position:absolute;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);}
 .picker-panel{position:relative;margin-top:auto;background:var(--surface);border-top:1px solid var(--border);border-radius:24px 24px 0 0;display:flex;flex-direction:column;height:88dvh;z-index:1;overflow:hidden;}
@@ -496,7 +496,7 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
     <div>
       <div class="logo">FORGE</div>
       <div class="home-subtitle">Training System</div>
-      <div style="font-family:var(--mono);font-size:9px;color:var(--text-dim);letter-spacing:1px;margin-top:4px;opacity:0.6;" id="version-label" onclick="handleVersionTap()">v0.72</div>
+      <div style="font-family:var(--mono);font-size:9px;color:var(--text-dim);letter-spacing:1px;margin-top:4px;opacity:0.6;" id="version-label" onclick="handleVersionTap()">v0.74</div>
     </div>
     <button onclick="openSettings()" style="background:var(--card);border:1px solid var(--border);border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;cursor:pointer;margin-top:4px;flex-shrink:0;">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -661,17 +661,17 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
       <button onclick="closeGoalBuilder()" style="font-family:var(--mono);font-size:11px;color:var(--muted);background:none;border:1px solid var(--border);border-radius:6px;padding:6px 12px;cursor:pointer;letter-spacing:1px;">CANCEL</button>
     </div>
 
-    <!-- Exercise picker search -->
+    <!-- Exercise picker -->
     <div class="gb-field">
       <div class="gb-label">Exercise</div>
-      <div style="position:relative;">
-        <input class="gb-input" id="gb-ex-search" placeholder="Search exercise library..." autocomplete="off" oninput="filterGBExercises()" onfocus="showGBDropdown()" onclick="showGBDropdown()">
-        <div id="gb-ex-dropdown" style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--card);border:1px solid var(--accent);border-radius:10px;margin-top:4px;max-height:200px;overflow-y:auto;z-index:200;box-shadow:0 8px 24px rgba(0,0,0,0.4);"></div>
-      </div>
-      <div id="gb-ex-selected" style="display:none;margin-top:8px;padding:10px 12px;background:var(--accent-dim);border:1px solid var(--accent);border-radius:8px;font-family:var(--sans);font-size:13px;color:var(--accent);display:flex;align-items:center;justify-content:space-between;">
+      <div id="gb-ex-selected" style="display:none;padding:10px 12px;background:var(--accent-dim);border:1px solid var(--accent);border-radius:8px;font-family:var(--sans);font-size:13px;color:var(--accent);display:none;align-items:center;justify-content:space-between;margin-bottom:8px;">
         <span id="gb-ex-selected-name"></span>
-        <span onclick="clearGBExercise()" style="cursor:pointer;font-size:16px;line-height:1;">×</span>
+        <span onclick="clearGBExercise()" style="cursor:pointer;font-size:16px;line-height:1;color:var(--accent);">×</span>
       </div>
+      <button onclick="openExPickerFor('goal')" style="width:100%;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--text-dim);font-family:var(--sans);font-size:14px;cursor:pointer;text-align:left;display:flex;align-items:center;justify-content:space-between;">
+        <span id="gb-ex-btn-label">Browse exercise library...</span>
+        <span style="color:var(--accent);font-size:18px;">›</span>
+      </button>
     </div>
 
     <!-- Target + Unit row -->
@@ -798,7 +798,7 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
   <div class="picker-panel">
     <div class="picker-handle"></div>
     <div class="picker-header">
-      <div class="picker-title">Add Exercise</div>
+      <div class="picker-title" id="picker-title-text">Add Exercise</div>
       <div class="picker-close" onclick="closeExPicker()">X</div>
     </div>
     <div class="picker-search"><input id="picker-search" placeholder="Search exercises..." oninput="filterPicker()"></div>
@@ -1590,6 +1590,7 @@ function saveProgram(){
 // ─────────────────────────────────────────────
 let expandedBlockIndex = null; // which block is currently expanded in the builder
 let pickerTargetBlockIndex = null; // which block the exercise picker is adding to
+let pickerMode = 'block'; // 'block' | 'quick' | 'goal'
 
 function renderBPBlocks(){
   if(builderProgram)saveBuilderDraft(builderProgram);
@@ -1847,6 +1848,7 @@ function removeCheckItemInline(blockIdx, checkIdx){
 // Exercise picker now targets a specific block by index
 function openExPickerFor(blockIdx){
   pickerTargetBlockIndex=blockIdx;
+  pickerMode= blockIdx==='goal' ? 'goal' : (blockIdx==='quick'?'quick':'block');
   pickerActiveTag=null;
   document.getElementById('picker-search').value='';
   document.getElementById('new-ex-form').classList.add('hidden');
@@ -1854,6 +1856,12 @@ function openExPickerFor(blockIdx){
   document.getElementById('picker-new-btn').style.display='block';
   document.getElementById('picker-scroll').style.display='';
   newExTags=[];
+  document.getElementById('picker-title-text').textContent=
+    pickerMode==='goal'?'Pick Exercise for Goal':'Add Exercise';
+  // If opening from goal builder, hide it so picker is fully visible
+  if(pickerMode==='goal'){
+    document.getElementById('goal-builder-sheet').style.display='none';
+  }
   renderPickerTagFilters();
   renderPickerList();
   document.getElementById('ex-picker-sheet').classList.add('open');
@@ -1900,6 +1908,11 @@ function addCheckItem(){}
 // ─────────────────────────────────────────────
 function closeExPicker(){
   document.getElementById('ex-picker-sheet').classList.remove('open');
+  // If we were picking for a goal, restore the goal builder
+  if(pickerMode==='goal'){
+    document.getElementById('goal-builder-sheet').style.display='flex';
+  }
+  pickerMode='block';
 }
 
 // Curated shortlist shown in picker — full EX_TAGS still searchable via text
@@ -1986,6 +1999,11 @@ function renderPickerList(){
 
 function addExToBlock(exTemplate){
   if(pickerTargetBlockIndex==='quick'){addExToQuick(exTemplate);return;}
+  if(pickerTargetBlockIndex==='goal'){
+    selectGBExercise(exTemplate);
+    closeExPicker();
+    return;
+  }
   const idx=pickerTargetBlockIndex;
   if(idx===null||idx===undefined||!builderProgram||!builderProgram.days||!builderProgram.days[idx]){
     showToast('Could not add exercise — try again');
@@ -3218,7 +3236,7 @@ function updateGoalCurrent(i){
 let goalBuilderIndex=null;
 let gbSelectedColor='#e8ff47';
 
-let gbSelectedExercise=null; // {id, name, logType, tags}
+let gbSelectedExercise=null;
 
 function openGoalBuilder(idx){
   goalBuilderIndex=idx;
@@ -3228,98 +3246,69 @@ function openGoalBuilder(idx){
   document.getElementById('gb-target').value=g?(g.target||''):'';
   gbSelectedColor=g?(g.color||GOAL_COLORS[0]):GOAL_COLORS[0];
 
-  // Restore exercise selection if editing
   gbSelectedExercise=null;
-  document.getElementById('gb-ex-search').value=g?(g.name||''):'';
   const selDiv=document.getElementById('gb-ex-selected');
-  document.getElementById('gb-ex-selected-name').textContent=g?g.name:'';
-  selDiv.style.display=g&&g.name?'flex':'none';
+  const btnLabel=document.getElementById('gb-ex-btn-label');
+  if(g&&g.name){
+    document.getElementById('gb-ex-selected-name').textContent=g.name;
+    selDiv.style.display='flex';
+    if(btnLabel)btnLabel.textContent='Change exercise...';
+  } else {
+    selDiv.style.display='none';
+    if(btnLabel)btnLabel.textContent='Browse exercise library...';
+  }
 
-  // Set unit
   const unitSel=document.getElementById('gb-unit');
   unitSel.value=(g&&g.unit)||'lbs';
 
   document.getElementById('gb-delete-btn').style.display=g?'block':'none';
-  document.getElementById('gb-ex-dropdown').style.display='none';
   renderGBColors();
   document.getElementById('goal-builder-sheet').classList.add('open');
-  setTimeout(()=>document.getElementById('gb-ex-search').focus(),100);
-}
-
-function filterGBExercises(){
-  const q=document.getElementById('gb-ex-search').value.trim().toLowerCase();
-  showGBDropdown(q);
-}
-
-function showGBDropdown(q=''){
-  const dropdown=document.getElementById('gb-ex-dropdown');
-  const allEx=[...(typeof EXERCISE_LIBRARY!=='undefined'?EXERCISE_LIBRARY:[]),...getExLibrary()];
-  const filtered=q
-    ?allEx.filter(e=>e.name.toLowerCase().includes(q)).slice(0,12)
-    :allEx.slice(0,12);
-  if(!filtered.length){dropdown.style.display='none';return;}
-  dropdown.innerHTML='';
-  filtered.forEach(ex=>{
-    const row=document.createElement('div');
-    row.style.cssText='padding:11px 14px;cursor:pointer;font-family:var(--sans);font-size:14px;border-bottom:1px solid var(--border);';
-    row.innerHTML='<div style="font-weight:500;color:var(--text);">'+escHtml(ex.name)+'</div>'+
-      '<div style="font-size:11px;color:var(--text-dim);margin-top:2px;">'+escHtml(ex.muscleGroup||'')+'</div>';
-    row.addEventListener('mousedown',e=>{e.preventDefault();selectGBExercise(ex);});
-    row.addEventListener('touchstart',e=>{e.preventDefault();selectGBExercise(ex);},{passive:false});
-    dropdown.appendChild(row);
-  });
-  dropdown.style.display='block';
 }
 
 function selectGBExercise(ex){
   gbSelectedExercise=ex;
-  document.getElementById('gb-ex-search').value=ex.name;
   document.getElementById('gb-ex-selected-name').textContent=ex.name;
   document.getElementById('gb-ex-selected').style.display='flex';
-  document.getElementById('gb-ex-dropdown').style.display='none';
-  // Infer unit from exercise type
+  const btnLabel=document.getElementById('gb-ex-btn-label');
+  if(btnLabel)btnLabel.textContent='Change exercise...';
+  // Infer unit
   const type=getLogType(ex);
   const unitSel=document.getElementById('gb-unit');
   if(type==='cardio') unitSel.value='miles';
   else if(type==='timed') unitSel.value='min';
   else if(type==='bodyweight') unitSel.value='reps';
   else unitSel.value='lbs';
+  // Restore goal builder sheet
+  document.getElementById('goal-builder-sheet').style.display='flex';
 }
 
 function clearGBExercise(){
   gbSelectedExercise=null;
-  document.getElementById('gb-ex-search').value='';
   document.getElementById('gb-ex-selected').style.display='none';
-  document.getElementById('gb-ex-search').focus();
+  const btnLabel=document.getElementById('gb-ex-btn-label');
+  if(btnLabel)btnLabel.textContent='Browse exercise library...';
 }
 
 function closeGoalBuilder(){
-  document.getElementById('goal-builder-sheet').classList.remove('open');
-  document.getElementById('gb-ex-dropdown').style.display='none';
+  const sheet=document.getElementById('goal-builder-sheet');
+  sheet.classList.remove('open');
+  sheet.style.display='';
   goalBuilderIndex=null;
   gbSelectedExercise=null;
 }
 
-// Close dropdown when tapping outside
-document.addEventListener('click',e=>{
-  const dd=document.getElementById('gb-ex-dropdown');
-  const input=document.getElementById('gb-ex-search');
-  if(dd&&input&&!dd.contains(e.target)&&e.target!==input){
-    dd.style.display='none';
-  }
-});
-
 function saveGoalFromBuilder(){
-  const name=document.getElementById('gb-ex-search').value.trim();
-  if(!name){showToast('Select an exercise first');return;}
+  const selName=document.getElementById('gb-ex-selected-name').textContent.trim();
+  if(!selName){showToast('Select an exercise first');return;}
   const target=parseFloat(document.getElementById('gb-target').value)||0;
   if(!target){showToast('Enter a target value');return;}
   const unit=document.getElementById('gb-unit').value;
   const goals=getUserGoals();
   const goal={
     id:goalBuilderIndex!==null?goals[goalBuilderIndex].id:'goal-'+Date.now(),
-    name,
-    current:0, // always auto-tracked, never manually set
+    name:selName,
+    current:0,
     target,unit,
     color:gbSelectedColor,
     exId:gbSelectedExercise?.id||null
