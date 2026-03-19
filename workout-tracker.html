@@ -496,7 +496,7 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
     <div>
       <div class="logo">FORGE</div>
       <div class="home-subtitle">Training System</div>
-      <div style="font-family:var(--mono);font-size:9px;color:rgba(232,255,71,0.35);letter-spacing:1px;margin-top:4px;">v0.58</div>
+      <div style="font-family:var(--mono);font-size:9px;color:rgba(232,255,71,0.35);letter-spacing:1px;margin-top:4px;">v0.64</div>
     </div>
     <button onclick="openSettings()" style="background:var(--card);border:1px solid var(--border);border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;cursor:pointer;margin-top:4px;flex-shrink:0;">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -518,9 +518,74 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
     </div>
     <div id="prog-add-wrap" style="display:none;padding:0 24px 12px;">
       <button class="add-program-tile" onclick="openProgramBuilder(null)">+ NEW PROGRAM</button>
+      <button id="quick-workout-btn" onclick="startQuickWorkout()" style="width:100%;padding:14px;background:var(--accent-dim);border:1px solid var(--accent);border-radius:var(--radius);font-family:var(--display);font-size:20px;letter-spacing:2px;color:var(--accent);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:8px;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"/></svg>
+        QUICK WORKOUT
+      </button>
     </div>
   </div>
   <div class="program-list" id="program-list"></div>
+  <div id="saved-blocks-section" style="display:none;padding:0 24px 110px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;margin-top:8px;">
+      <div style="font-family:var(--sans);font-size:13px;font-weight:500;color:var(--muted);">Saved Blocks</div>
+      <div id="saved-blocks-toggle" onclick="toggleSavedBlocks()" style="font-family:var(--mono);font-size:10px;color:var(--muted);cursor:pointer;letter-spacing:1px;">HIDE ▲</div>
+    </div>
+    <div id="saved-blocks-list"></div>
+  </div>
+</div>
+
+<!-- QUICK WORKOUT -->
+<div class="screen" id="quick-screen">
+  <div class="workout-topbar">
+    <div class="back-btn" onclick="exitQuickWorkout()">&#8592;</div>
+    <div class="topbar-title">
+      <div class="ttl">QUICK WORKOUT</div>
+      <div class="tsub" id="quick-date">—</div>
+    </div>
+    <div class="timer-display" id="quick-timer">0:00</div>
+  </div>
+  <div class="workout-body" id="quick-body"></div>
+  <div class="finish-bar" style="display:flex;gap:10px;">
+    <button class="finish-btn early-btn" style="font-size:16px;" onclick="addQuickExercise()">+ EXERCISE</button>
+    <button class="finish-btn" onclick="finishQuickWorkout()">FINISH</button>
+  </div>
+</div>
+
+<!-- QUICK WORKOUT SAVE-AS-BLOCK SHEET -->
+<div class="picker-sheet" id="quick-save-sheet">
+  <div class="picker-backdrop" onclick="closeQuickSave()"></div>
+  <div class="picker-panel" style="max-height:75vh;">
+    <div class="picker-handle"></div>
+    <div class="picker-header">
+      <div class="picker-title">Save Session</div>
+      <div class="picker-close" onclick="closeQuickSave()">✕</div>
+    </div>
+    <div style="padding:20px;">
+      <div style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Block Name</div>
+      <input id="quick-block-name" placeholder="e.g. Chest Day, Upper Body..."
+        style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:var(--sans);font-size:15px;padding:12px 14px;outline:none;box-sizing:border-box;margin-bottom:16px;"
+        onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">
+
+      <!-- Save as standalone block -->
+      <button id="quick-save-block-btn" onclick="confirmQuickSave('standalone')" style="width:100%;background:var(--accent);color:var(--accent-text);border:none;border-radius:var(--radius);padding:14px;font-family:var(--display);font-size:18px;letter-spacing:2px;cursor:pointer;margin-bottom:6px;">SAVE AS BLOCK</button>
+      <div id="quick-save-block-confirm" style="display:none;font-family:var(--sans);font-size:12px;color:var(--accent);text-align:center;margin-bottom:10px;">✓ Saved to block library</div>
+      <div style="font-family:var(--sans);font-size:12px;color:var(--muted);text-align:center;margin-bottom:18px;">Saves to your block library — add to any program later</div>
+
+      <!-- Add to program -->
+      <div style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Also add to a program</div>
+      <select id="quick-prog-select"
+        style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:var(--sans);font-size:14px;padding:12px 14px;outline:none;box-sizing:border-box;margin-bottom:10px;-webkit-appearance:none;">
+        <option value="">— Select a program —</option>
+      </select>
+      <button id="quick-add-prog-btn" onclick="confirmQuickSave('program')" style="width:100%;background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:var(--radius);padding:13px;font-family:var(--display);font-size:18px;letter-spacing:2px;cursor:pointer;margin-bottom:6px;">ADD TO PROGRAM</button>
+      <div id="quick-add-prog-confirm" style="display:none;font-family:var(--sans);font-size:12px;color:var(--accent);text-align:center;margin-bottom:10px;">✓ Added to program</div>
+
+      <div style="height:1px;background:var(--border);margin:14px 0;"></div>
+
+      <!-- Done -->
+      <button onclick="closeQuickSave()" style="width:100%;background:var(--accent);color:var(--accent-text);border:none;border-radius:var(--radius);padding:15px;font-family:var(--display);font-size:20px;letter-spacing:2px;cursor:pointer;">DONE</button>
+    </div>
+  </div>
 </div>
 
 <!-- HISTORY -->
@@ -1173,12 +1238,17 @@ const getGoalData  =()=>JSON.parse(localStorage.getItem('forge_g')||'{}');
 const saveGoalData =g=>localStorage.setItem('forge_g',JSON.stringify(g));
 const getCustomProgs=()=>JSON.parse(localStorage.getItem('forge_custom_progs')||'[]');
 const saveCustomProgs=p=>localStorage.setItem('forge_custom_progs',JSON.stringify(p));
-const getExLibrary =()=>JSON.parse(localStorage.getItem('forge_ex_lib')||'[]');
-const saveExLibrary=l=>localStorage.setItem('forge_ex_lib',JSON.stringify(l));
+const getExLibrary   =()=>JSON.parse(localStorage.getItem('forge_ex_lib')||'[]');
+const saveExLibrary  =l=>localStorage.setItem('forge_ex_lib',JSON.stringify(l));
+const getSavedBlocks =()=>JSON.parse(localStorage.getItem('forge_saved_blocks')||'[]');
+const saveSavedBlocks=b=>localStorage.setItem('forge_saved_blocks',JSON.stringify(b));
 // Custom user tags per context: 'style' | 'block' | 'ex'
 const getCustomTags=ctx=>JSON.parse(localStorage.getItem('forge_tags_'+ctx)||'[]');
 const saveCustomTags=(ctx,t)=>localStorage.setItem('forge_tags_'+ctx,JSON.stringify(t));
 
+const getBuilderDraft=()=>JSON.parse(localStorage.getItem('forge_builder_draft')||'null');
+const saveBuilderDraft=p=>localStorage.setItem('forge_builder_draft',JSON.stringify(p));
+const clearBuilderDraft=()=>localStorage.removeItem('forge_builder_draft');
 function getAllPrograms(){return [...BUILTIN_PROGRAMS,...getCustomProgs()];}
 
 // ─────────────────────────────────────────────
@@ -1216,16 +1286,12 @@ function switchProgTab(tab, el){
 function renderPrograms(){
   const list=document.getElementById('program-list');list.innerHTML='';
   const history=getHistory(),today=new Date().toDateString();
-
-  // Filter by tab
   const programs = progTab==='preset' ? BUILTIN_PROGRAMS : getCustomProgs();
 
   if(!programs.length){
     list.innerHTML='<div class="empty-state"><div class="em-label">PROGRAMS</div><div>No custom programs yet.<br>Tap + New Program to build one.</div></div>';
-    return;
-  }
-
-  programs.forEach(prog=>{
+  } else {
+    programs.forEach(prog=>{
     const card=document.createElement('div');
     card.className='program-card'+(activeProgram===prog.id?' expanded active-program':'');
     card.id='prog-'+prog.id;
@@ -1254,7 +1320,91 @@ function renderPrograms(){
         '<div class="block-list">'+blocksHtml+'</div>'+
       '</div>';
     list.appendChild(card);
+    });
+  }
+
+  // Render saved blocks section only on custom tab
+  const blocksSection=document.getElementById('saved-blocks-section');
+  const blocksList=document.getElementById('saved-blocks-list');
+  if(progTab==='custom'){
+    const saved=getSavedBlocks();
+    if(saved.length){
+      blocksSection.style.display='block';
+      blocksList.innerHTML='';
+      saved.forEach((block,i)=>{
+        const exCount=(block.exercises||[]).length;
+        const setCount=(block.exercises||[]).reduce((a,e)=>a+(e.sets||0),0);
+        const card=document.createElement('div');
+        card.style.cssText='background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:10px;';
+        card.innerHTML=
+          '<div style="display:flex;align-items:center;gap:10px;">'+
+            '<div style="width:3px;align-self:stretch;border-radius:2px;background:var(--muted);flex-shrink:0;"></div>'+
+            '<div style="flex:1;min-width:0;">'+
+              '<div style="font-family:var(--display);font-size:18px;letter-spacing:0.5px;">'+escHtml(block.name)+'</div>'+
+              '<div style="font-family:var(--sans);font-size:12px;color:var(--muted);margin-top:2px;">'+exCount+' exercise'+(exCount!==1?'s':'')+' · '+setCount+' sets</div>'+
+              (block.desc?'<div style="font-family:var(--sans);font-size:11px;color:var(--muted);margin-top:3px;">'+escHtml(block.desc)+'</div>':'')+
+            '</div>'+
+            '<div style="display:flex;gap:8px;flex-shrink:0;">'+
+              '<button onclick="addSavedBlockToProgram('+i+')" style="font-family:var(--mono);font-size:10px;color:var(--accent);background:var(--accent-dim);border:1px solid var(--accent);border-radius:6px;padding:6px 10px;cursor:pointer;letter-spacing:1px;white-space:nowrap;">ADD TO PROGRAM</button>'+
+              '<button onclick="deleteSavedBlock('+i+')" style="font-family:var(--mono);font-size:10px;color:var(--muted);background:none;border:1px solid var(--border);border-radius:6px;padding:6px 10px;cursor:pointer;letter-spacing:1px;">DEL</button>'+
+            '</div>'+
+          '</div>';
+        blocksList.appendChild(card);
+      });
+    } else {
+      blocksSection.style.display='none';
+    }
+  } else {
+    blocksSection.style.display='none';
+  }
+}
+
+let savedBlocksCollapsed=false;
+function toggleSavedBlocks(){
+  savedBlocksCollapsed=!savedBlocksCollapsed;
+  document.getElementById('saved-blocks-list').style.display=savedBlocksCollapsed?'none':'';
+  document.getElementById('saved-blocks-toggle').textContent=savedBlocksCollapsed?'SHOW ▼':'HIDE ▲';
+}
+
+function deleteSavedBlock(i){
+  showConfirm('Delete this block?','It will be removed from your block library.','DELETE',()=>{
+    const blocks=getSavedBlocks();
+    blocks.splice(i,1);
+    saveSavedBlocks(blocks);
+    closeConfirm();
+    renderPrograms();
+    showToast('Block deleted');
   });
+}
+
+function addSavedBlockToProgram(i){
+  const block=getSavedBlocks()[i];
+  if(!block)return;
+  const progs=getCustomProgs();
+  if(!progs.length){showToast('Create a program first');return;}
+  // Build a simple select sheet
+  const opts=progs.map((p,pi)=>'<option value="'+pi+'">'+escHtml(p.name)+'</option>').join('');
+  showConfirm(
+    'Add "'+block.name+'" to...',
+    '',
+    'ADD',
+    ()=>{
+      const sel=document.getElementById('block-prog-select');
+      if(!sel)return;
+      const pi=parseInt(sel.value);
+      if(isNaN(pi))return;
+      progs[pi].days=progs[pi].days||[];
+      progs[pi].days.push({...block,id:'block-'+Date.now()});
+      saveCustomProgs(progs);
+      closeConfirm();
+      showToast('Block added to '+progs[pi].name);
+    }
+  );
+  // Inject a select into the confirm body
+  setTimeout(()=>{
+    const body=document.getElementById('confirm-body');
+    if(body)body.innerHTML='<select id="block-prog-select" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--sans);font-size:14px;padding:10px 12px;margin-top:8px;outline:none;-webkit-appearance:none;">'+opts+'</select>';
+  },50);
 }
 
 function getAccClass(type){
@@ -1305,6 +1455,7 @@ function deleteProgram(){
 }
 
 function closeProgramBuilder(){
+  clearBuilderDraft();
   document.getElementById('bp-save-bar').style.display='none';
   showScreen('home-screen');
   // Switch to custom tab so user sees their program
@@ -1388,31 +1539,6 @@ function renderBPColors(){
   });
 }
 
-function renderBPBlocks(){
-  const el=document.getElementById('bp-block-list');el.innerHTML='';
-  if(!builderProgram.days.length){
-    el.innerHTML='<div style="font-family:var(--mono);font-size:11px;color:var(--muted);text-align:center;padding:20px">No blocks yet — add one below.</div>';
-    return;
-  }
-  builderProgram.days.forEach((day,i)=>{
-    const item=document.createElement('div');item.className='block-editor-item';
-    const setCount=day.isSimple?(day.checks||[]).length+' checks':((day.exercises||[]).reduce((a,e)=>a+e.sets,0))+' sets';
-    const tagsHtml=(day.tags||[]).map(t=>'<span class="ex-tag">'+t+'</span>').join('');
-    const accentColor=getAccColor(day.type);
-    item.innerHTML=
-      '<div class="block-editor-accent" style="background:'+accentColor+'"></div>'+
-      '<div class="block-editor-body">'+
-        '<div class="block-editor-name">'+day.name+'</div>'+
-        '<div class="block-editor-meta">'+(day.desc||'')+(day.desc?' · ':'')+setCount+'</div>'+
-        (tagsHtml?'<div class="block-editor-tag-row">'+tagsHtml+'</div>':'')+
-      '</div>'+
-      '<div class="block-editor-actions">'+
-        '<button class="block-action-btn" onclick="openBlockBuilder('+i+')">EDIT</button>'+
-        '<button class="block-action-btn del" onclick="removeBlock('+i+')">DEL</button>'+
-      '</div>';
-    el.appendChild(item);
-  });
-}
 
 function getAccColor(type){
   const m={push:'#ff8c47',pull:'#47b4ff',legs:'#e8ff47',chest:'#ff8c47',back:'#47b4ff',shoulders:'#c847ff',arms:'#ff4774',accessories:'#47ffd4',cardio:'#c847ff',core:'#ff4774'};
@@ -1433,6 +1559,7 @@ function saveProgram(){
   const idx=customs.findIndex(p=>p.id===builderProgram.id);
   if(idx>=0)customs[idx]=builderProgram;else customs.push(builderProgram);
   saveCustomProgs(customs);
+  clearBuilderDraft();
   showToast('Program saved');
   closeProgramBuilder();
 }
@@ -1444,6 +1571,7 @@ let expandedBlockIndex = null; // which block is currently expanded in the build
 let pickerTargetBlockIndex = null; // which block the exercise picker is adding to
 
 function renderBPBlocks(){
+  if(builderProgram)saveBuilderDraft(builderProgram);
   const el=document.getElementById('bp-block-list');el.innerHTML='';
   if(!builderProgram.days.length){
     el.innerHTML='<div style="font-family:var(--mono);font-size:11px;color:var(--muted);text-align:center;padding:20px 0">No blocks yet — add one below.</div>';
@@ -1710,21 +1838,6 @@ function openExPickerFor(blockIdx){
   document.getElementById('ex-picker-sheet').classList.add('open');
 }
 
-function addExToBlock(exTemplate){
-  const idx = pickerTargetBlockIndex;
-  if(idx===null||idx===undefined||!builderProgram||!builderProgram.days||!builderProgram.days[idx]){
-    showToast('Could not add exercise — try again');
-    closeExPicker();
-    return;
-  }
-  if(!builderProgram.days[idx].exercises)builderProgram.days[idx].exercises=[];
-  const ex={...exTemplate,id:exTemplate.id+'-'+Date.now(),sets:exTemplate.sets||3,reps:exTemplate.reps||'8-12'};
-  builderProgram.days[idx].exercises.push(ex);
-  expandedBlockIndex=idx;
-  renderBPBlocks();
-  closeExPicker();
-  showToast(exTemplate.name+' added');
-}
 
 // Confirm dialog (replaces native confirm() which breaks in PWA)
 let confirmCallback=null;
@@ -1851,6 +1964,7 @@ function renderPickerList(){
 }
 
 function addExToBlock(exTemplate){
+  if(pickerTargetBlockIndex==='quick'){addExToQuick(exTemplate);return;}
   const idx=pickerTargetBlockIndex;
   if(idx===null||idx===undefined||!builderProgram||!builderProgram.days||!builderProgram.days[idx]){
     showToast('Could not add exercise — try again');
@@ -2324,8 +2438,293 @@ function logSet(exId,setIdx){
 }
 
 // ─────────────────────────────────────────────
-// TIMER + FINISH
+// QUICK WORKOUT
 // ─────────────────────────────────────────────
+let quickExercises=[];   // [{ex, sets:[{weight,reps,ts,type}]}]
+let quickStart=null;
+let quickTimerInterval=null;
+
+function startQuickWorkout(){
+  quickExercises=[];
+  quickStart=Date.now();
+  document.getElementById('quick-date').textContent=
+    new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+  clearInterval(quickTimerInterval);
+  quickTimerInterval=setInterval(()=>{
+    const s=Math.floor((Date.now()-quickStart)/1000);
+    const m=Math.floor(s/60),sec=s%60;
+    document.getElementById('quick-timer').textContent=m+':'+(sec<10?'0':'')+sec;
+  },1000);
+  document.getElementById('quick-body').innerHTML=
+    '<div style="font-family:var(--sans);font-size:14px;color:var(--muted);text-align:center;padding:40px 24px;">Tap <strong style="color:var(--text)">+ EXERCISE</strong> to begin</div>';
+  showScreen('quick-screen');
+}
+
+function addQuickExercise(){
+  pickerTargetBlockIndex='quick';
+  pickerActiveTag=null;
+  document.getElementById('picker-search').value='';
+  document.getElementById('new-ex-form').classList.add('hidden');
+  document.getElementById('picker-new-btn').textContent='+ CREATE NEW EXERCISE';
+  document.getElementById('picker-scroll').style.display='';
+  newExTags=[];
+  renderPickerTagFilters();
+  renderPickerList();
+  document.getElementById('ex-picker-sheet').classList.add('open');
+}
+
+function addExToQuick(exTemplate){
+  const ex={...exTemplate,id:exTemplate.id+'-q'+Date.now(),sets:99,reps:'—'};
+  quickExercises.push({ex, sets:[]});
+  closeExPicker();
+  renderQuickBody();
+}
+
+function renderQuickBody(){
+  const body=document.getElementById('quick-body');
+  if(!quickExercises.length){
+    body.innerHTML='<div style="font-family:var(--sans);font-size:14px;color:var(--muted);text-align:center;padding:40px 24px;">Tap <strong style="color:var(--text)">+ EXERCISE</strong> to begin</div>';
+    return;
+  }
+  body.innerHTML='';
+  const activeIdx=quickExercises.length-1; // most recently added is active
+  quickExercises.forEach((item,exIdx)=>{
+    const {ex,sets}=item;
+    const isActive=exIdx===activeIdx;
+    const type=getLogType(ex);
+    const color=getExAccentColor(ex.tags||[]);
+    const card=document.createElement('div');
+    card.className='exercise-card expanded'+(isActive?' active-ex':'');
+    if(isActive)card.style.borderColor='var(--accent)';
+    card.id='qex-'+exIdx;
+
+    // Build logged sets display
+    let setsHtml='';
+    sets.forEach((s,si)=>{
+      const display=type==='lifting'?s.weight+'lbs × '+s.reps+'reps':
+                    type==='bodyweight'?s.reps+' reps':
+                    type==='cardio'?s.weight+' min'+(s.reps?' · '+s.reps+' mi':''):
+                    type==='hiit'?s.weight+' rounds'+(s.reps?' · '+s.reps:''):
+                    s.reps||'—';
+      setsHtml+=
+        '<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid rgba(37,37,48,0.3);">'+
+          '<div style="font-family:var(--mono);font-size:11px;color:var(--muted);width:20px;">'+(si+1)+'</div>'+
+          '<div style="flex:1;font-family:var(--mono);font-size:12px;color:var(--text);">'+display+'</div>'+
+          '<div style="font-family:var(--mono);font-size:10px;color:var(--muted);">'+new Date(s.ts).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})+'</div>'+
+        '</div>';
+    });
+
+    // Inline add set row
+    const addRowId='qadd-'+exIdx;
+    let addRowHtml='';
+    if(type==='lifting'){
+      addRowHtml=
+        '<div id="'+addRowId+'" style="display:flex;gap:8px;align-items:center;padding-top:10px;">'+
+          '<input id="qw-'+exIdx+'" type="number" inputmode="decimal" placeholder="lbs" style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--sans);font-size:14px;padding:9px 10px;outline:none;box-sizing:border-box;">'+
+          '<input id="qr-'+exIdx+'" type="number" inputmode="numeric" placeholder="reps" style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--sans);font-size:14px;padding:9px 10px;outline:none;box-sizing:border-box;">'+
+          '<button onclick="logQuickSet('+exIdx+')" style="background:var(--accent);color:var(--accent-text);border:none;border-radius:8px;padding:9px 14px;font-family:var(--mono);font-size:11px;font-weight:500;cursor:pointer;white-space:nowrap;">LOG</button>'+
+        '</div>';
+    } else if(type==='bodyweight'){
+      addRowHtml=
+        '<div id="'+addRowId+'" style="display:flex;gap:8px;align-items:center;padding-top:10px;">'+
+          '<input id="qr-'+exIdx+'" type="number" inputmode="numeric" placeholder="reps" style="flex:2;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--sans);font-size:14px;padding:9px 10px;outline:none;box-sizing:border-box;">'+
+          '<button onclick="logQuickSet('+exIdx+')" style="background:var(--accent);color:var(--accent-text);border:none;border-radius:8px;padding:9px 14px;font-family:var(--mono);font-size:11px;font-weight:500;cursor:pointer;">LOG</button>'+
+        '</div>';
+    } else if(type==='cardio'){
+      addRowHtml=
+        '<div id="'+addRowId+'" style="display:flex;gap:8px;align-items:center;padding-top:10px;">'+
+          '<input id="qw-'+exIdx+'" type="text" placeholder="duration" style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--sans);font-size:14px;padding:9px 10px;outline:none;box-sizing:border-box;">'+
+          '<input id="qr-'+exIdx+'" type="number" inputmode="decimal" placeholder="mi (opt)" style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--sans);font-size:13px;padding:9px 10px;outline:none;box-sizing:border-box;">'+
+          '<button onclick="logQuickSet('+exIdx+')" style="background:var(--accent);color:var(--accent-text);border:none;border-radius:8px;padding:9px 14px;font-family:var(--mono);font-size:11px;font-weight:500;cursor:pointer;">LOG</button>'+
+        '</div>';
+    } else {
+      addRowHtml=
+        '<div id="'+addRowId+'" style="display:flex;gap:8px;align-items:center;padding-top:10px;">'+
+          '<input id="qr-'+exIdx+'" type="text" placeholder="duration / reps" style="flex:2;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--sans);font-size:14px;padding:9px 10px;outline:none;box-sizing:border-box;">'+
+          '<button onclick="logQuickSet('+exIdx+')" style="background:var(--accent);color:var(--accent-text);border:none;border-radius:8px;padding:9px 14px;font-family:var(--mono);font-size:11px;font-weight:500;cursor:pointer;">LOG</button>'+
+        '</div>';
+    }
+
+    card.innerHTML=
+      '<div class="ex-header">'+
+        '<div class="ex-num">'+(exIdx+1)+'</div>'+
+        '<div class="ex-meta">'+
+          '<div class="ex-name">'+ex.name+'</div>'+
+          '<div class="ex-sub">'+sets.length+' set'+(sets.length!==1?'s':'')+' logged · '+ex.muscleGroup+'</div>'+
+        '</div>'+
+        '<button onclick="removeQuickExercise('+exIdx+')" style="font-family:var(--mono);font-size:10px;color:var(--muted);background:none;border:1px solid var(--border);border-radius:6px;padding:5px 8px;cursor:pointer;letter-spacing:1px;flex-shrink:0;">REMOVE</button>'+
+      '</div>'+
+      '<div class="ex-body">'+
+        (setsHtml||'<div style="font-family:var(--mono);font-size:11px;color:var(--muted);padding:4px 0 8px;">No sets yet</div>')+
+        addRowHtml+
+      '</div>';
+    body.appendChild(card);
+  });
+}
+
+function logQuickSet(exIdx){
+  const item=quickExercises[exIdx];
+  const type=getLogType(item.ex);
+  const wEl=document.getElementById('qw-'+exIdx);
+  const rEl=document.getElementById('qr-'+exIdx);
+  let w=0,r=0;
+  if(type==='lifting'){
+    w=parseFloat(wEl?.value);r=parseInt(rEl?.value);
+    if(isNaN(w)||isNaN(r)||w<=0||r<=0){showToast('Enter weight and reps');return;}
+  } else if(type==='bodyweight'){
+    r=parseInt(rEl?.value);
+    if(isNaN(r)||r<=0){showToast('Enter reps');return;}
+  } else if(type==='cardio'){
+    w=wEl?.value?.trim();if(!w){showToast('Enter duration');return;}
+    r=parseFloat(rEl?.value)||0;
+  } else {
+    r=rEl?.value?.trim();if(!r){showToast('Enter value');return;}
+  }
+  item.sets.push({weight:w,reps:r,ts:new Date().toISOString(),type});
+  if(wEl)wEl.value='';
+  if(rEl)rEl.value='';
+  renderQuickBody();
+  showToast('Set logged');
+}
+
+function removeQuickExercise(exIdx){
+  quickExercises.splice(exIdx,1);
+  renderQuickBody();
+}
+
+function finishQuickWorkout(){
+  if(!quickExercises.length){showToast('No exercises logged');return;}
+  clearInterval(quickTimerInterval);
+  const elapsed=Math.floor((Date.now()-quickStart)/1000);
+  const dur=Math.floor(elapsed/60)+':'+String(elapsed%60).padStart(2,'0');
+
+  // Save to history
+  const bests=getBests();
+  let totalSets=0,totalVol=0,prs=0;
+  const exBk=[];
+  quickExercises.forEach(({ex,sets})=>{
+    if(!sets.length)return;
+    totalSets+=sets.length;
+    const type=getLogType(ex);
+    if(type==='lifting'){
+      const top=sets.reduce((a,b)=>(b.weight*b.reps)>(a.weight*a.reps)?b:a);
+      const vol=sets.reduce((a,b)=>a+b.weight*b.reps,0);
+      totalVol+=vol;
+      const prev=bests[ex.id];
+      const isPR=!prev?.topSet||top.weight*top.reps>prev.topSet.weight*prev.topSet.reps;
+      if(isPR)prs++;
+      bests[ex.id]={topSet:top,sets,date:new Date().toISOString()};
+      exBk.push({name:ex.name,topSet:top,vol,isPR,partial:false,type});
+    } else {
+      exBk.push({name:ex.name,topSet:null,vol:0,isPR:false,partial:false,type,
+        summary:sets[0].weight?(sets[0].weight+(type==='cardio'?' min':'')):String(sets[0].reps)});
+    }
+  });
+  saveBests(bests);
+  const h=getHistory();
+  h.unshift({
+    blockId:'quick-'+Date.now(),
+    dayName:'Quick Workout',
+    programId:'quick',
+    programName:'Quick Workout',
+    date:new Date().toISOString(),
+    duration:dur,
+    totalSets,totalVolume:totalVol,prs,
+    exercises:exBk,
+    incomplete:false,
+    completedCount:quickExercises.length,
+    totalEx:quickExercises.length,
+    isQuick:true
+  });
+  saveHistory(h);
+
+  // Show save-as-block sheet
+  openQuickSave();
+}
+
+function openQuickSave(){
+  const sel=document.getElementById('quick-prog-select');
+  sel.innerHTML='<option value="">— Select a program —</option>';
+  getCustomProgs().forEach(p=>{
+    const opt=document.createElement('option');
+    opt.value=p.id;opt.textContent=p.name;
+    sel.appendChild(opt);
+  });
+  const names=quickExercises.map(x=>x.ex.name);
+  document.getElementById('quick-block-name').value=
+    names.length===1?names[0]:names.length<=3?names.map(n=>n.split(' ')[0]).join(' / '):'Quick Block';
+  // Reset button states
+  const saveBtn=document.getElementById('quick-save-block-btn');
+  const addBtn=document.getElementById('quick-add-prog-btn');
+  const saveConf=document.getElementById('quick-save-block-confirm');
+  const addConf=document.getElementById('quick-add-prog-confirm');
+  if(saveBtn){saveBtn.textContent='SAVE AS BLOCK';saveBtn.style.opacity='1';saveBtn.disabled=false;}
+  if(addBtn){addBtn.textContent='ADD TO PROGRAM';addBtn.style.opacity='1';addBtn.disabled=false;}
+  if(saveConf)saveConf.style.display='none';
+  if(addConf)addConf.style.display='none';
+  document.getElementById('quick-save-sheet').classList.add('open');
+}
+
+function closeQuickSave(){
+  document.getElementById('quick-save-sheet').classList.remove('open');
+  goHome();
+}
+
+function confirmQuickSave(mode){
+  const name=document.getElementById('quick-block-name').value.trim();
+  if(!name){showToast('Enter a block name');return;}
+
+  const block={
+    id:'block-'+Date.now(),
+    name:name.toUpperCase(),
+    desc:'Saved from Quick Workout · '+new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),
+    type:'lifting',tags:[],
+    exercises:quickExercises.map(({ex,sets})=>({
+      ...ex,
+      id:ex.id.replace(/-q\d+$/,''),
+      sets:sets.length||3,
+      reps:sets.length&&sets[0].reps?String(sets[0].reps):'8-12'
+    })),
+    checks:[],isSimple:false
+  };
+
+  if(mode==='standalone'){
+    const blocks=getSavedBlocks();
+    blocks.push(block);
+    saveSavedBlocks(blocks);
+    const conf=document.getElementById('quick-save-block-confirm');
+    const btn=document.getElementById('quick-save-block-btn');
+    if(conf)conf.style.display='block';
+    if(btn){btn.textContent='SAVED ✓';btn.style.opacity='0.6';btn.disabled=true;}
+  } else if(mode==='program'){
+    const progId=document.getElementById('quick-prog-select').value;
+    if(!progId){showToast('Select a program first');return;}
+    const progs=getCustomProgs();
+    const prog=progs.find(p=>p.id===progId);
+    if(prog){
+      if(!prog.days)prog.days=[];
+      prog.days.push({...block,id:'block-'+Date.now()});
+      saveCustomProgs(progs);
+      const conf=document.getElementById('quick-add-prog-confirm');
+      const btn=document.getElementById('quick-add-prog-btn');
+      if(conf){conf.style.display='block';conf.textContent='✓ Added to '+prog.name;}
+      if(btn){btn.textContent='ADDED ✓';btn.style.opacity='0.6';btn.disabled=true;}
+    }
+  }
+}
+
+function exitQuickWorkout(){
+  if(quickExercises.some(x=>x.sets.length>0)){
+    showConfirm('Exit Quick Workout?','Your logged sets will be lost.','EXIT',()=>{
+      clearInterval(quickTimerInterval);
+      closeConfirm();
+      goHome();
+    });
+  } else {
+    clearInterval(quickTimerInterval);
+    goHome();
+  }
+}
 function updateTimer(){
   if(!workoutStart)return;
   const e=Math.floor((Date.now()-workoutStart)/1000);
@@ -3171,6 +3570,45 @@ function cancelDrag(){}
 // INIT
 // ─────────────────────────────────────────────
 renderHome();
+
+// Startup integrity check — restore builder draft if app was interrupted mid-edit
+(()=>{
+  const draft=getBuilderDraft();
+  if(draft&&draft.id){
+    // Check if this draft was already saved
+    const saved=getCustomProgs().find(p=>p.id===draft.id);
+    if(!saved){
+      // Draft exists but wasn't saved — offer recovery
+      showConfirm(
+        'Unsaved Program',
+        '"'+(draft.name||'Untitled')+'" was not saved before the app closed. Restore it?',
+        'RESTORE',
+        ()=>{
+          builderProgram=draft;
+          closeConfirm();
+          openProgramBuilder._fromDraft=true;
+          // Manually open builder with draft
+          document.getElementById('bp-title').textContent=draft.name?'EDIT PROGRAM':'NEW PROGRAM';
+          expandedBlockIndex=null;
+          document.getElementById('bp-name').value=draft.name||'';
+          document.getElementById('bp-desc').value=draft.desc||'';
+          document.getElementById('bp-delete-wrap').style.display='none';
+          renderBPStyleTags();
+          renderBPColors();
+          renderBPBlocks();
+          updateBPPreview();
+          showScreen('builder-program-screen');
+          document.getElementById('bp-save-bar').style.display='block';
+        }
+      );
+      // Add a dismiss option by overriding close
+      const origClose=closeConfirm;
+    } else {
+      clearBuilderDraft();
+    }
+  }
+})();
+
 if('serviceWorker'in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{});});}
 </script>
 </body>
