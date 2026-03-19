@@ -1,4 +1,4 @@
-const CACHE = 'forge-v74';
+const CACHE = 'forge-v79';
 const PRECACHE = ['workout-tracker.html','exercise-library.js','manifest.json','https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js','https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>Promise.all(PRECACHE.map(u=>c.add(u).catch(()=>{})))));self.skipWaiting();});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));});

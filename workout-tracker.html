@@ -281,6 +281,17 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
 .suggest-btn{font-family:var(--mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;background:none;border:1px solid var(--border);border-radius:6px;color:var(--muted);padding:5px 9px;cursor:pointer;flex-shrink:0;margin-right:8px;transition:all 0.15s;}
 .suggest-btn:active{border-color:var(--accent);color:var(--accent);}
 .suggest-btn.open{border-color:var(--accent);color:var(--accent);background:var(--accent-dim);}
+.alt-btn{font-family:var(--mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;background:none;border:1px solid var(--border);border-radius:6px;color:var(--text-dim);padding:5px 9px;cursor:pointer;flex-shrink:0;margin-right:6px;transition:all 0.15s;}
+.alt-btn:active,.alt-btn.has-alts{border-color:var(--accent);color:var(--accent);}
+.alt-badge{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;background:var(--accent);color:var(--accent-text);border-radius:50%;font-size:9px;font-weight:700;margin-left:4px;}
+.ex-tile-alt-list{padding:4px 12px 8px;display:flex;flex-wrap:wrap;gap:6px;}
+.ex-alt-chip{font-family:var(--mono);font-size:10px;padding:3px 8px;border-radius:6px;background:var(--accent-dim);border:1px solid var(--accent);color:var(--accent);cursor:pointer;display:flex;align-items:center;gap:5px;}
+.ex-alt-chip-del{color:var(--muted);font-size:12px;line-height:1;}
+.swap-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
+.swap-row:last-child{border-bottom:none;}
+.swap-row-name{flex:1;font-size:14px;font-weight:500;}
+.swap-row-btn{font-family:var(--mono);font-size:10px;padding:7px 14px;border-radius:8px;background:var(--accent);color:var(--accent-text);border:none;cursor:pointer;letter-spacing:1px;flex-shrink:0;}
+
 .suggest-panel{display:none;background:var(--surface);border-bottom:1px solid var(--border);padding:12px 14px;}
 .suggest-panel.open{display:block;}
 .suggest-last{font-family:var(--mono);font-size:10px;color:var(--text-dim);margin-bottom:8px;}
@@ -496,7 +507,7 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
     <div>
       <div class="logo">FORGE</div>
       <div class="home-subtitle">Training System</div>
-      <div style="font-family:var(--mono);font-size:9px;color:var(--text-dim);letter-spacing:1px;margin-top:4px;opacity:0.6;" id="version-label" onclick="handleVersionTap()">v0.74</div>
+      <div style="font-family:var(--mono);font-size:9px;color:var(--text-dim);letter-spacing:1px;margin-top:4px;opacity:0.6;" id="version-label" onclick="handleVersionTap()">v0.79</div>
     </div>
     <button onclick="openSettings()" style="background:var(--card);border:1px solid var(--border);border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;cursor:pointer;margin-top:4px;flex-shrink:0;">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -585,6 +596,19 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
       <!-- Done -->
       <button onclick="closeQuickSave()" style="width:100%;background:var(--accent);color:var(--accent-text);border:none;border-radius:var(--radius);padding:15px;font-family:var(--display);font-size:20px;letter-spacing:2px;cursor:pointer;">DONE</button>
     </div>
+  </div>
+</div>
+
+<!-- ALTERNATES SWAP SHEET -->
+<div class="picker-sheet" id="alt-swap-sheet">
+  <div class="picker-backdrop" onclick="closeAltSwap()"></div>
+  <div class="picker-panel" style="max-height:60vh;">
+    <div class="picker-handle"></div>
+    <div class="picker-header">
+      <div class="picker-title" id="alt-swap-title">Swap Exercise</div>
+      <div class="picker-close" onclick="closeAltSwap()">✕</div>
+    </div>
+    <div class="picker-scroll" id="alt-swap-list" style="padding:8px 20px 20px;"></div>
   </div>
 </div>
 
@@ -855,8 +879,7 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
   </div>
   <div class="workout-body" id="workout-body"></div>
   <div class="finish-bar">
-    <button class="finish-btn early-btn" onclick="finishWorkout(true)">END EARLY</button>
-    <button class="finish-btn" onclick="finishWorkout(false)">FINISH</button>
+    <button class="finish-btn" onclick="confirmFinishWorkout()">FINISH</button>
   </div>
 </div>
 
@@ -1718,6 +1741,13 @@ function buildBlockBody(day, i){
 function buildExTile(ex, blockIdx, exIdx){
   const accentColor = getExAccentColor(ex.tags||[]);
   const tagsHtml = (ex.tags||[]).slice(0,4).map(t=>'<span class="ex-tag">'+t+'</span>').join('');
+  const alts=ex.alternates||[];
+  const altChips=alts.map((a,ai)=>
+    '<div class="ex-alt-chip">'+
+      escHtml(a.name)+
+      '<span class="ex-alt-chip-del" onclick="removeAlternate('+blockIdx+','+exIdx+','+ai+',event)">×</span>'+
+    '</div>'
+  ).join('');
   return '<div class="ex-tile" data-exidx="'+exIdx+'">'+ 
     '<div class="ex-tile-header">'+
       '<div class="ex-tile-bar" style="background:'+accentColor+'"></div>'+
@@ -1726,10 +1756,12 @@ function buildExTile(ex, blockIdx, exIdx){
         '<div class="ex-tile-muscle">'+escHtml(ex.muscleGroup)+'</div>'+
         (tagsHtml?'<div class="ex-tile-tags">'+tagsHtml+'</div>':'')+
       '</div>'+
-      '<div class="ex-tile-remove">'+
+      '<div class="ex-tile-remove" style="display:flex;gap:6px;align-items:center;padding:0 8px;">'+
+        '<button class="ex-tile-del'+(alts.length?' has-alts':'')+'" style="border-color:'+(alts.length?'var(--accent)':'var(--border)')+';color:'+(alts.length?'var(--accent)':'var(--muted)')+';" onclick="addAlternate('+blockIdx+','+exIdx+',event)">≈'+(alts.length?' '+alts.length:'')+' ALT</button>'+
         '<button class="ex-tile-del" onclick="removeExInline('+blockIdx+','+exIdx+')">DEL</button>'+
       '</div>'+
     '</div>'+
+    (alts.length?'<div class="ex-tile-alt-list">'+altChips+'</div>':'')+
     '<div class="ex-tile-controls">'+
       '<span class="ex-ctrl-label">Sets</span>'+
       '<input class="ex-ctrl-input sets-input" type="number" inputmode="numeric" value="'+ex.sets+'" onchange="updateExInline('+blockIdx+','+exIdx+',\'sets\',parseInt(this.value)||1)">'+
@@ -1908,11 +1940,11 @@ function addCheckItem(){}
 // ─────────────────────────────────────────────
 function closeExPicker(){
   document.getElementById('ex-picker-sheet').classList.remove('open');
-  // If we were picking for a goal, restore the goal builder
   if(pickerMode==='goal'){
     document.getElementById('goal-builder-sheet').style.display='flex';
   }
   pickerMode='block';
+  pickerTargetBlockIndex=null;
 }
 
 // Curated shortlist shown in picker — full EX_TAGS still searchable via text
@@ -1999,11 +2031,8 @@ function renderPickerList(){
 
 function addExToBlock(exTemplate){
   if(pickerTargetBlockIndex==='quick'){addExToQuick(exTemplate);return;}
-  if(pickerTargetBlockIndex==='goal'){
-    selectGBExercise(exTemplate);
-    closeExPicker();
-    return;
-  }
+  if(pickerTargetBlockIndex==='goal'){selectGBExercise(exTemplate);closeExPicker();return;}
+  if(pickerTargetBlockIndex==='alternate'){addExAsAlternate(exTemplate);return;}
   const idx=pickerTargetBlockIndex;
   if(idx===null||idx===undefined||!builderProgram||!builderProgram.days||!builderProgram.days[idx]){
     showToast('Could not add exercise — try again');
@@ -2131,7 +2160,7 @@ function createAndAddExercise(){
 let pendingProgId=null, pendingBlockId=null;
 
 function startWorkout(e,progId,blockId){
-  e.stopPropagation();
+  if(e&&e.stopPropagation)e.stopPropagation();
   pendingProgId=progId;
   pendingBlockId=blockId;
   const prog=getAllPrograms().find(p=>p.id===progId);
@@ -2150,10 +2179,16 @@ function startWorkout(e,progId,blockId){
       exList.appendChild(row);
     });
   } else {
-    (block.exercises||[]).forEach(ex=>{
+    (block.exercises||[]).forEach((ex,ei)=>{
       const color=getExAccentColor(ex.tags||[]);
+      const hasAlts=ex.alternates&&ex.alternates.length>0;
       const row=document.createElement('div');row.className='start-ex-row';
-      row.innerHTML='<div class="start-ex-bar" style="background:'+color+'"></div><div class="start-ex-name">'+ex.name+'</div><div class="start-ex-sets">'+ex.sets+'×'+ex.reps+'</div>';
+      row.style.cssText='display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);';
+      row.innerHTML=
+        '<div class="start-ex-bar" style="background:'+color+'"></div>'+
+        '<div class="start-ex-name">'+escHtml(ex.name)+'</div>'+
+        '<div class="start-ex-sets">'+ex.sets+'×'+ex.reps+'</div>'+
+        (hasAlts?'<button class="alt-btn" style="margin-right:0;" onclick="openStartSheetSwap(\''+pendingBlockId+'\','+ei+',event)">≈ ALT</button>':'');
       exList.appendChild(row);
     });
   }
@@ -2161,6 +2196,52 @@ function startWorkout(e,progId,blockId){
   document.getElementById('start-sheet').classList.add('open');
 }
 
+// Swap from start sheet — modifies pendingBlock before workout begins
+function openStartSheetSwap(blockId, exIdx, e){
+  if(e&&e.stopPropagation)e.stopPropagation();
+  const prog=getAllPrograms().find(p=>p.id===pendingProgId);
+  if(!prog)return;
+  const block=prog.days.find(d=>d.id===blockId);
+  if(!block)return;
+  const ex=block.exercises[exIdx];
+  if(!ex||!ex.alternates?.length)return;
+  document.getElementById('alt-swap-title').textContent='Swap: '+ex.name;
+  const list=document.getElementById('alt-swap-list');
+  list.innerHTML='';
+  ex.alternates.forEach((alt,i)=>{
+    const color=getExAccentColor(alt.tags||[]);
+    const row=document.createElement('div');
+    row.className='swap-row';
+    row.innerHTML=
+      '<div style="width:3px;align-self:stretch;border-radius:2px;background:'+color+';flex-shrink:0;"></div>'+
+      '<div class="swap-row-name">'+
+        '<div style="font-weight:600;">'+escHtml(alt.name)+'</div>'+
+        '<div style="font-size:11px;color:var(--text-dim);">'+escHtml(alt.muscleGroup||'')+'</div>'+
+      '</div>'+
+      '<button class="swap-row-btn" onclick="confirmStartSwap(\''+blockId+'\','+exIdx+','+i+')">SWAP</button>';
+    list.appendChild(row);
+  });
+  document.getElementById('alt-swap-sheet').classList.add('open');
+}
+
+function confirmStartSwap(blockId, exIdx, altIdx){
+  // Find the block in pending program — swap inline so confirmStartWorkout picks it up
+  const prog=getAllPrograms().find(p=>p.id===pendingProgId);
+  if(!prog)return;
+  const block=prog.days.find(d=>d.id===blockId);
+  if(!block)return;
+  const orig=block.exercises[exIdx];
+  const alt=orig.alternates[altIdx];
+  block.exercises[exIdx]={...orig, name:alt.name, muscleGroup:alt.muscleGroup, tags:alt.tags,
+    alternates:[{id:orig.id,name:orig.name,muscleGroup:orig.muscleGroup,tags:orig.tags||[],sets:orig.sets,reps:orig.reps},
+      ...orig.alternates.filter((_,i)=>i!==altIdx)]};
+  closeAltSwap();
+  // Re-render start sheet exercise list
+  startWorkout(null, pendingProgId, blockId);
+  showToast('Swapped to '+alt.name);
+}
+
+// Callable workout body builder for swap re-render
 function closeStartSheet(){
   document.getElementById('start-sheet').classList.remove('open');
   pendingProgId=null;pendingBlockId=null;
@@ -2185,7 +2266,10 @@ function confirmStartWorkout(){
 }
 
 function buildWorkoutBody(block){
+  if(!block)block=currentWorkout; // allow calling with no arg during swap re-render
   const body=document.getElementById('workout-body');body.innerHTML='';
+  // After rendering, restore any already-logged sets
+  setTimeout(()=>restoreSessionLogs(),0);
   if(block.isSimple){
     const card=document.createElement('div');card.className='accountability-card';
     card.innerHTML='<div class="accountability-title">'+block.name+'</div><div class="check-list" id="check-list"></div>';
@@ -2224,6 +2308,7 @@ function buildWorkoutBody(block){
     const card=document.createElement('div');
     card.className='exercise-card'+(idx===0?' expanded active-ex':'');
     card.id='ex-'+ex.id;
+    const hasAlts=ex.alternates&&ex.alternates.length>0;
     card.innerHTML=
       '<div class="ex-header" onclick="toggleEx(\''+ex.id+'\')">'+
         '<div class="ex-num">'+(idx+1)+'</div>'+
@@ -2232,6 +2317,7 @@ function buildWorkoutBody(block){
           '<div class="ex-sub">'+subLine+'</div>'+
           (tagsHtml?'<div class="ex-tags">'+tagsHtml+'</div>':'')+
         '</div>'+
+        (hasAlts?'<button class="alt-btn" onclick="openAltSwap(\''+ex.id+'\',event)">≈ ALT</button>':'')+
         (best?'<button class="suggest-btn" id="sb-'+ex.id+'" onclick="toggleSuggest(\''+ex.id+'\',event)">Suggest</button>':'')+
         '<div class="ex-chevron">&#9660;</div>'+
       '</div>'+
@@ -2476,9 +2562,136 @@ function logSet(exId,setIdx){
   showToast('Logged');
 }
 
+// Restore already-logged sets into DOM after a re-render
+function restoreSessionLogs(){
+  Object.entries(sessionLogs).forEach(([exId, sets])=>{
+    const ex=(currentWorkout?.exercises||[]).find(e=>e.id===exId);
+    if(!ex)return;
+    Object.entries(sets).forEach(([setIdx, log])=>{
+      const sid=exId+'-'+setIdx;
+      const wEl=document.getElementById('w-'+sid);
+      const rEl=document.getElementById('r-'+sid);
+      const btn=document.querySelector('#sr-'+sid+' .log-btn');
+      const tsEl=document.getElementById('ts-'+sid);
+      if(wEl){wEl.value=log.weight;wEl.classList.add('logged');}
+      if(rEl){rEl.value=log.reps;rEl.classList.add('logged');}
+      if(btn){btn.classList.add('logged');btn.textContent='DONE';btn.disabled=true;}
+      if(tsEl){
+        tsEl.style.display='block';
+        tsEl.textContent='Logged '+new Date(log.ts).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+      }
+    });
+    // Mark card done if all sets logged
+    if(Object.keys(sets).length>=ex.sets){
+      const card=document.getElementById('ex-'+exId);
+      if(card){card.classList.add('done-ex');card.classList.remove('active-ex');}
+    }
+  });
+}
+
 // ─────────────────────────────────────────────
-// QUICK WORKOUT
+// ALTERNATES
 // ─────────────────────────────────────────────
+let altTargetBlock=null, altTargetEx=null;
+
+function addAlternate(blockIdx, exIdx, e){
+  if(e&&e.stopPropagation)e.stopPropagation();
+  altTargetBlock=blockIdx;
+  altTargetEx=exIdx;
+  pickerTargetBlockIndex='alternate';
+  pickerMode='alternate';
+  pickerActiveTag=null;
+  document.getElementById('picker-search').value='';
+  document.getElementById('new-ex-form').classList.add('hidden');
+  document.getElementById('picker-new-btn').textContent='+ CREATE NEW EXERCISE';
+  document.getElementById('picker-scroll').style.display='';
+  newExTags=[];
+  document.getElementById('picker-title-text').textContent='Pick Alternate Exercise';
+  renderPickerTagFilters();
+  renderPickerList();
+  document.getElementById('ex-picker-sheet').classList.add('open');
+}
+
+function removeAlternate(blockIdx, exIdx, altIdx, e){
+  e.stopPropagation();
+  const ex=builderProgram.days[blockIdx].exercises[exIdx];
+  if(!ex.alternates)return;
+  ex.alternates.splice(altIdx,1);
+  expandedBlockIndex=blockIdx;
+  renderBPBlocks();
+}
+
+// Called from addExToBlock when in alternate mode
+function addExAsAlternate(exTemplate){
+  const ex=builderProgram.days[altTargetBlock]?.exercises[altTargetEx];
+  if(!ex)return;
+  if(!ex.alternates)ex.alternates=[];
+  // Don't add duplicates
+  if(ex.alternates.find(a=>a.id===exTemplate.id)){showToast('Already an alternate');closeExPicker();return;}
+  ex.alternates.push({id:exTemplate.id,name:exTemplate.name,muscleGroup:exTemplate.muscleGroup,tags:exTemplate.tags||[],sets:ex.sets,reps:ex.reps,bw:exTemplate.bw||false,logType:exTemplate.logType||null});
+  expandedBlockIndex=altTargetBlock;
+  closeExPicker();
+  renderBPBlocks();
+  showToast('Alternate added');
+}
+
+// Swap sheet — shown during start and workout
+let swapTargetExId=null;
+function openAltSwap(exId, e){
+  if(e&&e.stopPropagation)e.stopPropagation();
+  swapTargetExId=exId;
+  const ex=(currentWorkout?.exercises||[]).find(x=>x.id===exId);
+  if(!ex||!ex.alternates?.length)return;
+  document.getElementById('alt-swap-title').textContent='Swap: '+ex.name;
+  const list=document.getElementById('alt-swap-list');
+  list.innerHTML='';
+  // Show original as first option (to swap back)
+  ex.alternates.forEach((alt,i)=>{
+    const color=getExAccentColor(alt.tags||[]);
+    const row=document.createElement('div');
+    row.className='swap-row';
+    row.innerHTML=
+      '<div style="width:3px;align-self:stretch;border-radius:2px;background:'+color+';flex-shrink:0;"></div>'+
+      '<div class="swap-row-name">'+
+        '<div style="font-weight:600;">'+escHtml(alt.name)+'</div>'+
+        '<div style="font-size:11px;color:var(--text-dim);">'+escHtml(alt.muscleGroup||'')+'</div>'+
+      '</div>'+
+      '<button class="swap-row-btn" onclick="confirmSwap(\''+exId+'\','+i+')">SWAP</button>';
+    list.appendChild(row);
+  });
+  document.getElementById('alt-swap-sheet').classList.add('open');
+}
+
+function closeAltSwap(){
+  document.getElementById('alt-swap-sheet').classList.remove('open');
+  swapTargetExId=null;
+}
+
+function confirmSwap(exId, altIdx){
+  const exArr=currentWorkout?.exercises||[];
+  const idx=exArr.findIndex(x=>x.id===exId);
+  if(idx<0)return;
+  const orig=exArr[idx];
+  const alt=orig.alternates[altIdx];
+  // Swap in place — keep alternates array but put original as first alternate
+  exArr[idx]={
+    ...orig,
+    name:alt.name,
+    muscleGroup:alt.muscleGroup,
+    tags:alt.tags||[],
+    bw:alt.bw||false,
+    logType:alt.logType||null,
+    alternates:[
+      {id:orig.id,name:orig.name,muscleGroup:orig.muscleGroup,tags:orig.tags||[],sets:orig.sets,reps:orig.reps,bw:orig.bw||false},
+      ...orig.alternates.filter((_,i)=>i!==altIdx)
+    ]
+  };
+  closeAltSwap();
+  buildWorkoutBody(currentWorkout);
+  showToast('Swapped to '+alt.name);
+}
+
+
 let quickExercises=[];   // [{ex, sets:[{weight,reps,ts,type}]}]
 let quickStart=null;
 let quickTimerInterval=null;
@@ -2768,6 +2981,16 @@ function updateTimer(){
   if(!workoutStart)return;
   const e=Math.floor((Date.now()-workoutStart)/1000);
   document.getElementById('workout-timer').textContent=Math.floor(e/60)+':'+String(e%60).padStart(2,'0');
+}
+
+function confirmFinishWorkout(){
+  const logged=Object.values(sessionLogs).reduce((a,b)=>a+Object.keys(b).length,0);
+  showConfirm(
+    'Finish Workout?',
+    logged>0?logged+' set'+(logged!==1?'s':'')+' logged — save and complete this session?':'No sets logged yet. Finish anyway?',
+    'FINISH',
+    ()=>{ closeConfirm(); finishWorkout(false); }
+  );
 }
 
 function finishWorkout(early){
