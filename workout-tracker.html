@@ -508,7 +508,7 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
     <div>
       <div class="logo">FORGE</div>
       <div class="home-subtitle">Training System</div>
-      <div style="font-family:var(--mono);font-size:9px;color:var(--text-dim);letter-spacing:1px;margin-top:4px;opacity:0.6;" id="version-label" onclick="handleVersionTap()">v0.81</div>
+      <div style="font-family:var(--mono);font-size:9px;color:var(--text-dim);letter-spacing:1px;margin-top:4px;opacity:0.6;" id="version-label" onclick="handleVersionTap()">v0.82</div>
     </div>
     <button onclick="openSettings()" style="background:var(--card);border:1px solid var(--border);border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;cursor:pointer;margin-top:4px;flex-shrink:0;">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1778,11 +1778,37 @@ function buildExTile(ex, blockIdx, exIdx){
     '</div>'+
     (alts.length?'<div class="ex-tile-alt-list">'+altChips+'</div>':'')+
     '<div class="ex-tile-controls">'+
-      '<span class="ex-ctrl-label">Sets</span>'+
-      '<input class="ex-ctrl-input sets-input" type="number" inputmode="numeric" value="'+ex.sets+'" onchange="updateExInline('+blockIdx+','+exIdx+',\'sets\',parseInt(this.value)||1)">'+
-      '<span class="ex-ctrl-label">Reps</span>'+
-      '<input class="ex-ctrl-input reps-input" type="text" value="'+escHtml(ex.reps)+'" placeholder="8-12" onchange="updateExInline('+blockIdx+','+exIdx+',\'reps\',this.value)">'+
-      '<input class="ex-note-input" type="text" value="'+escHtml(ex.note||'')+'" placeholder="Note" onchange="updateExInline('+blockIdx+','+exIdx+',\'note\',this.value)">'+
+      (getLogType(ex)==='cardio'?
+        '<span class="ex-ctrl-label">Goal Duration</span>'+
+        '<input class="ex-ctrl-input reps-input" type="text" value="'+escHtml(ex.reps||'')+'" placeholder="30 min" onchange="updateExInline('+blockIdx+','+exIdx+',\'reps\',this.value)">'+
+        '<span class="ex-ctrl-label">Goal Dist</span>'+
+        '<input class="ex-ctrl-input sets-input" type="text" value="'+escHtml(ex.sets&&ex.sets!==99?String(ex.sets):'')+'" placeholder="3 mi" onchange="updateExInline('+blockIdx+','+exIdx+',\'sets\',this.value)">'+
+        '<input class="ex-note-input" type="text" value="'+escHtml(ex.note||'')+'" placeholder="Note" onchange="updateExInline('+blockIdx+','+exIdx+',\'note\',this.value)">'
+      :getLogType(ex)==='timed'?
+        '<span class="ex-ctrl-label">Sets</span>'+
+        '<input class="ex-ctrl-input sets-input" type="number" inputmode="numeric" value="'+ex.sets+'" onchange="updateExInline('+blockIdx+','+exIdx+',\'sets\',parseInt(this.value)||1)">'+
+        '<span class="ex-ctrl-label">Hold</span>'+
+        '<input class="ex-ctrl-input reps-input" type="text" value="'+escHtml(ex.reps)+'" placeholder="30s" onchange="updateExInline('+blockIdx+','+exIdx+',\'reps\',this.value)">'+
+        '<input class="ex-note-input" type="text" value="'+escHtml(ex.note||'')+'" placeholder="Note" onchange="updateExInline('+blockIdx+','+exIdx+',\'note\',this.value)">'
+      :getLogType(ex)==='hiit'?
+        '<span class="ex-ctrl-label">Rounds</span>'+
+        '<input class="ex-ctrl-input sets-input" type="number" inputmode="numeric" value="'+ex.sets+'" onchange="updateExInline('+blockIdx+','+exIdx+',\'sets\',parseInt(this.value)||1)">'+
+        '<span class="ex-ctrl-label">Work</span>'+
+        '<input class="ex-ctrl-input reps-input" type="text" value="'+escHtml(ex.reps)+'" placeholder="20s" onchange="updateExInline('+blockIdx+','+exIdx+',\'reps\',this.value)">'+
+        '<input class="ex-note-input" type="text" value="'+escHtml(ex.note||'')+'" placeholder="Rest" onchange="updateExInline('+blockIdx+','+exIdx+',\'note\',this.value)">'
+      :getLogType(ex)==='bodyweight'?
+        '<span class="ex-ctrl-label">Sets</span>'+
+        '<input class="ex-ctrl-input sets-input" type="number" inputmode="numeric" value="'+ex.sets+'" onchange="updateExInline('+blockIdx+','+exIdx+',\'sets\',parseInt(this.value)||1)">'+
+        '<span class="ex-ctrl-label">Reps</span>'+
+        '<input class="ex-ctrl-input reps-input" type="text" value="'+escHtml(ex.reps)+'" placeholder="8-12" onchange="updateExInline('+blockIdx+','+exIdx+',\'reps\',this.value)">'+
+        '<input class="ex-note-input" type="text" value="'+escHtml(ex.note||'')+'" placeholder="Note" onchange="updateExInline('+blockIdx+','+exIdx+',\'note\',this.value)">'
+      :
+        '<span class="ex-ctrl-label">Sets</span>'+
+        '<input class="ex-ctrl-input sets-input" type="number" inputmode="numeric" value="'+ex.sets+'" onchange="updateExInline('+blockIdx+','+exIdx+',\'sets\',parseInt(this.value)||1)">'+
+        '<span class="ex-ctrl-label">Reps</span>'+
+        '<input class="ex-ctrl-input reps-input" type="text" value="'+escHtml(ex.reps)+'" placeholder="8-12" onchange="updateExInline('+blockIdx+','+exIdx+',\'reps\',this.value)">'+
+        '<input class="ex-note-input" type="text" value="'+escHtml(ex.note||'')+'" placeholder="Note" onchange="updateExInline('+blockIdx+','+exIdx+',\'note\',this.value)">'
+      )+
     '</div>'+
   '</div>';
 }
@@ -2202,7 +2228,7 @@ function startWorkout(e,progId,blockId){
       row.innerHTML=
         '<div class="start-ex-bar" style="background:'+color+'"></div>'+
         '<div class="start-ex-name">'+escHtml(ex.name)+'</div>'+
-        '<div class="start-ex-sets">'+ex.sets+'×'+ex.reps+'</div>'+
+        '<div class="start-ex-sets">'+(getLogType(ex)==='cardio'?(ex.reps||'?')+' / '+(ex.sets&&ex.sets!==99?ex.sets+' dist':'dist?'):ex.sets+'×'+ex.reps)+'</div>'+
         (hasAlts?'<button class="alt-btn" style="margin-right:0;" onclick="openStartSheetSwap(\''+pendingBlockId+'\','+ei+',event)">≈ ALT</button>':'');
       exList.appendChild(row);
     });
@@ -2333,7 +2359,7 @@ function buildWorkoutBody(block){
       setsHtml+=buildSetInputs(ex,s,best);
       setsHtml+='<div class="set-timestamp" id="ts-'+ex.id+'-'+s+'" style="display:none"></div>';
     }
-    const subLine=type==='cardio'?'Duration · '+ex.muscleGroup:
+    const subLine=type==='cardio'?'Cardio · '+ex.muscleGroup+' — log duration & distance':
                   type==='hiit'?'Rounds · '+ex.muscleGroup:
                   type==='timed'?ex.sets+'x hold · '+ex.muscleGroup:
                   type==='bodyweight'?ex.sets+'x'+ex.reps+' · BW':
@@ -2542,7 +2568,7 @@ function buildSetInputs(ex, s, best){
 function getSetHeaderForType(type){
   if(type==='lifting')   return '<div class="sets-header"><span>#</span><span>LBS</span><span>REPS</span><span></span></div>';
   if(type==='bodyweight')return '<div class="sets-header" style="grid-template-columns:26px 1fr 76px"><span>#</span><span>REPS</span><span></span></div>';
-  if(type==='cardio')    return '<div class="sets-header"><span>#</span><span>DURATION</span><span>DIST (MI)</span><span></span></div>';
+  if(type==='cardio')    return '<div class="sets-header" style="grid-template-columns:26px 1fr 1fr 56px 76px"><span>●</span><span>DURATION</span><span>DIST</span><span>UNIT</span><span></span></div>';
   if(type==='hiit')      return '<div class="sets-header"><span>#</span><span>ROUNDS</span><span>WORK</span><span></span></div>';
   if(type==='timed')     return '<div class="sets-header" style="grid-template-columns:26px 1fr 76px"><span>#</span><span>DURATION</span><span></span></div>';
   return '';
@@ -2566,6 +2592,9 @@ function logSet(exId,setIdx){
     w=wEl?.value?.trim();
     if(!w){showToast('Enter duration');return;}
     r=parseFloat(rEl?.value)||0;
+    // Save distance unit
+    const duEl=document.getElementById('du-'+exId);
+    if(duEl&&ex)ex.distUnit=duEl.value;
   } else if(type==='hiit'){
     w=parseInt(wEl?.value);r=rEl?.value?.trim()||'';
     if(!w||w<=0){showToast('Enter rounds');return;}
@@ -2813,7 +2842,7 @@ function renderQuickBody(){
     sets.forEach((s,si)=>{
       const display=type==='lifting'?s.weight+'lbs × '+s.reps+'reps':
                     type==='bodyweight'?s.reps+' reps':
-                    type==='cardio'?s.weight+' min'+(s.reps?' · '+s.reps+' mi':''):
+                    type==='cardio'?s.weight+(s.reps?' · '+s.reps+' '+(s.distUnit||'mi'):''):
                     type==='hiit'?s.weight+' rounds'+(s.reps?' · '+s.reps:''):
                     s.reps||'—';
       setsHtml+=
@@ -2841,11 +2870,15 @@ function renderQuickBody(){
           '<button onclick="logQuickSet('+exIdx+')" style="background:var(--accent);color:var(--accent-text);border:none;border-radius:8px;padding:9px 14px;font-family:var(--mono);font-size:11px;font-weight:500;cursor:pointer;">LOG</button>'+
         '</div>';
     } else if(type==='cardio'){
+      const iStyle='width:80px;min-width:0;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--sans);font-size:13px;padding:9px 8px;outline:none;box-sizing:border-box;text-align:center;';
       addRowHtml=
         '<div id="'+addRowId+'" style="display:flex;gap:8px;align-items:center;padding-top:10px;">'+
-          '<input id="qw-'+exIdx+'" type="text" placeholder="duration" style="width:110px;min-width:0;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--sans);font-size:13px;padding:9px 8px;outline:none;box-sizing:border-box;text-align:center;">'+
-          '<input id="qr-'+exIdx+'" type="number" inputmode="decimal" placeholder="mi (opt)" style="width:80px;min-width:0;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--sans);font-size:14px;padding:9px 8px;outline:none;box-sizing:border-box;text-align:center;">'+
-          '<button onclick="logQuickSet('+exIdx+')" style="background:var(--accent);color:var(--accent-text);border:none;border-radius:8px;padding:9px 14px;font-family:var(--mono);font-size:11px;font-weight:500;cursor:pointer;">LOG</button>'+
+          '<input id="qw-'+exIdx+'" type="text" placeholder="duration" style="'+iStyle+'">'+
+          '<input id="qr-'+exIdx+'" type="number" inputmode="decimal" placeholder="dist" style="'+iStyle+'">'+
+          '<select id="qdu-'+exIdx+'" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text-dim);font-family:var(--mono);font-size:10px;padding:9px 4px;outline:none;-webkit-appearance:none;width:46px;text-align:center;flex-shrink:0;">'+
+            '<option>mi</option><option>km</option><option>laps</option><option>m</option><option>yd</option>'+
+          '</select>'+
+          '<button onclick="logQuickSet('+exIdx+')" style="background:var(--accent);color:var(--accent-text);border:none;border-radius:8px;padding:9px 14px;font-family:var(--mono);font-size:11px;font-weight:500;cursor:pointer;flex-shrink:0;">LOG</button>'+
         '</div>';
     } else {
       addRowHtml=
@@ -2887,14 +2920,17 @@ function logQuickSet(exIdx){
   } else if(type==='cardio'){
     w=wEl?.value?.trim();if(!w){showToast('Enter duration');return;}
     r=parseFloat(rEl?.value)||0;
+    const duEl=document.getElementById('qdu-'+exIdx);
+    const unit=duEl?duEl.value:'mi';
+    item.sets.push({weight:w,reps:r,distUnit:unit,ts:new Date().toISOString(),type});
+    if(wEl)wEl.value='';if(rEl)rEl.value='';
+    renderQuickBody();showToast('Set logged');return;
   } else {
     r=rEl?.value?.trim();if(!r){showToast('Enter value');return;}
   }
   item.sets.push({weight:w,reps:r,ts:new Date().toISOString(),type});
-  if(wEl)wEl.value='';
-  if(rEl)rEl.value='';
-  renderQuickBody();
-  showToast('Set logged');
+  if(wEl)wEl.value='';if(rEl)rEl.value='';
+  renderQuickBody();showToast('Set logged');
 }
 
 function removeQuickExercise(exIdx){
