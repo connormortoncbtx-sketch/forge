@@ -508,7 +508,7 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
     <div>
       <div class="logo">FORGE</div>
       <div class="home-subtitle">Training System</div>
-      <div style="font-family:var(--mono);font-size:9px;color:var(--text-dim);letter-spacing:1px;margin-top:4px;opacity:0.6;" id="version-label" onclick="handleVersionTap()">v0.80</div>
+      <div style="font-family:var(--mono);font-size:9px;color:var(--text-dim);letter-spacing:1px;margin-top:4px;opacity:0.6;" id="version-label" onclick="handleVersionTap()">v0.81</div>
     </div>
     <button onclick="openSettings()" style="background:var(--card);border:1px solid var(--border);border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;cursor:pointer;margin-top:4px;flex-shrink:0;">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -2730,6 +2730,25 @@ let quickStart=null;
 let quickTimerInterval=null;
 
 function startQuickWorkout(){
+  // Warn if a regular workout is already active
+  if(currentWorkout){
+    showConfirm(
+      'Workout Already Active',
+      '"'+currentWorkout.name+'" is still in progress. Abandon it and start a Quick Workout?',
+      'ABANDON',
+      ()=>{
+        clearInterval(timerInterval);
+        currentWorkout=null;sessionLogs={};workoutStart=null;
+        closeConfirm();
+        _startQuick();
+      }
+    );
+    return;
+  }
+  _startQuick();
+}
+
+function _startQuick(){
   quickExercises=[];
   quickStart=Date.now();
   document.getElementById('quick-date').textContent=
@@ -2739,9 +2758,15 @@ function startQuickWorkout(){
     const s=Math.floor((Date.now()-quickStart)/1000);
     const m=Math.floor(s/60),sec=s%60;
     document.getElementById('quick-timer').textContent=m+':'+(sec<10?'0':'')+sec;
+    // Keep active bar updated
+    const timerEl=document.getElementById('active-workout-timer-bar');
+    if(timerEl)timerEl.textContent=m+':'+(sec<10?'0':'')+sec;
   },1000);
   document.getElementById('quick-body').innerHTML=
     '<div style="font-family:var(--sans);font-size:14px;color:var(--muted);text-align:center;padding:40px 24px;">Tap <strong style="color:var(--text)">+ EXERCISE</strong> to begin</div>';
+  // Mark a quick workout as active for banner purposes
+  currentWorkout={name:'QUICK WORKOUT',isQuickSession:true};
+  workoutStart=quickStart;
   showScreen('quick-screen');
 }
 
@@ -2923,6 +2948,11 @@ function finishQuickWorkout(){
   });
   saveHistory(h);
 
+  // Clear active session state
+  currentWorkout=null; workoutStart=null;
+  const bar=document.getElementById('active-workout-bar');
+  if(bar)bar.style.display='none';
+
   // Show save-as-block sheet
   openQuickSave();
 }
@@ -3002,11 +3032,17 @@ function exitQuickWorkout(){
   if(quickExercises.some(x=>x.sets.length>0)){
     showConfirm('Exit Quick Workout?','Your logged sets will be lost.','EXIT',()=>{
       clearInterval(quickTimerInterval);
+      currentWorkout=null;workoutStart=null;
+      const bar=document.getElementById('active-workout-bar');
+      if(bar)bar.style.display='none';
       closeConfirm();
       goHome();
     });
   } else {
     clearInterval(quickTimerInterval);
+    currentWorkout=null;workoutStart=null;
+    const bar=document.getElementById('active-workout-bar');
+    if(bar)bar.style.display='none';
     goHome();
   }
 }
@@ -3649,7 +3685,7 @@ function showScreen(id){
 function returnToWorkout(){
   if(!currentWorkout)return;
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
-  showScreen('workout-screen');
+  showScreen(currentWorkout.isQuickSession?'quick-screen':'workout-screen');
 }
 
 function updateActiveBar(){
