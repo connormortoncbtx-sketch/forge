@@ -51,6 +51,7 @@ html[data-theme="cobalt"] {
   --accent-text:#1a0008;
   --muted:#44445a; --text:#ddd8f0; --text-dim:#a0a0c8;
 }
+@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.4;transform:scale(0.7);}}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100dvh;overflow-x:hidden;}
 .screen{display:none;min-height:100dvh;flex-direction:column;}
@@ -507,7 +508,7 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
     <div>
       <div class="logo">FORGE</div>
       <div class="home-subtitle">Training System</div>
-      <div style="font-family:var(--mono);font-size:9px;color:var(--text-dim);letter-spacing:1px;margin-top:4px;opacity:0.6;" id="version-label" onclick="handleVersionTap()">v0.79</div>
+      <div style="font-family:var(--mono);font-size:9px;color:var(--text-dim);letter-spacing:1px;margin-top:4px;opacity:0.6;" id="version-label" onclick="handleVersionTap()">v0.80</div>
     </div>
     <button onclick="openSettings()" style="background:var(--card);border:1px solid var(--border);border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;cursor:pointer;margin-top:4px;flex-shrink:0;">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -726,6 +727,20 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
     </div>
     <button class="gb-save-btn" onclick="saveGoalFromBuilder()">SAVE GOAL</button>
     <button class="gb-delete-btn" id="gb-delete-btn" style="display:none" onclick="deleteGoalFromBuilder()">DELETE GOAL</button>
+  </div>
+</div>
+
+<!-- ACTIVE WORKOUT BANNER -->
+<div id="active-workout-bar" style="display:none;position:fixed;bottom:72px;left:0;right:0;z-index:29;padding:0 16px 6px;">
+  <div onclick="returnToWorkout()" style="background:var(--accent);color:var(--accent-text);border-radius:var(--radius);padding:12px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;box-shadow:0 -2px 16px rgba(0,0,0,0.3);">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div style="width:8px;height:8px;background:var(--accent-text);border-radius:50%;animation:pulse-dot 1.2s infinite;flex-shrink:0;"></div>
+      <div>
+        <div style="font-family:var(--display);font-size:16px;letter-spacing:1px;" id="active-workout-name">WORKOUT IN PROGRESS</div>
+        <div style="font-family:var(--mono);font-size:10px;opacity:0.7;" id="active-workout-timer-bar">0:00</div>
+      </div>
+    </div>
+    <div style="font-family:var(--mono);font-size:11px;letter-spacing:1px;">RETURN ›</div>
   </div>
 </div>
 
@@ -2248,6 +2263,24 @@ function closeStartSheet(){
 }
 
 function confirmStartWorkout(){
+  if(currentWorkout){
+    showConfirm(
+      'Workout Already Active',
+      '"'+currentWorkout.name+'" is still in progress. Abandon it and start a new one?',
+      'ABANDON',
+      ()=>{
+        clearInterval(timerInterval);
+        currentWorkout=null;sessionLogs={};workoutStart=null;
+        closeConfirm();
+        _doStartWorkout();
+      }
+    );
+    return;
+  }
+  _doStartWorkout();
+}
+
+function _doStartWorkout(){
   document.getElementById('start-sheet').classList.remove('open');
   const prog=getAllPrograms().find(p=>p.id===pendingProgId);
   const block=prog.days.find(d=>d.id===pendingBlockId);
@@ -2981,6 +3014,7 @@ function updateTimer(){
   if(!workoutStart)return;
   const e=Math.floor((Date.now()-workoutStart)/1000);
   document.getElementById('workout-timer').textContent=Math.floor(e/60)+':'+String(e%60).padStart(2,'0');
+  updateActiveBar();
 }
 
 function confirmFinishWorkout(){
@@ -3082,13 +3116,26 @@ function finishWorkout(early){
     }).join('');
   }
   showScreen('summary-screen');
+  clearInterval(timerInterval);
+  currentWorkout=null; sessionLogs={}; workoutStart=null;
+  // Hide active workout bar
+  const bar=document.getElementById('active-workout-bar');
+  if(bar)bar.style.display='none';
 }
 
 function exitWorkout(){
-  if(confirm('Exit workout? Progress will be lost.')){clearInterval(timerInterval);currentWorkout=null;sessionLogs={};goHome();}
+  showConfirm('Exit Workout?','Your progress will be lost.','EXIT',()=>{
+    clearInterval(timerInterval);
+    currentWorkout=null;sessionLogs={};workoutStart=null;
+    closeConfirm();
+    const bar=document.getElementById('active-workout-bar');
+    if(bar)bar.style.display='none';
+    goHome();
+  });
 }
 
 function goHome(){renderHome();showScreen('home-screen');}
+
 
 // ─────────────────────────────────────────────
 // HISTORY
@@ -3587,12 +3634,35 @@ function saveGoal(){}
 // ─────────────────────────────────────────────
 function showTab(id,el){
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
-  el.classList.add('active');showScreen(id);
+  el.classList.add('active');
+  showScreen(id);
 }
 
 function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
+  // Show active workout banner on any non-workout screen when session is live
+  const bar=document.getElementById('active-workout-bar');
+  if(bar) bar.style.display=(currentWorkout&&id!=='workout-screen')?'block':'none';
+}
+
+function returnToWorkout(){
+  if(!currentWorkout)return;
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  showScreen('workout-screen');
+}
+
+function updateActiveBar(){
+  const bar=document.getElementById('active-workout-bar');
+  if(!bar)return;
+  if(!currentWorkout){bar.style.display='none';return;}
+  const nameEl=document.getElementById('active-workout-name');
+  const timerEl=document.getElementById('active-workout-timer-bar');
+  if(nameEl)nameEl.textContent=currentWorkout.name||'WORKOUT IN PROGRESS';
+  if(timerEl&&workoutStart){
+    const s=Math.floor((Date.now()-workoutStart)/1000);
+    timerEl.textContent=Math.floor(s/60)+':'+(s%60<10?'0':'')+s%60;
+  }
 }
 
 // ─────────────────────────────────────────────
