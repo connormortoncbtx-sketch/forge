@@ -91,7 +91,8 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
 .destructive-btn{width:100%;background:transparent;border:1px solid var(--red);color:var(--red);border-radius:var(--radius);padding:14px;font-family:var(--mono);font-size:12px;letter-spacing:1px;cursor:pointer;margin-top:10px;}
 
 /* ── HOME ── */
-#home-screen{padding:0 0 90px;overflow-y:auto;}
+#home-screen{padding:0 0 150px;overflow-y:auto;}
+#home-screen.has-banner{padding-bottom:155px;}
 .home-header{padding:52px 24px 20px;}
 .logo{font-family:var(--display);font-size:52px;letter-spacing:4px;color:var(--accent);line-height:1;}
 .home-subtitle{font-family:var(--sans);font-size:12px;color:var(--text-dim);letter-spacing:0;font-weight:400;margin-top:3px;}
@@ -508,7 +509,7 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
     <div>
       <div class="logo">FORGE</div>
       <div class="home-subtitle">Training System</div>
-      <div style="font-family:var(--mono);font-size:9px;color:var(--text-dim);letter-spacing:1px;margin-top:4px;opacity:0.6;" id="version-label" onclick="handleVersionTap()">v0.82</div>
+      <div style="font-family:var(--mono);font-size:9px;color:var(--text-dim);letter-spacing:1px;margin-top:4px;opacity:0.6;" id="version-label" onclick="handleVersionTap()">v0.84</div>
     </div>
     <button onclick="openSettings()" style="background:var(--card);border:1px solid var(--border);border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;cursor:pointer;margin-top:4px;flex-shrink:0;">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -537,7 +538,7 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
     </div>
   </div>
   <div class="program-list" id="program-list"></div>
-  <div id="saved-blocks-section" style="display:none;padding:0 24px 110px;">
+  <div id="saved-blocks-section" style="display:none;padding:0 24px 160px;">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;margin-top:8px;">
       <div style="font-family:var(--sans);font-size:13px;font-weight:500;color:var(--muted);">Saved Blocks</div>
       <div id="saved-blocks-toggle" onclick="toggleSavedBlocks()" style="font-family:var(--mono);font-size:10px;color:var(--muted);cursor:pointer;letter-spacing:1px;">HIDE ▲</div>
@@ -647,7 +648,7 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
         style="width:100%;background:var(--card);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:var(--sans);font-size:14px;padding:10px 14px;outline:none;box-sizing:border-box;"
         oninput="filterHistExercises()">
     </div>
-    <div id="hist-ex-list" style="padding:0 24px 100px;overflow-y:auto;flex:1;"></div>
+    <div id="hist-ex-list" style="padding:0 24px 150px;overflow-y:auto;flex:1;"></div>
   </div>
 </div>
 
@@ -673,7 +674,7 @@ textarea.field-input{resize:none;min-height:72px;line-height:1.5;}
     </div>
     <button onclick="openGoalBuilder(null)" style="font-family:var(--mono);font-size:11px;color:var(--accent);background:var(--accent-dim);border:1px solid var(--accent);border-radius:20px;padding:8px 14px;cursor:pointer;letter-spacing:1px;white-space:nowrap;flex-shrink:0;">+ ADD GOAL</button>
   </div>
-  <div style="padding:0 24px 100px;" id="goals-list"></div>
+  <div style="padding:0 24px 150px;" id="goals-list"></div>
 </div>
 
 <!-- GOAL BUILDER SHEET -->
@@ -2359,11 +2360,11 @@ function buildWorkoutBody(block){
       setsHtml+=buildSetInputs(ex,s,best);
       setsHtml+='<div class="set-timestamp" id="ts-'+ex.id+'-'+s+'" style="display:none"></div>';
     }
-    const subLine=type==='cardio'?'Cardio · '+ex.muscleGroup+' — log duration & distance':
-                  type==='hiit'?'Rounds · '+ex.muscleGroup:
-                  type==='timed'?ex.sets+'x hold · '+ex.muscleGroup:
-                  type==='bodyweight'?ex.sets+'x'+ex.reps+' · BW':
-                  ex.sets+'x'+ex.reps+' · '+ex.muscleGroup;
+    const subLine=type==='cardio'?   'Cardio · log duration & distance':
+                  type==='hiit'?    'HIIT · '+ex.sets+' rounds':
+                  type==='timed'?   ex.sets+'× hold · '+ex.muscleGroup:
+                  type==='bodyweight'? ex.sets+'× '+ex.reps+' reps · BW':
+                                    ex.sets+'× '+ex.reps+' · '+ex.muscleGroup;
     const card=document.createElement('div');
     card.className='exercise-card'+(idx===0?' expanded active-ex':'');
     card.id='ex-'+ex.id;
@@ -2500,20 +2501,44 @@ function getProgressionNote(ex, best){ return null; }
 // LOG TYPE — determines input fields per exercise
 // ─────────────────────────────────────────────
 function getLogType(ex){
-  if(ex.logType)return ex.logType; // explicit override from custom exercise
+  if(ex.logType)return ex.logType; // explicit override always wins
+
   const tags=(ex.tags||[]).map(t=>t.toLowerCase());
   const mg=(ex.muscleGroup||'').toLowerCase();
-  if(tags.includes('cardio')||tags.includes('zone 2')||tags.includes('running')||
-     mg.includes('cardio')||tags.includes('rowing')||tags.includes('cycling')||
-     ['stationary bike','assault bike','elliptical','stair climber','rowing machine'].includes((ex.name||'').toLowerCase()))
-    return 'cardio';
-  if(tags.includes('hiit')||tags.includes('interval'))
-    return 'hiit';
-  if(tags.includes('mobility')||tags.includes('flexibility')||tags.includes('stretch'))
-    return 'timed';
-  if(ex.bw&&!tags.some(t=>['barbell','dumbbell','cable','machine','kettlebell'].includes(t)))
+  const name=(ex.name||'').toLowerCase();
+
+  // LOCOMOTIVE CARDIO — you travel through space, distance is meaningful
+  // Running, cycling, rowing, swimming, skiing, etc.
+  const locomotiveTags=['running','cycling','rowing','swimming','skiing','skating'];
+  const locomotiveNames=['run','jog','sprint','bike','cycle','row','swim','ski','skate',
+    'treadmill','elliptical','stair climber','stairmaster','assault bike','air bike','ski erg'];
+  if(locomotiveTags.some(t=>tags.includes(t)) ||
+     locomotiveNames.some(n=>name.includes(n)) ||
+     name==='easy run (zone 2)'){
+    return 'cardio'; // duration + distance
+  }
+
+  // TIMED / ISOMETRIC — holds, stretches, planks
+  if(tags.includes('isometric')||tags.includes('mobility')||
+     tags.includes('flexibility')||tags.includes('stretch')||
+     name.includes('plank')||name.includes('hold')||name.includes('hang')){
+    return 'timed'; // sets × duration
+  }
+
+  // HIIT / INTERVAL — structured rounds with work/rest
+  if(tags.includes('interval')||(tags.includes('hiit')&&!tags.includes('bodyweight')&&!tags.includes('conditioning'))){
+    return 'hiit'; // rounds × work interval
+  }
+
+  // CONDITIONING BODYWEIGHT — jumping jacks, burpees, mountain climbers, jump rope
+  // These are cardio in nature but logged as reps or duration, NOT distance
+  // They keep their bodyweight/reps logging
+  if(ex.bw||tags.includes('bodyweight')){
+    // If they also have conditioning/cardio tags, they still log as reps
     return 'bodyweight';
-  return 'lifting'; // default
+  }
+
+  return 'lifting'; // default: weighted exercises
 }
 
 function buildSetInputs(ex, s, best){
@@ -2566,11 +2591,11 @@ function buildSetInputs(ex, s, best){
 }
 
 function getSetHeaderForType(type){
-  if(type==='lifting')   return '<div class="sets-header"><span>#</span><span>LBS</span><span>REPS</span><span></span></div>';
-  if(type==='bodyweight')return '<div class="sets-header" style="grid-template-columns:26px 1fr 76px"><span>#</span><span>REPS</span><span></span></div>';
-  if(type==='cardio')    return '<div class="sets-header" style="grid-template-columns:26px 1fr 1fr 56px 76px"><span>●</span><span>DURATION</span><span>DIST</span><span>UNIT</span><span></span></div>';
-  if(type==='hiit')      return '<div class="sets-header"><span>#</span><span>ROUNDS</span><span>WORK</span><span></span></div>';
-  if(type==='timed')     return '<div class="sets-header" style="grid-template-columns:26px 1fr 76px"><span>#</span><span>DURATION</span><span></span></div>';
+  if(type==='lifting')    return '<div class="sets-header"><span>#</span><span>LBS</span><span>REPS</span><span></span></div>';
+  if(type==='bodyweight') return '<div class="sets-header" style="grid-template-columns:26px 1fr 76px"><span>#</span><span>REPS</span><span></span></div>';
+  if(type==='cardio')     return '<div class="sets-header" style="grid-template-columns:26px 1fr 1fr 56px 76px"><span>●</span><span>DURATION</span><span>DIST</span><span>UNIT</span><span></span></div>';
+  if(type==='hiit')       return '<div class="sets-header"><span>#</span><span>ROUNDS</span><span>WORK</span><span></span></div>';
+  if(type==='timed')      return '<div class="sets-header" style="grid-template-columns:26px 1fr 76px"><span>#</span><span>DURATION</span><span></span></div>';
   return '';
 }
 function logSet(exId,setIdx){
@@ -3715,7 +3740,7 @@ function showScreen(id){
   document.getElementById(id).classList.add('active');
   // Show active workout banner on any non-workout screen when session is live
   const bar=document.getElementById('active-workout-bar');
-  if(bar) bar.style.display=(currentWorkout&&id!=='workout-screen')?'block':'none';
+  if(bar) bar.style.display=(currentWorkout&&id!=='workout-screen'&&id!=='quick-screen')?'block':'none';
 }
 
 function returnToWorkout(){
